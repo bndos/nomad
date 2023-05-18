@@ -23,7 +23,7 @@ Replace `<YOUR_GOOGLE_MAPS_API_KEY>` and `<YOUR_GOOGLE_PLACES_API_KEY>` with you
 To get started with Flutter development:
 
 1. Install Flutter by following the [official documentation](https://flutter.dev/docs/get-started/install).
-2. Clone this repository: `git clone https://github.com/your-username/nomad.git`.
+2. Clone this repository: `git clone https://github.com/bndos/nomad.git`.
 3. Navigate to the project directory: `cd nomad`.
 4. Retrieve the dependencies by running: `flutter pub get`.
 5. Run the app on your preferred device or emulator using: `flutter run`.
