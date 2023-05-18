@@ -18,11 +18,13 @@ class MapScreen extends StatefulWidget {
 
 class MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<places_sdk.AutocompletePrediction> _predictions = [];
-  List<places_sdk.FetchPlaceResponse?> _placeDetails = [];
   final LocationService _locationService = LocationService();
 
+  List<Marker> _markers = [];
   GoogleMapController? _mapController;
+
+  List<places_sdk.AutocompletePrediction> _predictions = [];
+  List<places_sdk.FetchPlaceResponse?> _placeDetails = [];
 
   @override
   void initState() {
@@ -53,13 +55,13 @@ class MapScreenState extends State<MapScreen> {
       places_sdk.LatLng currentPosition =
           places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
 
-      _focusLocation(currentPosition);
+      _focusLocation(currentPosition, addMarker: false);
     } catch (e) {
       // TODO Handle location error
     }
   }
 
-  void _focusLocation(places_sdk.LatLng? location) {
+  void _focusLocation(places_sdk.LatLng? location, {bool addMarker = true}) {
     if (location != null) {
       final latLng = LatLng(location.lat, location.lng);
       if (_mapController != null) {
@@ -67,11 +69,19 @@ class MapScreenState extends State<MapScreen> {
           CameraUpdate.newLatLngZoom(latLng, 16.0),
         );
       }
-    }
 
-    setState(() {
-      _clearPredictions();
-    });
+      setState(() {
+        if (addMarker) {
+          _markers = [
+            Marker(
+              markerId: const MarkerId('focusedLocation'),
+              position: latLng,
+            ),
+          ];
+        }
+        _clearPredictions();
+      });
+    }
   }
 
   void _fetchAutocompletePredictions(String input) async {
@@ -124,6 +134,7 @@ class MapScreenState extends State<MapScreen> {
           GoogleMap(
             zoomControlsEnabled: false,
             mapType: MapType.terrain,
+            markers: Set<Marker>.of(_markers),
             onMapCreated: (GoogleMapController controller) {
               setState(() {
                 _mapController = controller;
