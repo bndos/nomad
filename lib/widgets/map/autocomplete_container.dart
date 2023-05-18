@@ -4,7 +4,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 class AutocompleteContainer extends StatelessWidget {
   final List<AutocompletePrediction> predictions;
   final List<FetchPlaceResponse?> placeDetails;
-  final void Function(AutocompletePrediction, LatLng) handlePredictionSelection;
+  final void Function(LatLng) handlePredictionSelection;
 
   const AutocompleteContainer({
     Key? key,
@@ -60,7 +60,7 @@ class AutocompleteContainer extends StatelessWidget {
             return ListTile(
               leading: Icon(iconData),
               title: Text(prediction.fullText),
-              onTap: () => handlePredictionSelection(prediction, location!),
+              onTap: () => handlePredictionSelection(location!),
             );
           },
         ),
