@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import './screens/map_screen.dart';
-import './services/places_service.dart';
+import 'package:nomad/screens/map_screen.dart';
+import 'package:nomad/services/places_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
