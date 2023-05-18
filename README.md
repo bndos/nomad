@@ -20,8 +20,6 @@ Replace `<YOUR_GOOGLE_MAPS_API_KEY>` and `<YOUR_GOOGLE_PLACES_API_KEY>` with you
 
 ## Getting Started
 
-This project is a Flutter application that allows you to explore maps and places. It serves as a starting point for building your own location-based applications.
-
 To get started with Flutter development:
 
 1. Install Flutter by following the [official documentation](https://flutter.dev/docs/get-started/install).
