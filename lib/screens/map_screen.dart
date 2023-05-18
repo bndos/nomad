@@ -50,18 +50,28 @@ class MapScreenState extends State<MapScreen> {
   void getCurrentLocation() async {
     try {
       Position position = await _locationService.getCurrentLocation();
-      LatLng currentPosition = LatLng(position.latitude, position.longitude);
-      _mapController!.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: currentPosition,
-            zoom: 18,
-          ),
-        ),
-      );
+      places_sdk.LatLng currentPosition =
+          places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
+
+      _focusLocation(currentPosition);
     } catch (e) {
       // TODO Handle location error
     }
+  }
+
+  void _focusLocation(places_sdk.LatLng? location) {
+    if (location != null) {
+      final latLng = LatLng(location.lat, location.lng);
+      if (_mapController != null) {
+        _mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(latLng, 16.0),
+        );
+      }
+    }
+
+    setState(() {
+      _clearPredictions();
+    });
   }
 
   void _fetchAutocompletePredictions(String input) async {
@@ -101,22 +111,6 @@ class MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _handlePredictionSelection(places_sdk.AutocompletePrediction prediction,
-      places_sdk.LatLng? location) {
-    if (location != null) {
-      final latLng = LatLng(location.lat, location.lng);
-      if (_mapController != null) {
-        _mapController!.animateCamera(
-          CameraUpdate.newLatLngZoom(latLng, 14.0),
-        );
-      }
-    }
-
-    setState(() {
-      _clearPredictions();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     const CameraPosition kGooglePlex = CameraPosition(
@@ -151,7 +145,7 @@ class MapScreenState extends State<MapScreen> {
             AutocompleteContainer(
               predictions: _predictions,
               placeDetails: _placeDetails,
-              handlePredictionSelection: _handlePredictionSelection,
+              handlePredictionSelection: _focusLocation,
             ),
         ],
       ),
