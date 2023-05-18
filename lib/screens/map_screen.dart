@@ -61,6 +61,23 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
+  void _setMarker(LatLng position, String id) {
+    setState(() {
+      _markers = [
+        Marker(
+          markerId: MarkerId(id),
+          position: position,
+        )
+      ];
+    });
+  }
+
+  void _clearMarkers() {
+    setState(() {
+      _markers = [];
+    });
+  }
+
   void _focusLocation(places_sdk.LatLng? location, {bool addMarker = true}) {
     if (location != null) {
       final latLng = LatLng(location.lat, location.lng);
@@ -72,15 +89,36 @@ class MapScreenState extends State<MapScreen> {
 
       setState(() {
         if (addMarker) {
-          _markers = [
-            Marker(
-              markerId: const MarkerId('focusedLocation'),
-              position: latLng,
-            ),
-          ];
+          _setMarker(latLng, 'focusedLocation');
         }
         _clearPredictions();
       });
+    }
+  }
+
+  bool _isLongPressAroundMarker(LatLng position) {
+    if (_markers.isNotEmpty) {
+      final markerPosition = _markers.first.position;
+      final distance = Geolocator.distanceBetween(
+        markerPosition.latitude,
+        markerPosition.longitude,
+        position.latitude,
+        position.longitude,
+      );
+      return distance < 100;
+    }
+    return false;
+  }
+
+  void _handleMapLongPress(LatLng latLng) {
+    if (_isLongPressAroundMarker(latLng)) {
+      _clearMarkers();
+    } else {
+      _focusLocation(
+        places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
+      );
+
+      _setMarker(latLng, 'longPressedLocation');
     }
   }
 
@@ -141,6 +179,7 @@ class MapScreenState extends State<MapScreen> {
                 getCurrentLocation();
               });
             },
+            onLongPress: _handleMapLongPress,
             initialCameraPosition: kGooglePlex,
           ),
           SearchField(
