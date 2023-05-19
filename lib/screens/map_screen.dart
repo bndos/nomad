@@ -96,7 +96,7 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
-  bool _isLongPressAroundMarker(LatLng position) {
+  bool _isTouchAroundMarker(LatLng position) {
     if (_markers.isNotEmpty) {
       final markerPosition = _markers.first.position;
       final distance = Geolocator.distanceBetween(
@@ -110,21 +110,47 @@ class MapScreenState extends State<MapScreen> {
     return false;
   }
 
+  void _handleMapTap(LatLng latLng) {
+    if (_isTouchAroundMarker(latLng)) {
+      _focusLocation(
+        places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
+      );
+    } else {
+      _clearMarkers();
+    }
+  }
+
   void _handleMapLongPress(LatLng latLng) {
-    if (_isLongPressAroundMarker(latLng)) {
+    if (_isTouchAroundMarker(latLng)) {
       _clearMarkers();
     } else {
       _focusLocation(
         places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
       );
-
-      _setMarker(latLng, 'longPressedLocation');
     }
   }
 
   void _fetchAutocompletePredictions(String input) async {
+    final LatLng mapCenter = await _mapController!.getLatLng(
+      ScreenCoordinate(
+        x: MediaQuery.of(context).size.width ~/ 2,
+        y: MediaQuery.of(context).size.height ~/ 2,
+      ),
+    );
+
+    final locationBias = places_sdk.LatLngBounds(
+      southwest: places_sdk.LatLng(
+        lat: mapCenter.latitude - 0.1,
+        lng: mapCenter.longitude - 0.1,
+      ),
+      northeast: places_sdk.LatLng(
+        lat: mapCenter.latitude + 0.1,
+        lng: mapCenter.longitude + 0.1,
+      ),
+    );
     final places_sdk.FindAutocompletePredictionsResponse predictions =
-        await PlacesService.places!.findAutocompletePredictions(input);
+        await PlacesService.places!
+            .findAutocompletePredictions(input, locationBias: locationBias);
 
     if (_placeDetails.length < predictions.predictions.length) {
       _placeDetails = List<places_sdk.FetchPlaceResponse?>.filled(
@@ -180,6 +206,7 @@ class MapScreenState extends State<MapScreen> {
               });
             },
             onLongPress: _handleMapLongPress,
+            onTap: _handleMapTap,
             initialCameraPosition: kGooglePlex,
           ),
           SearchField(
