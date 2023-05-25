@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
     as places_sdk;
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
+    as places_sdk;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
 import 'package:nomad/widgets/map/autocomplete_container.dart';
 import 'package:nomad/widgets/map/current_location_button.dart';
+import 'package:nomad/widgets/map/place_details_bottom_sheet.dart';
 import 'package:nomad/widgets/map/search_field.dart';
 
 class MapScreen extends StatefulWidget {
@@ -78,7 +81,10 @@ class MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _focusLocation(places_sdk.LatLng? location, {bool addMarker = true}) {
+  void _focusLocation(places_sdk.LatLng? location,
+      {places_sdk.FetchPlaceResponse? placeDetails,
+      bool addMarker = true,
+      bool showBottomSheet = false}) {
     if (location != null) {
       final latLng = LatLng(location.lat, location.lng);
       if (_mapController != null) {
@@ -92,6 +98,17 @@ class MapScreenState extends State<MapScreen> {
           _setMarker(latLng, 'focusedLocation');
         }
         _clearPredictions();
+
+        if (showBottomSheet && placeDetails != null) {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return PlaceDetailsBottomSheet(
+                  placeName: placeDetails.place!.name!,
+                  address: placeDetails.place!.address!);
+            },
+          );
+        }
       });
     }
   }
@@ -148,6 +165,7 @@ class MapScreenState extends State<MapScreen> {
         lng: mapCenter.longitude + 0.1,
       ),
     );
+
     final places_sdk.FindAutocompletePredictionsResponse predictions =
         await PlacesService.places!
             .findAutocompletePredictions(input, locationBias: locationBias);
@@ -166,6 +184,7 @@ class MapScreenState extends State<MapScreen> {
         fields: [
           places_sdk.PlaceField.Types,
           places_sdk.PlaceField.Name,
+          places_sdk.PlaceField.Address,
           places_sdk.PlaceField.Location,
         ],
       );
