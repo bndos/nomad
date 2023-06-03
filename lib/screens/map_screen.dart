@@ -7,7 +7,7 @@ import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
 import 'package:nomad/widgets/map/autocomplete_container.dart';
 import 'package:nomad/widgets/map/current_location_button.dart';
-import 'package:nomad/widgets/map/place_details_bottom_sheet.dart';
+import 'package:nomad/widgets/map/place_details_bottom_container.dart';
 import 'package:nomad/widgets/map/search_field.dart';
 
 class MapScreen extends StatefulWidget {
@@ -81,9 +81,7 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void _focusLocation(places_sdk.LatLng? location,
-      {places_sdk.FetchPlaceResponse? placeDetails,
-      bool addMarker = true,
-      bool showBottomSheet = false}) {
+      {places_sdk.FetchPlaceResponse? placeDetails, bool addMarker = true}) {
     if (location != null) {
       final latLng = LatLng(location.lat, location.lng);
       if (_mapController != null) {
@@ -98,7 +96,7 @@ class MapScreenState extends State<MapScreen> {
         }
         _clearPredictions();
 
-        if (showBottomSheet) {
+        if (placeDetails != null) {
           _currentPlaceDetails = placeDetails;
         }
       });

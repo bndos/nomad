@@ -6,8 +6,7 @@ class AutocompleteContainer extends StatelessWidget {
   final List<FetchPlaceResponse?> placeDetails;
   final void Function(LatLng? location,
       {FetchPlaceResponse? placeDetails,
-      bool addMarker,
-      bool showBottomSheet}) handlePredictionSelection;
+      bool addMarker}) handlePredictionSelection;
 
   const AutocompleteContainer({
     Key? key,
@@ -64,7 +63,7 @@ class AutocompleteContainer extends StatelessWidget {
               leading: Icon(iconData),
               title: Text(prediction.fullText),
               onTap: () => handlePredictionSelection(location!,
-                  placeDetails: placeDetails[index]!, showBottomSheet: true),
+                  placeDetails: placeDetails[index]!),
             );
           },
         ),
