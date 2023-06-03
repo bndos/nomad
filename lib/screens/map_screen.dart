@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
     as places_sdk;
-import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
-    as places_sdk;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nomad/services/location_service.dart';
@@ -28,6 +26,7 @@ class MapScreenState extends State<MapScreen> {
 
   List<places_sdk.AutocompletePrediction> _predictions = [];
   List<places_sdk.FetchPlaceResponse?> _placeDetails = [];
+  places_sdk.FetchPlaceResponse? _currentPlaceDetails;
 
   @override
   void initState() {
@@ -99,15 +98,8 @@ class MapScreenState extends State<MapScreen> {
         }
         _clearPredictions();
 
-        if (showBottomSheet && placeDetails != null) {
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return PlaceDetailsBottomSheet(
-                  placeName: placeDetails.place!.name!,
-                  address: placeDetails.place!.address!);
-            },
-          );
+        if (showBottomSheet) {
+          _currentPlaceDetails = placeDetails;
         }
       });
     }
@@ -243,6 +235,10 @@ class MapScreenState extends State<MapScreen> {
               placeDetails: _placeDetails,
               handlePredictionSelection: _focusLocation,
             ),
+          if (_currentPlaceDetails != null)
+            PlaceDetailsContainer(
+                placeName: _currentPlaceDetails!.place!.name!,
+                address: _currentPlaceDetails!.place!.address!),
         ],
       ),
     );
