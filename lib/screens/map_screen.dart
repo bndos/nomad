@@ -26,7 +26,9 @@ class MapScreenState extends State<MapScreen> {
 
   List<places_sdk.AutocompletePrediction> _predictions = [];
   List<places_sdk.FetchPlaceResponse?> _placeDetails = [];
+  List<String?> _placeDistances = [];
   places_sdk.FetchPlaceResponse? _currentPlaceDetails;
+  String _currentPlaceDistance = '';
 
   @override
   void initState() {
@@ -81,7 +83,9 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void _focusLocation(places_sdk.LatLng? location,
-      {places_sdk.FetchPlaceResponse? placeDetails, bool addMarker = true}) {
+      {places_sdk.FetchPlaceResponse? placeDetails,
+      String? placeDistance,
+      bool addMarker = true}) {
     if (location != null) {
       final latLng = LatLng(location.lat, location.lng);
       if (_mapController != null) {
@@ -98,6 +102,10 @@ class MapScreenState extends State<MapScreen> {
 
         if (placeDetails != null) {
           _currentPlaceDetails = placeDetails;
+        }
+
+        if (placeDistance != null) {
+          _currentPlaceDistance = placeDistance;
         }
       });
     }
@@ -167,6 +175,13 @@ class MapScreenState extends State<MapScreen> {
       );
     }
 
+    if (_placeDistances.length < predictions.predictions.length) {
+      _placeDistances = List<String?>.filled(
+        predictions.predictions.length,
+        null,
+      );
+    }
+
     for (int i = 0; i < predictions.predictions.length; i++) {
       final prediction = predictions.predictions[i];
       final details = await PlacesService.places!.fetchPlace(
@@ -179,6 +194,8 @@ class MapScreenState extends State<MapScreen> {
         ],
       );
       _placeDetails[i] = details;
+      _placeDistances[i] =
+          await _locationService.getDistanceFromMe(details.place!.latLng!);
     }
 
     setState(() {
@@ -231,12 +248,16 @@ class MapScreenState extends State<MapScreen> {
             AutocompleteContainer(
               predictions: _predictions,
               placeDetails: _placeDetails,
+              placeDistances: _placeDistances,
               handlePredictionSelection: _focusLocation,
             ),
           if (_currentPlaceDetails != null)
             PlaceDetailsContainer(
-                placeName: _currentPlaceDetails!.place!.name!,
-                address: _currentPlaceDetails!.place!.address!),
+              placeName: _currentPlaceDetails!.place!.name!,
+              address: _currentPlaceDetails!.place!.address!,
+              types: _currentPlaceDetails!.place!.types!,
+              distance: _currentPlaceDistance,
+            )
         ],
       ),
     );

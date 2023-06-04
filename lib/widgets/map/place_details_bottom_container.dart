@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+
+import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
 class PlaceDetailsContainer extends StatefulWidget {
   final String placeName;
   final String address;
+  final String distance;
+  final List<PlaceType> types;
 
   const PlaceDetailsContainer({
     Key? key,
     required this.placeName,
     required this.address,
+    required this.types,
+    required this.distance,
   }) : super(key: key);
 
   @override
@@ -17,6 +26,33 @@ class PlaceDetailsContainer extends StatefulWidget {
 class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
   double containerHeight = 200.0; // Initial height of the container
   double dragOffset = 0.0; // Offset for tracking the drag gesture
+
+  IconData getIconForPlaceType(PlaceType placeType) {
+    switch (placeType) {
+      case PlaceType.UNIVERSITY:
+        return FontAwesomeIcons.graduationCap;
+      case PlaceType.RESTAURANT:
+        return FontAwesomeIcons.utensils;
+      case PlaceType.CAFE:
+        return FontAwesomeIcons.coffee;
+      case PlaceType.BAR:
+        return FontAwesomeIcons.glassCheers;
+      case PlaceType.PARK:
+        return FontAwesomeIcons.tree;
+      case PlaceType.SHOPPING_MALL:
+        return FontAwesomeIcons.shoppingBag;
+      case PlaceType.HOSPITAL:
+        return FontAwesomeIcons.hospital;
+      case PlaceType.MOVIE_THEATER:
+        return FontAwesomeIcons.film;
+      case PlaceType.MUSEUM:
+        return FontAwesomeIcons.monument;
+      case PlaceType.STADIUM:
+        return FontAwesomeIcons.volleyballBall;
+      default:
+        return FontAwesomeIcons.mapMarkerAlt; // Default icon
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,33 +97,85 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.placeName,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                        width: MediaQuery.of(context).size.width *
+                            0.2, // 25% of the screen width
+                        height: MediaQuery.of(context).size.width *
+                            0.2, // Set the height equal to the width for a circular shape
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100], // Pale grey background color
+                          shape: BoxShape.circle, // Circular shape
+                        ),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            iconTheme: IconThemeData(
+                              color: Colors.grey[
+                                  800], // Set the desired foreground color
+                            ),
+                          ),
+                          child: Icon(
+                            getIconForPlaceType(widget.types[0]),
+                            size: 32.0,
+                          ),
+                        )),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.distance.isNotEmpty
+                                ? '${widget.placeName} (${widget.distance})'
+                                : widget.placeName,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            widget.types[0].name.capitalize!,
+                            style: const TextStyle(fontSize: 12.0),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            widget.address,
+                            style: const TextStyle(fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8.0),
-                Text(
-                  widget.address,
-                  style: const TextStyle(fontSize: 16.0),
-                ),
-                const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ElevatedButton(
+                    RoundedIconButton(
+                      icon: FontAwesomeIcons
+                          .plus, // Replace with the appropriate Font Awesome icon
+                      label: 'Event',
                       onPressed: () {
-                        // Perform action 1
+                        // Perform create event action
                       },
-                      child: const Text('Action 1'),
                     ),
-                    ElevatedButton(
+                    RoundedIconButton(
+                      icon: FontAwesomeIcons
+                          .mapMarker, // Replace with the appropriate Font Awesome icon
+                      label: 'Directions',
                       onPressed: () {
-                        // Perform action 2
+                        // Perform directions action
                       },
-                      child: const Text('Action 2'),
+                    ),
+                    RoundedIconButton(
+                      icon: FontAwesomeIcons
+                          .share, // Replace with the appropriate Font Awesome icon
+                      label: 'Share',
+                      onPressed: () {
+                        // Perform share action
+                      },
                     ),
                   ],
                 ),
