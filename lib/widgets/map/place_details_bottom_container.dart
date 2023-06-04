@@ -34,13 +34,13 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       case PlaceType.RESTAURANT:
         return FontAwesomeIcons.utensils;
       case PlaceType.CAFE:
-        return FontAwesomeIcons.coffee;
+        return FontAwesomeIcons.mugSaucer;
       case PlaceType.BAR:
-        return FontAwesomeIcons.glassCheers;
+        return FontAwesomeIcons.champagneGlasses;
       case PlaceType.PARK:
         return FontAwesomeIcons.tree;
       case PlaceType.SHOPPING_MALL:
-        return FontAwesomeIcons.shoppingBag;
+        return FontAwesomeIcons.bagShopping;
       case PlaceType.HOSPITAL:
         return FontAwesomeIcons.hospital;
       case PlaceType.MOVIE_THEATER:
@@ -48,9 +48,9 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       case PlaceType.MUSEUM:
         return FontAwesomeIcons.monument;
       case PlaceType.STADIUM:
-        return FontAwesomeIcons.volleyballBall;
+        return FontAwesomeIcons.volleyball;
       default:
-        return FontAwesomeIcons.mapMarkerAlt; // Default icon
+        return FontAwesomeIcons.locationPin; // Default icon
     }
   }
 
@@ -163,7 +163,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
                     ),
                     RoundedIconButton(
                       icon: FontAwesomeIcons
-                          .mapMarker, // Replace with the appropriate Font Awesome icon
+                          .locationPin, // Replace with the appropriate Font Awesome icon
                       label: 'Directions',
                       onPressed: () {
                         // Perform directions action

@@ -25,8 +25,7 @@ class MapScreenState extends State<MapScreen> {
   GoogleMapController? _mapController;
 
   List<places_sdk.AutocompletePrediction> _predictions = [];
-  List<places_sdk.FetchPlaceResponse?> _placeDetails = [];
-  List<String?> _placeDistances = [];
+  places_sdk.LatLng? _currentLocation;
   places_sdk.FetchPlaceResponse? _currentPlaceDetails;
   String _currentPlaceDistance = '';
 
@@ -56,13 +55,16 @@ class MapScreenState extends State<MapScreen> {
   void getCurrentLocation() async {
     try {
       Position position = await _locationService.getCurrentLocation();
-      places_sdk.LatLng currentPosition =
+      _currentLocation =
           places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
-
-      _focusLocation(currentPosition, addMarker: false);
     } catch (e) {
       // TODO Handle location error
     }
+  }
+
+  void focusCurrentLocation() {
+    getCurrentLocation();
+    _moveCameraToLocation(_currentLocation, addMarker: false);
   }
 
   void _setMarker(LatLng position, String id) {
@@ -82,10 +84,8 @@ class MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _focusLocation(places_sdk.LatLng? location,
-      {places_sdk.FetchPlaceResponse? placeDetails,
-      String? placeDistance,
-      bool addMarker = true}) {
+  void _moveCameraToLocation(places_sdk.LatLng? location,
+      {bool addMarker = true}) {
     if (location != null) {
       final latLng = LatLng(location.lat, location.lng);
       if (_mapController != null) {
@@ -99,14 +99,42 @@ class MapScreenState extends State<MapScreen> {
           _setMarker(latLng, 'focusedLocation');
         }
         _clearPredictions();
+      });
+    }
+  }
 
-        if (placeDetails != null) {
-          _currentPlaceDetails = placeDetails;
-        }
+  void _focusPredictionClicked(int? index) async {
+    if (index != null) {
+      final prediction = _predictions[index];
+      final details = await PlacesService.places!.fetchPlace(
+        prediction.placeId,
+        fields: [
+          places_sdk.PlaceField.Types,
+          places_sdk.PlaceField.Name,
+          places_sdk.PlaceField.Address,
+          places_sdk.PlaceField.Location,
+        ],
+      );
 
-        if (placeDistance != null) {
-          _currentPlaceDistance = placeDistance;
+      final location = details.place!.latLng;
+      final distanceMeters = prediction.distanceMeters;
+      String distance = '';
+
+      if (distanceMeters != null) {
+        if (distanceMeters >= 1000) {
+          distance = '${(distanceMeters / 1000).toStringAsFixed(1)} km';
+        } else {
+          distance = '${distanceMeters.toStringAsFixed(0)} m';
         }
+      } else {
+        distance = await _locationService.getDistanceFromMe(location!);
+      }
+
+      _moveCameraToLocation(location);
+
+      setState(() {
+        _currentPlaceDetails = details;
+        _currentPlaceDistance = distance;
       });
     }
   }
@@ -127,7 +155,7 @@ class MapScreenState extends State<MapScreen> {
 
   void _handleMapTap(LatLng latLng) {
     if (_isTouchAroundMarker(latLng)) {
-      _focusLocation(
+      _moveCameraToLocation(
         places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
       );
     } else {
@@ -139,7 +167,7 @@ class MapScreenState extends State<MapScreen> {
     if (_isTouchAroundMarker(latLng)) {
       _clearMarkers();
     } else {
-      _focusLocation(
+      _moveCameraToLocation(
         places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
       );
     }
@@ -165,38 +193,8 @@ class MapScreenState extends State<MapScreen> {
     );
 
     final places_sdk.FindAutocompletePredictionsResponse predictions =
-        await PlacesService.places!
-            .findAutocompletePredictions(input, locationBias: locationBias);
-
-    if (_placeDetails.length < predictions.predictions.length) {
-      _placeDetails = List<places_sdk.FetchPlaceResponse?>.filled(
-        predictions.predictions.length,
-        null,
-      );
-    }
-
-    if (_placeDistances.length < predictions.predictions.length) {
-      _placeDistances = List<String?>.filled(
-        predictions.predictions.length,
-        null,
-      );
-    }
-
-    for (int i = 0; i < predictions.predictions.length; i++) {
-      final prediction = predictions.predictions[i];
-      final details = await PlacesService.places!.fetchPlace(
-        prediction.placeId,
-        fields: [
-          places_sdk.PlaceField.Types,
-          places_sdk.PlaceField.Name,
-          places_sdk.PlaceField.Address,
-          places_sdk.PlaceField.Location,
-        ],
-      );
-      _placeDetails[i] = details;
-      _placeDistances[i] =
-          await _locationService.getDistanceFromMe(details.place!.latLng!);
-    }
+        await PlacesService.places!.findAutocompletePredictions(input,
+            locationBias: locationBias, origin: _currentLocation);
 
     setState(() {
       _predictions = predictions.predictions;
@@ -228,7 +226,7 @@ class MapScreenState extends State<MapScreen> {
             onMapCreated: (GoogleMapController controller) {
               setState(() {
                 _mapController = controller;
-                getCurrentLocation();
+                focusCurrentLocation();
               });
             },
             onLongPress: _handleMapLongPress,
@@ -242,14 +240,12 @@ class MapScreenState extends State<MapScreen> {
             clearPredictions: _clearPredictions,
           ),
           CurrentLocationButton(
-            getCurrentLocation: getCurrentLocation,
+            getCurrentLocation: focusCurrentLocation,
           ),
           if (_predictions.isNotEmpty)
             AutocompleteContainer(
               predictions: _predictions,
-              placeDetails: _placeDetails,
-              placeDistances: _placeDistances,
-              handlePredictionSelection: _focusLocation,
+              handlePredictionSelection: _focusPredictionClicked,
             ),
           if (_currentPlaceDetails != null)
             PlaceDetailsContainer(
