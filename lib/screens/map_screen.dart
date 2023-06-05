@@ -235,8 +235,8 @@ class MapScreenState extends State<MapScreen> {
             initialCameraPosition: kGooglePlex,
           ),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               child: SearchField(
                 searchController: _searchController,
                 predictions: _predictions,
