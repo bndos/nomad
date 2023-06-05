@@ -11,7 +11,7 @@ class CurrentLocationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 80,
+      bottom: 30,
       right: 20,
       child: Container(
         width: 50,
