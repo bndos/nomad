@@ -231,13 +231,19 @@ class MapScreenState extends State<MapScreen> {
             },
             onLongPress: _handleMapLongPress,
             onTap: _handleMapTap,
+            myLocationButtonEnabled: false,
             initialCameraPosition: kGooglePlex,
           ),
-          SearchField(
-            searchController: _searchController,
-            predictions: _predictions,
-            onSearchChanged: _onSearchChanged,
-            clearPredictions: _clearPredictions,
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SearchField(
+                searchController: _searchController,
+                predictions: _predictions,
+                onSearchChanged: _onSearchChanged,
+                clearPredictions: _clearPredictions,
+              ),
+            ),
           ),
           CurrentLocationButton(
             getCurrentLocation: focusCurrentLocation,
