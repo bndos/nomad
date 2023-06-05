@@ -37,6 +37,8 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
         return FontAwesomeIcons.mugSaucer;
       case PlaceType.BAR:
         return FontAwesomeIcons.champagneGlasses;
+      case PlaceType.NIGHT_CLUB:
+        return FontAwesomeIcons.champagneGlasses;
       case PlaceType.PARK:
         return FontAwesomeIcons.tree;
       case PlaceType.SHOPPING_MALL:
@@ -48,7 +50,11 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       case PlaceType.MUSEUM:
         return FontAwesomeIcons.monument;
       case PlaceType.STADIUM:
-        return FontAwesomeIcons.volleyball;
+        return FontAwesomeIcons.flag;
+      case PlaceType.TOURIST_ATTRACTION:
+        return FontAwesomeIcons.camera;
+      case PlaceType.SUBWAY_STATION:
+        return FontAwesomeIcons.trainSubway;
       default:
         return FontAwesomeIcons.locationPin; // Default icon
     }
@@ -136,7 +142,9 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
                           ),
                           const SizedBox(height: 8.0),
                           Text(
-                            widget.types[0].name.capitalize!,
+                            widget.types[0].name
+                                .replaceAll('_', ' ')
+                                .capitalize!,
                             style: const TextStyle(fontSize: 12.0),
                           ),
                           const SizedBox(height: 8.0),
