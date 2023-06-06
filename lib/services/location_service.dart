@@ -2,7 +2,9 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
-  Future<Position> getCurrentLocation() async {
+  bool permissionGranted = false;
+
+  Future<bool> checkPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -30,7 +32,16 @@ class LocationService {
       }
     }
 
+    permissionGranted = true;
+    return permissionGranted;
+  }
+
+  Future<Position> getCurrentLocation() async {
     // Get the current position
+    if (!permissionGranted) {
+      checkPermission();
+    }
+
     Position position = await Geolocator.getCurrentPosition();
     return position;
   }
