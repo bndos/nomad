@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
-import 'package:nomad/widgets/map/autocomplete_container.dart';
 import 'package:nomad/widgets/map/current_location_button.dart';
 import 'package:nomad/widgets/map/place_details_bottom_container.dart';
 import 'package:nomad/widgets/map/search_field.dart';
@@ -24,16 +23,9 @@ class MapScreenState extends State<MapScreen> {
   List<Marker> _markers = [];
   GoogleMapController? _mapController;
 
-  List<places_sdk.AutocompletePrediction> _predictions = [];
   places_sdk.LatLng? _currentLocation;
   places_sdk.FetchPlaceResponse? _currentPlaceDetails;
   String _currentPlaceDistance = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(_onSearchChanged);
-  }
 
   @override
   void dispose() {
@@ -41,22 +33,14 @@ class MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    String input = _searchController.text;
-    if (input.isNotEmpty) {
-      _fetchAutocompletePredictions(input);
-    } else {
-      setState(() {
-        _predictions = [];
-      });
-    }
-  }
-
   void getCurrentLocation() async {
     try {
       Position position = await _locationService.getCurrentLocation();
-      _currentLocation =
-          places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
+
+      setState(() {
+        _currentLocation =
+            places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
+      });
     } catch (e) {
       // TODO Handle location error
     }
@@ -98,14 +82,14 @@ class MapScreenState extends State<MapScreen> {
         if (addMarker) {
           _setMarker(latLng, 'focusedLocation');
         }
-        _clearPredictions();
       });
     }
   }
 
-  void _focusPredictionClicked(int? index) async {
+  void _focusPredictionClicked(
+      int? index, List<places_sdk.AutocompletePrediction> predictions) async {
     if (index != null) {
-      final prediction = _predictions[index];
+      final prediction = predictions[index];
       final details = await PlacesService.places!.fetchPlace(
         prediction.placeId,
         fields: [
@@ -173,42 +157,6 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _fetchAutocompletePredictions(String input) async {
-    final LatLng mapCenter = await _mapController!.getLatLng(
-      ScreenCoordinate(
-        x: MediaQuery.of(context).size.width ~/ 2,
-        y: MediaQuery.of(context).size.height ~/ 2,
-      ),
-    );
-
-    final locationBias = places_sdk.LatLngBounds(
-      southwest: places_sdk.LatLng(
-        lat: mapCenter.latitude - 0.1,
-        lng: mapCenter.longitude - 0.1,
-      ),
-      northeast: places_sdk.LatLng(
-        lat: mapCenter.latitude + 0.1,
-        lng: mapCenter.longitude + 0.1,
-      ),
-    );
-
-    final places_sdk.FindAutocompletePredictionsResponse predictions =
-        await PlacesService.places!.findAutocompletePredictions(input,
-            locationBias: locationBias, origin: _currentLocation);
-
-    setState(() {
-      _predictions = predictions.predictions;
-    });
-  }
-
-  void _clearPredictions() {
-    setState(() {
-      _searchController.text = '';
-      FocusScope.of(context).unfocus();
-      _predictions = [];
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     const CameraPosition kGooglePlex = CameraPosition(
@@ -234,32 +182,26 @@ class MapScreenState extends State<MapScreen> {
             myLocationButtonEnabled: false,
             initialCameraPosition: kGooglePlex,
           ),
-          SafeArea(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: SearchField(
-                searchController: _searchController,
-                predictions: _predictions,
-                onSearchChanged: _onSearchChanged,
-                clearPredictions: _clearPredictions,
-              ),
-            ),
-          ),
           CurrentLocationButton(
             getCurrentLocation: focusCurrentLocation,
           ),
-          if (_predictions.isNotEmpty)
-            AutocompleteContainer(
-              predictions: _predictions,
-              handlePredictionSelection: _focusPredictionClicked,
-            ),
           if (_currentPlaceDetails != null)
             PlaceDetailsContainer(
               placeName: _currentPlaceDetails!.place!.name!,
               address: _currentPlaceDetails!.place!.address!,
               types: _currentPlaceDetails!.place!.types!,
               distance: _currentPlaceDistance,
-            )
+            ),
+          SafeArea(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: SearchField(
+                currentLocation: _currentLocation,
+                mapController: _mapController,
+                handlePredictionSelection: _focusPredictionClicked,
+              ),
+            ),
+          ),
         ],
       ),
     );
