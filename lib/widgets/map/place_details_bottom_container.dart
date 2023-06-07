@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:nomad/widgets/events/event_form.dart';
 
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
@@ -58,6 +59,16 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       default:
         return FontAwesomeIcons.locationPin; // Default icon
     }
+  }
+
+  void _openEventForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return const EventForm();
+      },
+    );
   }
 
   @override
@@ -167,6 +178,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
                       label: 'Event',
                       onPressed: () {
                         // Perform create event action
+                        _openEventForm(context);
                       },
                     ),
                     RoundedIconButton(

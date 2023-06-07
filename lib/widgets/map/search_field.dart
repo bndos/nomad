@@ -97,7 +97,7 @@ class SearchFieldState extends State<SearchField> {
         children: [
           Container(
             width: Get.width,
-            margin: const EdgeInsets.only(top: 6, bottom: 0),
+            margin: const EdgeInsets.only(top: 20, bottom: 0),
             padding: const EdgeInsets.only(left: 5),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -109,13 +109,13 @@ class SearchFieldState extends State<SearchField> {
                 ),
               ],
               borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(10),
-                topRight: const Radius.circular(10),
+                topLeft: const Radius.circular(20),
+                topRight: const Radius.circular(20),
                 bottomLeft: _predictions.isEmpty
-                    ? const Radius.circular(10)
+                    ? const Radius.circular(20)
                     : const Radius.circular(0),
                 bottomRight: _predictions.isEmpty
-                    ? const Radius.circular(10)
+                    ? const Radius.circular(20)
                     : const Radius.circular(0),
               ),
             ),
