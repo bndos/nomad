@@ -157,32 +157,12 @@ class EventFormState extends State<EventForm> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    FontAwesomeIcons.locationArrow,
-                                    size: 12.0,
-                                    color: Colors.blue,
-                                  ),
-                                  const SizedBox(width: 5.0),
-                                  Text(
-                                    '${widget.placeName} (${widget.distance})',
-                                    style: const TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.locationArrow,
+                              label: '${widget.placeName} (${widget.distance})',
+                              onPressed: () => {},
+                              color: const Color(0xFFE6F0FF),
+                              iconColor: const Color(0xFF4D8AF0),
                             ),
                             IconButton(
                               padding: const EdgeInsets.all(0),
@@ -210,16 +190,6 @@ class EventFormState extends State<EventForm> {
                           label: 'Event Details',
                         ),
                         const SizedBox(height: 16),
-                        // TextButton.icon(
-                        //   onPressed: () => _selectDate(context),
-                        //   icon: const Icon(FontAwesomeIcons.calendar),
-                        //   label: Text(
-                        // _selectedDate != null
-                        //     ? 'Selected Date: ${_selectedDate!.toIso8601String().split('T')[0]}'
-                        //     : 'Select Date',
-                        //   ),
-                        // ),
-
                         Row(
                           children: [
                             RoundedIconButton(
@@ -247,9 +217,28 @@ class EventFormState extends State<EventForm> {
                               isDisabled: _startDateWrapper.date == null,
                             ),
                           ],
-                        )
-
-                        // Add other form fields and content here
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.camera,
+                              label: 'Take Picture',
+                              onPressed: () {
+                                // TODO: Handle take picture action
+                              },
+                            ),
+                            const SizedBox(width: 10),
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.plus,
+                              label: 'Add Picture',
+                              onPressed: () {
+                                // TODO: Handle add picture action
+                              },
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
