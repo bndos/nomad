@@ -5,8 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
-import 'package:nomad/widgets/map/autocomplete_container.dart';
 import 'package:nomad/widgets/map/current_location_button.dart';
+import 'package:nomad/widgets/map/place_details_bottom_container.dart';
 import 'package:nomad/widgets/map/search_field.dart';
 
 class MapScreen extends StatefulWidget {
@@ -18,17 +18,14 @@ class MapScreen extends StatefulWidget {
 
 class MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<places_sdk.AutocompletePrediction> _predictions = [];
-  List<places_sdk.FetchPlaceResponse?> _placeDetails = [];
   final LocationService _locationService = LocationService();
 
+  List<Marker> _markers = [];
   GoogleMapController? _mapController;
 
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(_onSearchChanged);
-  }
+  places_sdk.LatLng? _currentLocation;
+  places_sdk.FetchPlaceResponse? _currentPlaceDetails;
+  String _currentPlaceDistance = '';
 
   @override
   void dispose() {
@@ -36,85 +33,132 @@ class MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    String input = _searchController.text;
-    if (input.isNotEmpty) {
-      _fetchAutocompletePredictions(input);
-    } else {
-      setState(() {
-        _predictions = [];
-      });
-    }
-  }
-
   void getCurrentLocation() async {
     try {
       Position position = await _locationService.getCurrentLocation();
-      LatLng currentPosition = LatLng(position.latitude, position.longitude);
-      _mapController!.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: currentPosition,
-            zoom: 18,
-          ),
-        ),
-      );
+
+      setState(() {
+        _currentLocation =
+            places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
+      });
     } catch (e) {
       // TODO Handle location error
     }
   }
 
-  void _fetchAutocompletePredictions(String input) async {
-    final places_sdk.FindAutocompletePredictionsResponse predictions =
-        await PlacesService.places!.findAutocompletePredictions(input);
+  void focusCurrentLocation() {
+    getCurrentLocation();
+    _moveCameraToLocation(_currentLocation, addMarker: false);
+  }
 
-    if (_placeDetails.length < predictions.predictions.length) {
-      _placeDetails = List<places_sdk.FetchPlaceResponse?>.filled(
-        predictions.predictions.length,
-        null,
-      );
+  void _setMarker(LatLng position, String id) {
+    setState(() {
+      _markers = [
+        Marker(
+          markerId: MarkerId(id),
+          position: position,
+        )
+      ];
+    });
+  }
+
+  void _clearMarkers() {
+    setState(() {
+      _markers = [];
+    });
+  }
+
+  void _moveCameraToLocation(
+    places_sdk.LatLng? location, {
+    bool addMarker = true,
+  }) {
+    if (location != null) {
+      final latLng = LatLng(location.lat, location.lng);
+      if (_mapController != null) {
+        _mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(latLng, 16.0),
+        );
+      }
+
+      setState(() {
+        if (addMarker) {
+          _setMarker(latLng, 'focusedLocation');
+        }
+      });
     }
+  }
 
-    for (int i = 0; i < predictions.predictions.length; i++) {
-      final prediction = predictions.predictions[i];
+  void _focusPredictionClicked(
+    int? index,
+    List<places_sdk.AutocompletePrediction> predictions,
+  ) async {
+    if (index != null) {
+      final prediction = predictions[index];
       final details = await PlacesService.places!.fetchPlace(
         prediction.placeId,
         fields: [
           places_sdk.PlaceField.Types,
           places_sdk.PlaceField.Name,
+          places_sdk.PlaceField.Address,
           places_sdk.PlaceField.Location,
         ],
       );
-      _placeDetails[i] = details;
-    }
 
-    setState(() {
-      _predictions = predictions.predictions;
-    });
-  }
+      final location = details.place!.latLng;
+      final distanceMeters = prediction.distanceMeters;
+      String distance = '';
 
-  void _clearPredictions() {
-    setState(() {
-      _searchController.text = '';
-      FocusScope.of(context).unfocus();
-      _predictions = [];
-    });
-  }
-
-  void _handlePredictionSelection(places_sdk.AutocompletePrediction prediction,
-      places_sdk.LatLng? location) {
-    if (location != null) {
-      final latLng = LatLng(location.lat, location.lng);
-      if (_mapController != null) {
-        _mapController!.animateCamera(
-          CameraUpdate.newLatLngZoom(latLng, 14.0),
-        );
+      if (distanceMeters != null) {
+        if (distanceMeters >= 1000) {
+          distance = '${(distanceMeters / 1000).toStringAsFixed(1)} km';
+        } else {
+          distance = '${distanceMeters.toStringAsFixed(0)} m';
+        }
+      } else {
+        distance = await _locationService.getDistanceFromMe(location!);
       }
-    }
 
-    setState(() {
-      _clearPredictions();
-    });
+      _moveCameraToLocation(location);
+
+      setState(() {
+        _currentPlaceDetails = details;
+        _currentPlaceDistance = distance;
+      });
+    }
+  }
+
+  bool _isTouchAroundMarker(LatLng position) {
+    if (_markers.isNotEmpty) {
+      final markerPosition = _markers.first.position;
+      final distance = Geolocator.distanceBetween(
+        markerPosition.latitude,
+        markerPosition.longitude,
+        position.latitude,
+        position.longitude,
+      );
+      return distance < 100;
+    }
+    return false;
+  }
+
+  void _handleMapTap(LatLng latLng) {
+    if (_isTouchAroundMarker(latLng)) {
+      _moveCameraToLocation(
+        places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
+      );
+    } else {
+      _clearMarkers();
+    }
+  }
+
+  void _handleMapLongPress(LatLng latLng) {
+    if (_isTouchAroundMarker(latLng)) {
+      _clearMarkers();
+    } else {
+      _moveCameraToLocation(
+        places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
+      );
+    }
   }
 
   @override
@@ -130,29 +174,38 @@ class MapScreenState extends State<MapScreen> {
           GoogleMap(
             zoomControlsEnabled: false,
             mapType: MapType.terrain,
+            markers: Set<Marker>.of(_markers),
             onMapCreated: (GoogleMapController controller) {
               setState(() {
                 _mapController = controller;
-                getCurrentLocation();
+                focusCurrentLocation();
               });
             },
+            onLongPress: _handleMapLongPress,
+            onTap: _handleMapTap,
+            myLocationButtonEnabled: false,
             initialCameraPosition: kGooglePlex,
           ),
-          SearchField(
-            searchController: _searchController,
-            predictions: _predictions,
-            onSearchChanged: _onSearchChanged,
-            clearPredictions: _clearPredictions,
-          ),
           CurrentLocationButton(
-            getCurrentLocation: getCurrentLocation,
+            getCurrentLocation: focusCurrentLocation,
           ),
-          if (_predictions.isNotEmpty)
-            AutocompleteContainer(
-              predictions: _predictions,
-              placeDetails: _placeDetails,
-              handlePredictionSelection: _handlePredictionSelection,
+          if (_currentPlaceDetails != null)
+            PlaceDetailsContainer(
+              placeName: _currentPlaceDetails!.place!.name!,
+              address: _currentPlaceDetails!.place!.address!,
+              types: _currentPlaceDetails!.place!.types!,
+              distance: _currentPlaceDistance,
             ),
+          SafeArea(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: SearchField(
+                currentLocation: _currentLocation,
+                mapController: _mapController,
+                handlePredictionSelection: _focusPredictionClicked,
+              ),
+            ),
+          ),
         ],
       ),
     );
