@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
+import 'package:time_range_picker/time_range_picker.dart';
+
+import 'package:intl/intl.dart';
 
 class EventForm extends StatefulWidget {
   const EventForm({Key? key}) : super(key: key);
 
   @override
   EventFormState createState() => EventFormState();
+}
+
+class DateWrapper {
+  DateTime? date;
 }
 
 class EventFormState extends State<EventForm> {
@@ -17,7 +24,8 @@ class EventFormState extends State<EventForm> {
   final FocusNode _eventDescriptionFocusNode = FocusNode();
   bool _isEventNameFocused = false;
   bool _isEventDescriptionFocused = false;
-  DateTime? _selectedDate;
+  final DateWrapper _startDateWrapper = DateWrapper();
+  final DateWrapper _endDateWrapper = DateWrapper();
 
   @override
   void initState() {
@@ -52,46 +60,64 @@ class EventFormState extends State<EventForm> {
     });
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context, DateWrapper selectedDate,
+      {DateTime? initialDate}) async {
+    setState(() {
+      selectedDate.date = null;
+      _endDateWrapper.date = null;
+    });
+
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: initialDate ?? DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (BuildContext context, Widget? child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: Theme(
-            data: ThemeData.light(),
-            child: child!,
-          ),
-        );
-      },
     );
+
     if (pickedDate != null) {
+      setState(() {
+        selectedDate.date = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+        );
+      });
+
       if (!mounted) return;
 
-      final TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-        builder: (BuildContext context, Widget? child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: Theme(
-              data: ThemeData.light(),
-              child: child!,
-            ),
-          );
-        },
-      );
+      final TimeOfDay? pickedTime;
+
+      if (initialDate != null &&
+          pickedDate.year == initialDate.year &&
+          pickedDate.month == initialDate.month &&
+          pickedDate.day == initialDate.day) {
+        TimeRange timeRange = await await showTimeRangePicker(
+          context: context,
+          start: TimeOfDay.fromDateTime(initialDate),
+          end: const TimeOfDay(hour: 23, minute: 59),
+          disabledTime: TimeRange(
+            startTime: const TimeOfDay(hour: 23, minute: 55),
+            //end time initialDate minus 1 minute
+            endTime: TimeOfDay.fromDateTime(initialDate),
+          ),
+          use24HourFormat: false,
+        );
+
+        pickedTime = timeRange.endTime;
+      } else {
+        pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+      }
 
       if (pickedTime != null) {
         setState(() {
-          _selectedDate = DateTime(
+          selectedDate.date = DateTime(
             pickedDate.year,
             pickedDate.month,
             pickedDate.day,
-            pickedTime.hour,
+            pickedTime!.hour,
             pickedTime.minute,
           );
         });
@@ -165,22 +191,24 @@ class EventFormState extends State<EventForm> {
                             RoundedIconButton(
                               icon: FontAwesomeIcons.calendar,
                               textLabel: 'Start date',
-                              label: _selectedDate != null
-                                  ? _selectedDate!
-                                      .toIso8601String()
-                                      .split('T')[0]
+                              label: _startDateWrapper.date != null
+                                  ? DateFormat('yyyy-MM-dd HH:mm')
+                                      .format(_startDateWrapper.date!)
                                   : 'Select Date',
-                              onPressed: () => _selectDate(context),
+                              onPressed: () =>
+                                  _selectDate(context, _startDateWrapper),
                             ),
                             RoundedIconButton(
                               icon: FontAwesomeIcons.calendar,
                               textLabel: 'End date',
-                              label: _selectedDate != null
-                                  ? _selectedDate!
-                                      .toIso8601String()
-                                      .split('T')[0]
+                              label: _endDateWrapper.date != null
+                                  ? DateFormat('yyyy-MM-dd HH:mm')
+                                      .format(_endDateWrapper.date!)
                                   : 'Select Date',
-                              onPressed: () => _selectDate(context),
+                              onPressed: () => _selectDate(
+                                  context, _endDateWrapper,
+                                  initialDate: _startDateWrapper.date),
+                              isDisabled: _startDateWrapper.date == null,
                             ),
                           ],
                         )
