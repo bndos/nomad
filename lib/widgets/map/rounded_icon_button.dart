@@ -5,6 +5,7 @@ class RoundedIconButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final String? textLabel;
+  final bool isDisabled; // New property for disabled state
 
   const RoundedIconButton({
     Key? key,
@@ -12,6 +13,7 @@ class RoundedIconButton extends StatelessWidget {
     required this.label,
     this.onPressed,
     this.textLabel,
+    this.isDisabled = false, // Set default value to false
   }) : super(key: key);
 
   @override
@@ -22,22 +24,29 @@ class RoundedIconButton extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             elevation: 0, // Set elevation to 0 to remove the shadow
-            backgroundColor: Colors.grey[100], // Pale grey background color
+            backgroundColor: isDisabled
+                ? Colors.grey[50]
+                : Colors.grey[
+                    100], // Use different background color for disabled state
             foregroundColor: Colors.black, // Black foreground color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
           ),
-          onPressed: onPressed,
+          onPressed: isDisabled
+              ? () => {}
+              : onPressed, // Disable onPressed when isDisabled is true
           child: Column(
             children: [
               if (textLabel != null)
                 Text(
                   textLabel!,
                   style: TextStyle(
-                    // a subtle, light, grey text style
-                    color: Colors.grey[600],
+                    color: isDisabled
+                        ? Colors.grey[400]
+                        : Colors.grey[
+                            600], // Use different text color for disabled state
                     fontSize: 12.0,
                     fontWeight: FontWeight.w400,
                   ),
@@ -45,11 +54,22 @@ class RoundedIconButton extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 16.0),
+                  Icon(
+                    icon,
+                    size: 16.0,
+                    color: isDisabled
+                        ? Colors.grey[400]
+                        : null, // Reduce opacity of the icon when disabled
+                  ),
                   const SizedBox(width: 8.0),
                   Text(
                     label,
-                    style: const TextStyle(fontSize: 12.0),
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: isDisabled
+                          ? Colors.grey[400]
+                          : null, // Reduce opacity of the text when disabled
+                    ),
                   ),
                 ],
               ),
