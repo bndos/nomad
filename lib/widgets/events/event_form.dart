@@ -58,12 +58,44 @@ class EventFormState extends State<EventForm> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: Theme(
+            data: ThemeData.light(),
+            child: child!,
+          ),
+        );
+      },
     );
-
     if (pickedDate != null) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
+      if (!mounted) return;
+
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: Theme(
+              data: ThemeData.light(),
+              child: child!,
+            ),
+          );
+        },
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDate = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
     }
   }
 
@@ -89,26 +121,21 @@ class EventFormState extends State<EventForm> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     const Text(
-                        //       'Create Event',
-                        //       style: TextStyle(
-                        //         fontSize: 18,
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //     IconButton(
-                        //       icon: const Icon(Icons.close),
-                        //       onPressed: () {
-                        //         // Close the modal when the close button is pressed
-                        //         Navigator.of(context).pop();
-                        //       },
-                        //     ),
-                        //   ],
-                        // ),
-                        const SizedBox(height: 32),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              padding: const EdgeInsets.all(0),
+                              icon: const Icon(FontAwesomeIcons.xmark),
+                              onPressed: () {
+                                // Close the modal when the close button is pressed
+                                Navigator.of(context).pop();
+                              },
+                              iconSize: 16,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
                         CustomTextField(
                           controller: _eventNameController,
                           focusNode: _eventNameFocusNode,
