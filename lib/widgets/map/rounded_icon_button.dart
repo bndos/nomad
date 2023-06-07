@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+const lightGreyColor = Color(0xFFF2F2F2);
+
 class RoundedIconButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback? onPressed;
   final String? textLabel;
   final bool isDisabled; // New property for disabled state
+  final Color color;
+  final Color iconColor;
 
   const RoundedIconButton({
     Key? key,
@@ -14,6 +18,8 @@ class RoundedIconButton extends StatelessWidget {
     this.onPressed,
     this.textLabel,
     this.isDisabled = false, // Set default value to false
+    this.color = lightGreyColor,
+    this.iconColor = Colors.black,
   }) : super(key: key);
 
   @override
@@ -26,13 +32,13 @@ class RoundedIconButton extends StatelessWidget {
             elevation: 0, // Set elevation to 0 to remove the shadow
             backgroundColor: isDisabled
                 ? Colors.grey[50]
-                : Colors.grey[
-                    100], // Use different background color for disabled state
+                : color, // Use different background color for disabled state
             foregroundColor: Colors.black, // Black foreground color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 6.0, vertical: 12.0),
           ),
           onPressed: isDisabled
               ? () => {}
@@ -51,6 +57,7 @@ class RoundedIconButton extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
+              if (textLabel != null) const SizedBox(height: 3.0),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -59,7 +66,7 @@ class RoundedIconButton extends StatelessWidget {
                     size: 16.0,
                     color: isDisabled
                         ? Colors.grey[400]
-                        : null, // Reduce opacity of the icon when disabled
+                        : iconColor, // Reduce opacity of the icon when disabled
                   ),
                   const SizedBox(width: 8.0),
                   Text(
