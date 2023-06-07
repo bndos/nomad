@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
 class EventForm extends StatefulWidget {
   const EventForm({Key? key}) : super(key: key);
@@ -15,6 +17,7 @@ class EventFormState extends State<EventForm> {
   final FocusNode _eventDescriptionFocusNode = FocusNode();
   bool _isEventNameFocused = false;
   bool _isEventDescriptionFocused = false;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -49,6 +52,21 @@ class EventFormState extends State<EventForm> {
     });
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -71,39 +89,74 @@ class EventFormState extends State<EventForm> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Create Event',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.close),
-                              onPressed: () {
-                                // Close the modal when the close button is pressed
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     const Text(
+                        //       'Create Event',
+                        //       style: TextStyle(
+                        //         fontSize: 18,
+                        //         fontWeight: FontWeight.bold,
+                        //       ),
+                        //     ),
+                        //     IconButton(
+                        //       icon: const Icon(Icons.close),
+                        //       onPressed: () {
+                        //         // Close the modal when the close button is pressed
+                        //         Navigator.of(context).pop();
+                        //       },
+                        //     ),
+                        //   ],
+                        // ),
+                        const SizedBox(height: 32),
                         CustomTextField(
                           controller: _eventNameController,
                           focusNode: _eventNameFocusNode,
                           isTextFieldFocused: _isEventNameFocused,
                           label: 'Event Name',
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         CustomTextField(
                           controller: _eventDescriptionController,
                           focusNode: _eventDescriptionFocusNode,
                           isTextFieldFocused: _isEventDescriptionFocused,
                           label: 'Event Details',
                         ),
+                        const SizedBox(height: 16),
+                        // TextButton.icon(
+                        //   onPressed: () => _selectDate(context),
+                        //   icon: const Icon(FontAwesomeIcons.calendar),
+                        //   label: Text(
+                        // _selectedDate != null
+                        //     ? 'Selected Date: ${_selectedDate!.toIso8601String().split('T')[0]}'
+                        //     : 'Select Date',
+                        //   ),
+                        // ),
+
+                        Row(
+                          children: [
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.calendar,
+                              textLabel: 'Start date',
+                              label: _selectedDate != null
+                                  ? _selectedDate!
+                                      .toIso8601String()
+                                      .split('T')[0]
+                                  : 'Select Date',
+                              onPressed: () => _selectDate(context),
+                            ),
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.calendar,
+                              textLabel: 'End date',
+                              label: _selectedDate != null
+                                  ? _selectedDate!
+                                      .toIso8601String()
+                                      .split('T')[0]
+                                  : 'Select Date',
+                              onPressed: () => _selectDate(context),
+                            ),
+                          ],
+                        )
 
                         // Add other form fields and content here
                       ],
@@ -141,22 +194,22 @@ class CustomTextField extends StatelessWidget {
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(
-          //size of text
-          fontSize: 20,
-          // Adjust the position here
-          height: 4.5,
+        labelStyle: TextStyle(
+          //color
+          color: Colors.grey[500],
+          fontSize: 16,
+          height: 5.5,
         ),
         hintText: isTextFieldFocused ? null : 'Event Name',
         filled: true,
         fillColor: Colors.grey[100],
         contentPadding: EdgeInsets.symmetric(
-          vertical: isTextFieldFocused ? 30 : 16,
+          vertical: isTextFieldFocused ? 30 : 22,
           horizontal: 24,
         ),
         border: OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(28),
         ),
       ),
     );

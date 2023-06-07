@@ -4,12 +4,14 @@ class RoundedIconButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback? onPressed;
+  final String? textLabel;
 
   const RoundedIconButton({
     Key? key,
     required this.icon,
     required this.label,
     this.onPressed,
+    this.textLabel,
   }) : super(key: key);
 
   @override
@@ -25,17 +27,31 @@ class RoundedIconButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
           ),
           onPressed: onPressed,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+          child: Column(
             children: [
-              Icon(icon, size: 16.0),
-              const SizedBox(width: 8.0),
-              Text(
-                label,
-                style: const TextStyle(fontSize: 12.0),
+              if (textLabel != null)
+                Text(
+                  textLabel!,
+                  style: TextStyle(
+                    // a subtle, light, grey text style
+                    color: Colors.grey[600],
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 16.0),
+                  const SizedBox(width: 8.0),
+                  Text(
+                    label,
+                    style: const TextStyle(fontSize: 12.0),
+                  ),
+                ],
               ),
             ],
           ),
