@@ -68,8 +68,10 @@ class MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _moveCameraToLocation(places_sdk.LatLng? location,
-      {bool addMarker = true}) {
+  void _moveCameraToLocation(
+    places_sdk.LatLng? location, {
+    bool addMarker = true,
+  }) {
     if (location != null) {
       final latLng = LatLng(location.lat, location.lng);
       if (_mapController != null) {
@@ -87,7 +89,9 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void _focusPredictionClicked(
-      int? index, List<places_sdk.AutocompletePrediction> predictions) async {
+    int? index,
+    List<places_sdk.AutocompletePrediction> predictions,
+  ) async {
     if (index != null) {
       final prediction = predictions[index];
       final details = await PlacesService.places!.fetchPlace(

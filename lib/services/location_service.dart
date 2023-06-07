@@ -48,7 +48,11 @@ class LocationService {
 
   String getDistanceBetween(LatLng position1, Position position2) {
     double distanceInMeters = Geolocator.distanceBetween(
-        position1.lat, position1.lng, position2.latitude, position2.longitude);
+      position1.lat,
+      position1.lng,
+      position2.latitude,
+      position2.longitude,
+    );
 
     if (distanceInMeters < 1000) {
       return '${distanceInMeters.toStringAsFixed(0)} m';

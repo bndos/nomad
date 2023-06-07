@@ -66,7 +66,10 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return const EventForm();
+        return EventForm(
+          placeName: widget.placeName,
+          distance: widget.distance,
+        );
       },
     );
   }
@@ -117,26 +120,27 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
                 Row(
                   children: [
                     Container(
-                        width: MediaQuery.of(context).size.width *
-                            0.2, // 25% of the screen width
-                        height: MediaQuery.of(context).size.width *
-                            0.2, // Set the height equal to the width for a circular shape
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100], // Pale grey background color
-                          shape: BoxShape.circle, // Circular shape
+                      width: MediaQuery.of(context).size.width *
+                          0.2, // 25% of the screen width
+                      height: MediaQuery.of(context).size.width *
+                          0.2, // Set the height equal to the width for a circular shape
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100], // Pale grey background color
+                        shape: BoxShape.circle, // Circular shape
+                      ),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          iconTheme: IconThemeData(
+                            color: Colors
+                                .grey[800], // Set the desired foreground color
+                          ),
                         ),
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            iconTheme: IconThemeData(
-                              color: Colors.grey[
-                                  800], // Set the desired foreground color
-                            ),
-                          ),
-                          child: Icon(
-                            getIconForPlaceType(widget.types[0]),
-                            size: 32.0,
-                          ),
-                        )),
+                        child: Icon(
+                          getIconForPlaceType(widget.types[0]),
+                          size: 32.0,
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 8.0),
                     Expanded(
                       child: Column(
