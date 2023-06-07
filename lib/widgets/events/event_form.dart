@@ -6,7 +6,11 @@ import 'package:time_range_picker/time_range_picker.dart';
 import 'package:intl/intl.dart';
 
 class EventForm extends StatefulWidget {
-  const EventForm({Key? key}) : super(key: key);
+  final String distance;
+  final String placeName;
+
+  const EventForm({Key? key, required this.distance, required this.placeName})
+      : super(key: key);
 
   @override
   EventFormState createState() => EventFormState();
@@ -60,8 +64,11 @@ class EventFormState extends State<EventForm> {
     });
   }
 
-  Future<void> _selectDate(BuildContext context, DateWrapper selectedDate,
-      {DateTime? initialDate}) async {
+  Future<void> _selectDate(
+    BuildContext context,
+    DateWrapper selectedDate, {
+    DateTime? initialDate,
+  }) async {
     setState(() {
       selectedDate.date = null;
       _endDateWrapper.date = null;
@@ -140,7 +147,7 @@ class EventFormState extends State<EventForm> {
             Expanded(
               child: SafeArea(
                 child: Container(
-                  margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                  margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
                   color: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -148,8 +155,35 @@ class EventFormState extends State<EventForm> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.blue[50],
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    FontAwesomeIcons.locationArrow,
+                                    size: 12.0,
+                                    color: Colors.blue,
+                                  ),
+                                  const SizedBox(width: 5.0),
+                                  Text(
+                                    '${widget.placeName} (${widget.distance})',
+                                    style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                             IconButton(
                               padding: const EdgeInsets.all(0),
                               icon: const Icon(FontAwesomeIcons.xmark),
@@ -206,8 +240,10 @@ class EventFormState extends State<EventForm> {
                                       .format(_endDateWrapper.date!)
                                   : 'Select Date',
                               onPressed: () => _selectDate(
-                                  context, _endDateWrapper,
-                                  initialDate: _startDateWrapper.date),
+                                context,
+                                _endDateWrapper,
+                                initialDate: _startDateWrapper.date,
+                              ),
                               isDisabled: _startDateWrapper.date == null,
                             ),
                           ],

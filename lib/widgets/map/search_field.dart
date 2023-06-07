@@ -12,8 +12,9 @@ import 'package:nomad/widgets/map/autocomplete_container.dart';
 class SearchField extends StatefulWidget {
   final GoogleMapController? mapController;
   final void Function(
-          int? index, List<places_sdk.AutocompletePrediction> predictions)
-      handlePredictionSelection;
+    int? index,
+    List<places_sdk.AutocompletePrediction> predictions,
+  ) handlePredictionSelection;
   final places_sdk.LatLng? currentLocation;
 
   const SearchField({
@@ -82,8 +83,11 @@ class SearchFieldState extends State<SearchField> {
     );
 
     final places_sdk.FindAutocompletePredictionsResponse predictionsResponse =
-        await PlacesService.places!.findAutocompletePredictions(input,
-            locationBias: locationBias, origin: widget.currentLocation);
+        await PlacesService.places!.findAutocompletePredictions(
+      input,
+      locationBias: locationBias,
+      origin: widget.currentLocation,
+    );
 
     setState(() {
       _predictions = predictionsResponse.predictions;
