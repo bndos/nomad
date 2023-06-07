@@ -43,6 +43,8 @@ dependencies:
   geolocator: ^9.0.2
   intl: ^0.18.1
   time_range_picker: ^2.2.0
+  cached_network_image: ^3.2.3
+  flutter_cache_manager: ^3.3.0
 
 dev_dependencies:
   flutter_test:

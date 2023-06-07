@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nomad/widgets/gallery/grid_gallery.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
@@ -134,119 +135,151 @@ class EventFormState extends State<EventForm> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      // onTap: () {
-      //   // Close the modal when tapping outside the sheet
-      //   Navigator.of(context).pop();
-      // },
-      child: Material(
-        color: Colors.transparent,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(
-              child: SafeArea(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            RoundedIconButton(
-                              icon: FontAwesomeIcons.locationArrow,
-                              label: '${widget.placeName} (${widget.distance})',
-                              onPressed: () => {},
-                              color: const Color(0xFFE6F0FF),
-                              iconColor: const Color(0xFF4D8AF0),
-                            ),
-                            IconButton(
-                              padding: const EdgeInsets.all(0),
-                              icon: const Icon(FontAwesomeIcons.xmark),
-                              onPressed: () {
-                                // Close the modal when the close button is pressed
-                                Navigator.of(context).pop();
-                              },
-                              iconSize: 16,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        CustomTextField(
-                          controller: _eventNameController,
-                          focusNode: _eventNameFocusNode,
-                          isTextFieldFocused: _isEventNameFocused,
-                          label: 'Event Name',
-                        ),
-                        const SizedBox(height: 24),
-                        CustomTextField(
-                          controller: _eventDescriptionController,
-                          focusNode: _eventDescriptionFocusNode,
-                          isTextFieldFocused: _isEventDescriptionFocused,
-                          label: 'Event Details',
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            RoundedIconButton(
-                              icon: FontAwesomeIcons.calendar,
-                              textLabel: 'Start date',
-                              label: _startDateWrapper.date != null
-                                  ? DateFormat('yyyy-MM-dd HH:mm')
-                                      .format(_startDateWrapper.date!)
-                                  : 'Select Date',
-                              onPressed: () =>
-                                  _selectDate(context, _startDateWrapper),
-                            ),
-                            RoundedIconButton(
-                              icon: FontAwesomeIcons.calendar,
-                              textLabel: 'End date',
-                              label: _endDateWrapper.date != null
-                                  ? DateFormat('yyyy-MM-dd HH:mm')
-                                      .format(_endDateWrapper.date!)
-                                  : 'Select Date',
-                              onPressed: () => _selectDate(
-                                context,
-                                _endDateWrapper,
-                                initialDate: _startDateWrapper.date,
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Expanded(
+            child: SafeArea(
+              child: Container(
+                margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RoundedIconButton(
+                            icon: FontAwesomeIcons.locationArrow,
+                            label: '${widget.placeName} (${widget.distance})',
+                            onPressed: () => {},
+                            color: const Color(0xFFE6F0FF),
+                            iconColor: const Color(0xFF4D8AF0),
+                          ),
+                          IconButton(
+                            padding: const EdgeInsets.all(0),
+                            icon: const Icon(FontAwesomeIcons.xmark),
+                            onPressed: () {
+                              // Close the modal when the close button is pressed
+                              Navigator.of(context).pop();
+                            },
+                            iconSize: 16,
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 24),
+                              CustomTextField(
+                                controller: _eventNameController,
+                                focusNode: _eventNameFocusNode,
+                                isTextFieldFocused: _isEventNameFocused,
+                                label: 'Event Name',
                               ),
-                              isDisabled: _startDateWrapper.date == null,
-                            ),
-                          ],
+                              const SizedBox(height: 24),
+                              CustomTextField(
+                                controller: _eventDescriptionController,
+                                focusNode: _eventDescriptionFocusNode,
+                                isTextFieldFocused: _isEventDescriptionFocused,
+                                label: 'Event Details',
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  RoundedIconButton(
+                                    icon: FontAwesomeIcons.calendar,
+                                    textLabel: 'Start date',
+                                    label: _startDateWrapper.date != null
+                                        ? DateFormat('yyyy-MM-dd HH:mm')
+                                            .format(_startDateWrapper.date!)
+                                        : 'Select Date',
+                                    onPressed: () =>
+                                        _selectDate(context, _startDateWrapper),
+                                  ),
+                                  RoundedIconButton(
+                                    icon: FontAwesomeIcons.calendar,
+                                    textLabel: 'End date',
+                                    label: _endDateWrapper.date != null
+                                        ? DateFormat('yyyy-MM-dd HH:mm')
+                                            .format(_endDateWrapper.date!)
+                                        : 'Select Date',
+                                    onPressed: () => _selectDate(
+                                      context,
+                                      _endDateWrapper,
+                                      initialDate: _startDateWrapper.date,
+                                    ),
+                                    isDisabled: _startDateWrapper.date == null,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  RoundedIconButton(
+                                    icon: FontAwesomeIcons.camera,
+                                    label: 'Take Picture',
+                                    onPressed: () {
+                                      // TODO: Handle take picture action
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  RoundedIconButton(
+                                    icon: FontAwesomeIcons.plus,
+                                    label: 'Add Picture',
+                                    onPressed: () {
+                                      // TODO: Handle add picture action
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              const GridGallery(
+                                imageUrls: [
+                                  "https://picsum.photos/200/300?random=0",
+                                  "https://picsum.photos/200/300?random=1",
+                                  "https://picsum.photos/200/300?random=2",
+                                  "https://picsum.photos/200/300?random=3",
+                                  "https://picsum.photos/200/300?random=4",
+                                  "https://picsum.photos/200/300?random=5",
+                                  "https://picsum.photos/200/300?random=6",
+                                  "https://picsum.photos/200/300?random=7",
+                                  "https://picsum.photos/200/300?random=8",
+                                  "https://picsum.photos/200/300?random=9",
+                                  "https://picsum.photos/200/300?random=10",
+                                ],
+                                backgroundColor: lightGreyColor,
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            RoundedIconButton(
-                              icon: FontAwesomeIcons.camera,
-                              label: 'Take Picture',
-                              onPressed: () {
-                                // TODO: Handle take picture action
-                              },
-                            ),
-                            const SizedBox(width: 10),
-                            RoundedIconButton(
-                              icon: FontAwesomeIcons.plus,
-                              label: 'Add Picture',
-                              onPressed: () {
-                                // TODO: Handle add picture action
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                      Row(
+                        children: [
+                          RoundedIconButton(
+                            icon: FontAwesomeIcons.floppyDisk,
+                            label: 'Create Event',
+                            onPressed: () {
+                              // TODO: Handle create event action
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
