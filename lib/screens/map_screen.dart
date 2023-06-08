@@ -168,46 +168,44 @@ class MapScreenState extends State<MapScreen> {
       zoom: 14.4746,
     );
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          GoogleMap(
-            zoomControlsEnabled: false,
-            mapType: MapType.terrain,
-            markers: Set<Marker>.of(_markers),
-            onMapCreated: (GoogleMapController controller) {
-              setState(() {
-                _mapController = controller;
-                focusCurrentLocation();
-              });
-            },
-            onLongPress: _handleMapLongPress,
-            onTap: _handleMapTap,
-            myLocationButtonEnabled: false,
-            initialCameraPosition: kGooglePlex,
+    return Stack(
+      children: [
+        GoogleMap(
+          zoomControlsEnabled: false,
+          mapType: MapType.terrain,
+          markers: Set<Marker>.of(_markers),
+          onMapCreated: (GoogleMapController controller) {
+            setState(() {
+              _mapController = controller;
+              focusCurrentLocation();
+            });
+          },
+          onLongPress: _handleMapLongPress,
+          onTap: _handleMapTap,
+          myLocationButtonEnabled: false,
+          initialCameraPosition: kGooglePlex,
+        ),
+        CurrentLocationButton(
+          getCurrentLocation: focusCurrentLocation,
+        ),
+        if (_currentPlaceDetails != null)
+          PlaceDetailsContainer(
+            placeName: _currentPlaceDetails!.place!.name!,
+            address: _currentPlaceDetails!.place!.address!,
+            types: _currentPlaceDetails!.place!.types!,
+            distance: _currentPlaceDistance,
           ),
-          CurrentLocationButton(
-            getCurrentLocation: focusCurrentLocation,
-          ),
-          if (_currentPlaceDetails != null)
-            PlaceDetailsContainer(
-              placeName: _currentPlaceDetails!.place!.name!,
-              address: _currentPlaceDetails!.place!.address!,
-              types: _currentPlaceDetails!.place!.types!,
-              distance: _currentPlaceDistance,
-            ),
-          SafeArea(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: SearchField(
-                currentLocation: _currentLocation,
-                mapController: _mapController,
-                handlePredictionSelection: _focusPredictionClicked,
-              ),
+        SafeArea(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: SearchField(
+              currentLocation: _currentLocation,
+              mapController: _mapController,
+              handlePredictionSelection: _focusPredictionClicked,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
