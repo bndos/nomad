@@ -1,7 +1,10 @@
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
-  Future<Position> getCurrentLocation() async {
+  bool permissionGranted = false;
+
+  Future<bool> checkPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -29,9 +32,38 @@ class LocationService {
       }
     }
 
+    permissionGranted = true;
+    return permissionGranted;
+  }
+
+  Future<Position> getCurrentLocation() async {
     // Get the current position
+    if (!permissionGranted) {
+      checkPermission();
+    }
+
     Position position = await Geolocator.getCurrentPosition();
     return position;
+  }
+
+  String getDistanceBetween(LatLng position1, Position position2) {
+    double distanceInMeters = Geolocator.distanceBetween(
+      position1.lat,
+      position1.lng,
+      position2.latitude,
+      position2.longitude,
+    );
+
+    if (distanceInMeters < 1000) {
+      return '${distanceInMeters.toStringAsFixed(0)} m';
+    } else {
+      return '${(distanceInMeters / 1000).toStringAsFixed(1)} km';
+    }
+  }
+
+  Future<String> getDistanceFromMe(LatLng position) async {
+    final currentLocation = await getCurrentLocation();
+    return getDistanceBetween(position, currentLocation);
   }
 }
 
