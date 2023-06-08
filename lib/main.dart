@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:nomad/home_page.dart';
 
-import 'package:nomad/screens/map_screen.dart';
 import 'package:nomad/services/places_service.dart';
 
 void main() async {
@@ -18,12 +18,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'My App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MapScreen(),
+      home: HomePage(),
     );
   }
 }
