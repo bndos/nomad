@@ -29,12 +29,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: GNav(
         gap: 2,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        tabBackgroundColor: Colors.grey.shade300,
-        backgroundColor: Colors.grey.shade100,
+        tabBackgroundColor: Colors.grey.shade200,
+        backgroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
         tabMargin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
         selectedIndex: _selectedIndex,
