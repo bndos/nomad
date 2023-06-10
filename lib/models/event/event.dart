@@ -4,8 +4,8 @@ class Event {
   String? location;
   DateTime? startTime;
   DateTime? endTime;
+  String? details;
   String name;
-  String details;
   List<String> imageUrls;
 
   Event({
