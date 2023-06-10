@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/events/event_form.dart';
+import 'package:nomad/widgets/events/event_preview.dart';
 
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
@@ -27,6 +29,7 @@ class PlaceDetailsContainer extends StatefulWidget {
 class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
   double containerHeight = 200.0; // Initial height of the container
   double dragOffset = 0.0; // Offset for tracking the drag gesture
+  Event? _createdEvent;
 
   IconData getIconForPlaceType(PlaceType placeType) {
     switch (placeType) {
@@ -61,6 +64,12 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
     }
   }
 
+  void _handleEventCreated(Event event) {
+    setState(() {
+      _createdEvent = event;
+    });
+  }
+
   void _openEventForm(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -69,6 +78,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
         return EventForm(
           placeName: widget.placeName,
           distance: widget.distance,
+          onEventCreated: _handleEventCreated,
         );
       },
     );
@@ -203,6 +213,13 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
                     ),
                   ],
                 ),
+                if (_createdEvent != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: EventPreview(
+                      event: _createdEvent!,
+                    ),
+                  ),
               ],
             ),
           ),

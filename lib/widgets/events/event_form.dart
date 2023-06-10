@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/gallery/grid_gallery.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 import 'package:time_range_picker/time_range_picker.dart';
@@ -9,9 +10,14 @@ import 'package:intl/intl.dart';
 class EventForm extends StatefulWidget {
   final String distance;
   final String placeName;
+  final Function(Event) onEventCreated;
 
-  const EventForm({Key? key, required this.distance, required this.placeName})
-      : super(key: key);
+  const EventForm({
+    Key? key,
+    required this.distance,
+    required this.placeName,
+    required this.onEventCreated,
+  }) : super(key: key);
 
   @override
   EventFormState createState() => EventFormState();
@@ -268,7 +274,31 @@ class EventFormState extends State<EventForm> {
                             icon: FontAwesomeIcons.floppyDisk,
                             label: 'Create Event',
                             onPressed: () {
-                              // TODO: Handle create event action
+                              Event event = Event(
+                                placeName: widget.placeName,
+                                startTime: _startDateWrapper.date!,
+                                endTime: _endDateWrapper.date!,
+                                name: _eventNameController.text,
+                                details: _eventDescriptionController.text,
+                                imageUrls: [
+                                  "https://picsum.photos/200/300?random=0",
+                                  "https://picsum.photos/200/300?random=1",
+                                  "https://picsum.photos/200/300?random=2",
+                                  "https://picsum.photos/200/300?random=3",
+                                  "https://picsum.photos/200/300?random=4",
+                                  "https://picsum.photos/200/300?random=5",
+                                  "https://picsum.photos/200/300?random=6",
+                                  "https://picsum.photos/200/300?random=7",
+                                  "https://picsum.photos/200/300?random=8",
+                                  "https://picsum.photos/200/300?random=9",
+                                  "https://picsum.photos/200/300?random=10",
+                                ],
+                              );
+
+                              // call handler to create event
+                              widget.onEventCreated(event);
+                              // close modal
+                              Navigator.of(context).pop();
                             },
                           ),
                         ],
