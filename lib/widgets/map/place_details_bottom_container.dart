@@ -29,7 +29,7 @@ class PlaceDetailsContainer extends StatefulWidget {
 class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
   double containerHeight = 200.0; // Initial height of the container
   double dragOffset = 0.0; // Offset for tracking the drag gesture
-  Event? _createdEvent;
+  List<Event> events = [];
 
   IconData getIconForPlaceType(PlaceType placeType) {
     switch (placeType) {
@@ -66,7 +66,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
 
   void _handleEventCreated(Event event) {
     setState(() {
-      _createdEvent = event;
+      events.add(event);
     });
   }
 
@@ -96,9 +96,14 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
             // Update the container height based on the vertical drag gesture
             containerHeight -= details.delta.dy;
             // Ensure the container doesn't exceed certain limits
+            final availableHeight = MediaQuery.of(context).size.height -
+                AppBar().preferredSize.height -
+                MediaQuery.of(context).padding.top -
+                MediaQuery.of(context).padding.bottom;
+
             containerHeight = containerHeight.clamp(
               100.0,
-              MediaQuery.of(context).size.height,
+              availableHeight,
             );
           });
         },
@@ -120,108 +125,110 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
               topRight: Radius.circular(16.0),
             ),
           ),
-          child: OverflowBox(
-            minHeight: 0.0,
-            maxHeight: double.infinity,
-            alignment: Alignment.topCenter,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width *
-                          0.2, // 25% of the screen width
-                      height: MediaQuery.of(context).size.width *
-                          0.2, // Set the height equal to the width for a circular shape
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100], // Pale grey background color
-                        shape: BoxShape.circle, // Circular shape
-                      ),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          iconTheme: IconThemeData(
-                            color: Colors
-                                .grey[800], // Set the desired foreground color
-                          ),
-                        ),
-                        child: Icon(
-                          getIconForPlaceType(widget.types[0]),
-                          size: 32.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.2, // 25% of the screen width
+                    height: MediaQuery.of(context).size.width *
+                        0.2, // Set the height equal to the width for a circular shape
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100], // Pale grey background color
+                      shape: BoxShape.circle, // Circular shape
+                    ),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        iconTheme: IconThemeData(
+                          color: Colors
+                              .grey[800], // Set the desired foreground color
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.distance.isNotEmpty
-                                ? '${widget.placeName} (${widget.distance})'
-                                : widget.placeName,
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            widget.types[0].name
-                                .replaceAll('_', ' ')
-                                .capitalize!,
-                            style: const TextStyle(fontSize: 12.0),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            widget.address,
-                            style: const TextStyle(fontSize: 12.0),
-                          ),
-                        ],
+                      child: Icon(
+                        getIconForPlaceType(widget.types[0]),
+                        size: 32.0,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RoundedIconButton(
-                      icon: FontAwesomeIcons
-                          .plus, // Replace with the appropriate Font Awesome icon
-                      label: 'Event',
-                      onPressed: () {
-                        // Perform create event action
-                        _openEventForm(context);
-                      },
-                    ),
-                    RoundedIconButton(
-                      icon: FontAwesomeIcons
-                          .locationPin, // Replace with the appropriate Font Awesome icon
-                      label: 'Directions',
-                      onPressed: () {
-                        // Perform directions action
-                      },
-                    ),
-                    RoundedIconButton(
-                      icon: FontAwesomeIcons
-                          .share, // Replace with the appropriate Font Awesome icon
-                      label: 'Share',
-                      onPressed: () {
-                        // Perform share action
-                      },
-                    ),
-                  ],
-                ),
-                if (_createdEvent != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: EventPreview(
-                      event: _createdEvent!,
                     ),
                   ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.distance.isNotEmpty
+                              ? '${widget.placeName} (${widget.distance})'
+                              : widget.placeName,
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          widget.types[0].name.replaceAll('_', ' ').capitalize!,
+                          style: const TextStyle(fontSize: 12.0),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          widget.address,
+                          style: const TextStyle(fontSize: 12.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  RoundedIconButton(
+                    icon: FontAwesomeIcons
+                        .plus, // Replace with the appropriate Font Awesome icon
+                    label: 'Event',
+                    onPressed: () {
+                      // Perform create event action
+                      _openEventForm(context);
+                    },
+                  ),
+                  RoundedIconButton(
+                    icon: FontAwesomeIcons
+                        .locationPin, // Replace with the appropriate Font Awesome icon
+                    label: 'Directions',
+                    onPressed: () {
+                      // Perform directions action
+                    },
+                  ),
+                  RoundedIconButton(
+                    icon: FontAwesomeIcons
+                        .share, // Replace with the appropriate Font Awesome icon
+                    label: 'Share',
+                    onPressed: () {
+                      // Perform share action
+                    },
+                  ),
+                ],
+              ),
+              if (events.isNotEmpty) ...[
+                const SizedBox(height: 8.0),
+                Expanded(
+                  child: SizedBox(
+                    height: containerHeight,
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: events.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final event = events[index];
+                        return EventPreview(event: event);
+                      },
+                    ),
+                  ),
+                ),
               ],
-            ),
+            ],
           ),
         ),
       ),

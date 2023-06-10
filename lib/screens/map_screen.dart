@@ -188,13 +188,6 @@ class MapScreenState extends State<MapScreen> {
         CurrentLocationButton(
           getCurrentLocation: focusCurrentLocation,
         ),
-        if (_currentPlaceDetails != null)
-          PlaceDetailsContainer(
-            placeName: _currentPlaceDetails!.place!.name!,
-            address: _currentPlaceDetails!.place!.address!,
-            types: _currentPlaceDetails!.place!.types!,
-            distance: _currentPlaceDistance,
-          ),
         SafeArea(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -205,6 +198,13 @@ class MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
+        if (_currentPlaceDetails != null)
+          PlaceDetailsContainer(
+            placeName: _currentPlaceDetails!.place!.name!,
+            address: _currentPlaceDetails!.place!.address!,
+            types: _currentPlaceDetails!.place!.types!,
+            distance: _currentPlaceDistance,
+          ),
       ],
     );
   }
