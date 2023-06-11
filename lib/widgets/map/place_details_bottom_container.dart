@@ -184,11 +184,13 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
               topRight: Radius.circular(16.0),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SingleChildScrollView(
-                child: Column(
+          child: OverflowBox(
+            alignment: Alignment.topCenter,
+            maxHeight: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
                   children: [
                     Row(
                       children: [
@@ -279,21 +281,25 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
                     ),
                   ],
                 ),
-              ),
-              if (events.isNotEmpty) ...[
-                const SizedBox(height: 8.0),
-                Expanded(
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: events.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final event = events[index];
-                      return EventPreview(event: event);
-                    },
+                if (events.isNotEmpty) ...[
+                  const SizedBox(height: 8.0),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height - 200,
+                      minHeight: 0,
+                    ),
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: events.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final event = events[index];
+                        return EventPreview(event: event);
+                      },
+                    ),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
