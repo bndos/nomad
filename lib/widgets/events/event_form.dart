@@ -276,8 +276,8 @@ class EventFormState extends State<EventForm> {
                             onPressed: () {
                               Event event = Event(
                                 placeName: widget.placeName,
-                                startTime: _startDateWrapper.date!,
-                                endTime: _endDateWrapper.date!,
+                                startTime: _startDateWrapper.date,
+                                endTime: _endDateWrapper.date,
                                 name: _eventNameController.text,
                                 details: _eventDescriptionController.text,
                                 imageUrls: [
