@@ -39,12 +39,12 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 800),
     );
     _spring = const SpringDescription(
-      mass: 0.1,
-      stiffness: 1,
-      damping: 0.7,
+      mass: 1,
+      stiffness: 100,
+      damping: 10.0,
     );
   }
 
@@ -120,12 +120,34 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final appBarHeight = AppBar().preferredSize.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final availableHeight =
+        screenHeight - appBarHeight - statusBarHeight - bottomPadding;
+
+    final snapPoints = [
+      250.0,
+      screenHeight * 3 / 5,
+      availableHeight
+    ];
+    final currentHeight = containerHeight;
+    final closestSnapPoint = snapPoints.reduce((prev, point) {
+      if ((currentHeight - prev).abs() < (currentHeight - point).abs()) {
+        return prev;
+      } else {
+        return point;
+      }
+    });
+
     final simulation = SpringSimulation(
       _spring,
       containerHeight,
-      250.0,
-      details.velocity.pixelsPerSecond.dy,
+      closestSnapPoint,
+      1000 * details.velocity.pixelsPerSecond.dy,
     );
+    containerHeight = closestSnapPoint;
     _animationController.animateWith(simulation);
   }
 

@@ -149,7 +149,7 @@ class EventFormState extends State<EventForm> {
           Expanded(
             child: SafeArea(
               child: Container(
-                margin: const EdgeInsets.only(top: 30, left: 10, right: 10),
+                margin: const EdgeInsets.only(top: 50, left: 10, right: 10),
                 color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
