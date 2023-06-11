@@ -30,7 +30,7 @@ class PlaceDetailsContainer extends StatefulWidget {
 
 class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
     with SingleTickerProviderStateMixin {
-  double containerHeight = 250.0; // Initial height of the container
+  double containerHeight = 200.0; // Initial height of the container
   double dragOffset = 0.0; // Offset for tracking the drag gesture
   List<Event> events = [];
   late AnimationController _animationController;
@@ -123,7 +123,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
     final availableHeight =
         screenHeight - appBarHeight - statusBarHeight - bottomPadding;
 
-    final snapPoints = [0.0, 250.0, screenHeight * 3 / 5, availableHeight];
+    final snapPoints = [0.0, 200.0, screenHeight * 1 / 2, availableHeight];
     final currentHeight = containerHeight;
     final closestSnapPoint = snapPoints.reduce((prev, point) {
       if ((currentHeight - prev).abs() < (currentHeight - point).abs()) {
@@ -184,107 +184,111 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
               topRight: Radius.circular(16.0),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.2, // 25% of the screen width
-                    height: MediaQuery.of(context).size.width *
-                        0.2, // Set the height equal to the width for a circular shape
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100], // Pale grey background color
-                      shape: BoxShape.circle, // Circular shape
-                    ),
-                    child: Theme(
-                      data: Theme.of(context).copyWith(
-                        iconTheme: IconThemeData(
-                          color: Colors
-                              .grey[800], // Set the desired foreground color
-                        ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width *
+                          0.2, // 25% of the screen width
+                      height: MediaQuery.of(context).size.width *
+                          0.2, // Set the height equal to the width for a circular shape
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100], // Pale grey background color
+                        shape: BoxShape.circle, // Circular shape
                       ),
-                      child: Icon(
-                        getIconForPlaceType(widget.types[0]),
-                        size: 32.0,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.distance.isNotEmpty
-                              ? '${widget.placeName} (${widget.distance})'
-                              : widget.placeName,
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          iconTheme: IconThemeData(
+                            color: Colors
+                                .grey[800], // Set the desired foreground color
                           ),
                         ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          widget.types[0].name.replaceAll('_', ' ').capitalize!,
-                          style: const TextStyle(fontSize: 12.0),
+                        child: Icon(
+                          getIconForPlaceType(widget.types[0]),
+                          size: 32.0,
                         ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          widget.address,
-                          style: const TextStyle(fontSize: 12.0),
-                        ),
-                      ],
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.distance.isNotEmpty
+                                ? '${widget.placeName} (${widget.distance})'
+                                : widget.placeName,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            widget.types[0].name
+                                .replaceAll('_', ' ')
+                                .capitalize!,
+                            style: const TextStyle(fontSize: 12.0),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            widget.address,
+                            style: const TextStyle(fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RoundedIconButton(
+                      icon: FontAwesomeIcons
+                          .plus, // Replace with the appropriate Font Awesome icon
+                      label: 'Event',
+                      onPressed: () {
+                        // Perform create event action
+                        _openEventForm(context);
+                      },
+                    ),
+                    RoundedIconButton(
+                      icon: FontAwesomeIcons
+                          .locationPin, // Replace with the appropriate Font Awesome icon
+                      label: 'Directions',
+                      onPressed: () {
+                        // Perform directions action
+                      },
+                    ),
+                    RoundedIconButton(
+                      icon: FontAwesomeIcons
+                          .share, // Replace with the appropriate Font Awesome icon
+                      label: 'Share',
+                      onPressed: () {
+                        // Perform share action
+                      },
+                    ),
+                  ],
+                ),
+                if (events.isNotEmpty) ...[
+                  const SizedBox(height: 8.0),
+                  Expanded(
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: events.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final event = events[index];
+                        return EventPreview(event: event);
+                      },
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RoundedIconButton(
-                    icon: FontAwesomeIcons
-                        .plus, // Replace with the appropriate Font Awesome icon
-                    label: 'Event',
-                    onPressed: () {
-                      // Perform create event action
-                      _openEventForm(context);
-                    },
-                  ),
-                  RoundedIconButton(
-                    icon: FontAwesomeIcons
-                        .locationPin, // Replace with the appropriate Font Awesome icon
-                    label: 'Directions',
-                    onPressed: () {
-                      // Perform directions action
-                    },
-                  ),
-                  RoundedIconButton(
-                    icon: FontAwesomeIcons
-                        .share, // Replace with the appropriate Font Awesome icon
-                    label: 'Share',
-                    onPressed: () {
-                      // Perform share action
-                    },
-                  ),
-                ],
-              ),
-              if (events.isNotEmpty) ...[
-                const SizedBox(height: 8.0),
-                Expanded(
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: events.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final event = events[index];
-                      return EventPreview(event: event);
-                    },
-                  ),
-                ),
               ],
-            ],
+            ),
           ),
         ),
       ),
