@@ -13,6 +13,7 @@ class PlaceDetailsContainer extends StatefulWidget {
   final String address;
   final String distance;
   final List<PlaceType> types;
+  final VoidCallback? onHideContainer; // New callback function
 
   const PlaceDetailsContainer({
     Key? key,
@@ -20,6 +21,7 @@ class PlaceDetailsContainer extends StatefulWidget {
     required this.address,
     required this.types,
     required this.distance,
+    this.onHideContainer,
   }) : super(key: key);
 
   @override
@@ -110,12 +112,6 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
     setState(() {
       containerHeight -= details.delta.dy;
-      final availableHeight = MediaQuery.of(context).size.height -
-          AppBar().preferredSize.height -
-          MediaQuery.of(context).padding.top -
-          MediaQuery.of(context).padding.bottom;
-
-      containerHeight = containerHeight.clamp(250.0, availableHeight);
     });
   }
 
@@ -127,11 +123,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
     final availableHeight =
         screenHeight - appBarHeight - statusBarHeight - bottomPadding;
 
-    final snapPoints = [
-      250.0,
-      screenHeight * 3 / 5,
-      availableHeight
-    ];
+    final snapPoints = [0.0, 250.0, screenHeight * 3 / 5, availableHeight];
     final currentHeight = containerHeight;
     final closestSnapPoint = snapPoints.reduce((prev, point) {
       if ((currentHeight - prev).abs() < (currentHeight - point).abs()) {
@@ -159,7 +151,8 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       bottom: 0,
       child: GestureDetector(
         onVerticalDragUpdate: _handleVerticalDragUpdate,
-        onVerticalDragEnd: _handleVerticalDragEnd,
+        onVerticalDragEnd:
+            widget.onHideContainer != null ? _handleVerticalDragEnd : null,
         child: AnimatedContainer(
           width: double.infinity,
           height: containerHeight,
@@ -169,8 +162,14 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
             right: 16.0,
             bottom: 0.0,
           ),
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeOutQuart,
+          onEnd: () => {
+            if (containerHeight < 150)
+              {
+                widget.onHideContainer?.call(),
+              }
+          },
           decoration: const BoxDecoration(
             color: Colors.white,
             boxShadow: [
