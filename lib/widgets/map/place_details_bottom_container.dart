@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/event_preview.dart';
-
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
 class PlaceDetailsContainer extends StatefulWidget {
@@ -26,10 +27,33 @@ class PlaceDetailsContainer extends StatefulWidget {
   PlaceDetailsContainerState createState() => PlaceDetailsContainerState();
 }
 
-class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
-  double containerHeight = 200.0; // Initial height of the container
+class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
+    with SingleTickerProviderStateMixin {
+  double containerHeight = 250.0; // Initial height of the container
   double dragOffset = 0.0; // Offset for tracking the drag gesture
   List<Event> events = [];
+  late AnimationController _animationController;
+  late SpringDescription _spring;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _spring = const SpringDescription(
+      mass: 0.1,
+      stiffness: 1,
+      damping: 0.7,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   IconData getIconForPlaceType(PlaceType placeType) {
     switch (placeType) {
@@ -84,6 +108,28 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
     );
   }
 
+  void _handleVerticalDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      containerHeight -= details.delta.dy;
+      final availableHeight = MediaQuery.of(context).size.height -
+          AppBar().preferredSize.height -
+          MediaQuery.of(context).padding.top -
+          MediaQuery.of(context).padding.bottom;
+
+      containerHeight = containerHeight.clamp(250.0, availableHeight);
+    });
+  }
+
+  void _handleVerticalDragEnd(DragEndDetails details) {
+    final simulation = SpringSimulation(
+      _spring,
+      containerHeight,
+      250.0,
+      details.velocity.pixelsPerSecond.dy,
+    );
+    _animationController.animateWith(simulation);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -91,26 +137,19 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       right: 0,
       bottom: 0,
       child: GestureDetector(
-        onVerticalDragUpdate: (details) {
-          setState(() {
-            // Update the container height based on the vertical drag gesture
-            containerHeight -= details.delta.dy;
-            // Ensure the container doesn't exceed certain limits
-            final availableHeight = MediaQuery.of(context).size.height -
-                AppBar().preferredSize.height -
-                MediaQuery.of(context).padding.top -
-                MediaQuery.of(context).padding.bottom;
-
-            containerHeight = containerHeight.clamp(
-              100.0,
-              availableHeight,
-            );
-          });
-        },
-        child: Container(
+        onVerticalDragUpdate: _handleVerticalDragUpdate,
+        onVerticalDragEnd: _handleVerticalDragEnd,
+        child: AnimatedContainer(
           width: double.infinity,
           height: containerHeight,
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(
+            top: 16.0,
+            left: 16.0,
+            right: 16.0,
+            bottom: 0.0,
+          ),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutQuart,
           decoration: const BoxDecoration(
             color: Colors.white,
             boxShadow: [
@@ -215,16 +254,13 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
               if (events.isNotEmpty) ...[
                 const SizedBox(height: 8.0),
                 Expanded(
-                  child: SizedBox(
-                    height: containerHeight,
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: events.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final event = events[index];
-                        return EventPreview(event: event);
-                      },
-                    ),
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: events.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final event = events[index];
+                      return EventPreview(event: event);
+                    },
                   ),
                 ),
               ],
