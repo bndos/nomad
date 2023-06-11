@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
         child: GNav(
           gap: 2,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          tabBackgroundColor: Colors.grey.shade200,
+          tabBackgroundColor: Colors.grey.shade100,
           backgroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
           tabMargin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
