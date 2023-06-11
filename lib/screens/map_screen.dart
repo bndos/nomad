@@ -33,6 +33,13 @@ class MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
+  void _handleHidePlaceDetails() {
+    setState(() {
+      _currentPlaceDetails = null;
+      _currentPlaceDistance = '';
+    });
+  }
+
   void getCurrentLocation(bool shouldMoveCamera) async {
     try {
       Position position = await _locationService.getCurrentLocation();
@@ -206,6 +213,7 @@ class MapScreenState extends State<MapScreen> {
             address: _currentPlaceDetails!.place!.address!,
             types: _currentPlaceDetails!.place!.types!,
             distance: _currentPlaceDistance,
+            onHideContainer: _handleHidePlaceDetails,
           ),
       ],
     );
