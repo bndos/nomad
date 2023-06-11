@@ -33,13 +33,16 @@ class MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  void getCurrentLocation() async {
+  void getCurrentLocation(bool shouldMoveCamera) async {
     try {
       Position position = await _locationService.getCurrentLocation();
 
       setState(() {
         _currentLocation =
             places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
+        if (shouldMoveCamera) {
+          _moveCameraToLocation(_currentLocation);
+        }
       });
     } catch (e) {
       // TODO Handle location error
@@ -47,8 +50,7 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void focusCurrentLocation() {
-    getCurrentLocation();
-    _moveCameraToLocation(_currentLocation, addMarker: false);
+    getCurrentLocation(true);
   }
 
   void _setMarker(LatLng position, String id) {
