@@ -33,41 +33,43 @@ class _HomePageState extends State<HomePage> {
         index: _selectedIndex,
         children: _screens,
       ),
-      bottomNavigationBar: GNav(
-        gap: 2,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        tabBackgroundColor: Colors.grey.shade200,
-        backgroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-        tabMargin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-        selectedIndex: _selectedIndex,
-        onTabChange: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        tabs: const [
-          GButton(
-            icon: Iconsax.map_1,
-            text: 'Map',
-          ),
-          GButton(
-            icon: Icons.search,
-            text: 'Search',
-          ),
-          GButton(
-            icon: Iconsax.camera,
-            text: 'Camera',
-          ),
-          GButton(
-            icon: Iconsax.message,
-            text: 'Chats',
-          ),
-          GButton(
-            icon: Icons.person_outline,
-            text: 'Profile',
-          ),
-        ],
+      bottomNavigationBar: SafeArea(
+        child: GNav(
+          gap: 2,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          tabBackgroundColor: Colors.grey.shade200,
+          backgroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+          tabMargin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          selectedIndex: _selectedIndex,
+          onTabChange: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          tabs: const [
+            GButton(
+              icon: Iconsax.map_1,
+              text: 'Map',
+            ),
+            GButton(
+              icon: Icons.search,
+              text: 'Search',
+            ),
+            GButton(
+              icon: Iconsax.camera,
+              text: 'Camera',
+            ),
+            GButton(
+              icon: Iconsax.message,
+              text: 'Chats',
+            ),
+            GButton(
+              icon: Icons.person_outline,
+              text: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
