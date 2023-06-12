@@ -106,15 +106,6 @@ class _EventPageState extends State<EventPage> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        if (_event.details != null &&
-                            _event.details!.isNotEmpty)
-                          const SizedBox(height: 8),
-                        if (_event.details != null &&
-                            _event.details!.isNotEmpty)
-                          Text(
-                            _event.details!,
-                            style: const TextStyle(fontSize: 16),
-                          ),
                         if (_event.startTime != null) const SizedBox(height: 8),
                         if (_event.startTime != null)
                           Row(
@@ -131,13 +122,19 @@ class _EventPageState extends State<EventPage> {
                                 DateFormat('MMM d AT h:mm a', 'en_US')
                                     .format(_event.startTime!)
                                     .toUpperCase(),
-                                style: const TextStyle(color: Colors.black),
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                               ),
                               if (_event.endTime != null)
                                 Text(
                                   " - ${DateFormat('MMM d AT h:mm a', 'en_US').format(_event.endTime!)}"
                                       .toUpperCase(),
-                                  style: const TextStyle(color: Colors.black),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                  ),
                                 ),
                             ],
                           ),
@@ -158,6 +155,15 @@ class _EventPageState extends State<EventPage> {
                                 style: const TextStyle(color: Colors.grey),
                               ),
                             ],
+                          ),
+                        if (_event.details != null &&
+                            _event.details!.isNotEmpty)
+                          const SizedBox(height: 8),
+                        if (_event.details != null &&
+                            _event.details!.isNotEmpty)
+                          Text(
+                            _event.details!,
+                            style: const TextStyle(fontSize: 14),
                           ),
                         // Add the rest of the event variables here
                         // Example: if (_event.placeName != null) Text(_event.placeName!),
