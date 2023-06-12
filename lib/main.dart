@@ -21,8 +21,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // default background color for the whole app
       theme: ThemeData(
-        primaryColor: Colors.white,
+        primaryColor: Colors.grey.shade900,
       ),
+      color: Colors.white,
       title: 'My App',
       home: const HomePage(),
     );
