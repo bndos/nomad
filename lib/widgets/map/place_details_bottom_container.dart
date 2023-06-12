@@ -165,7 +165,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeOutQuart,
           onEnd: () => {
-            if (containerHeight < 150)
+            if (containerHeight < 10)
               {
                 widget.onHideContainer?.call(),
               }

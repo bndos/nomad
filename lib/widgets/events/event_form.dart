@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/gallery/grid_gallery.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
@@ -142,7 +143,7 @@ class EventFormState extends State<EventForm> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: Colors.white,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -278,8 +279,10 @@ class EventFormState extends State<EventForm> {
                                 placeName: widget.placeName,
                                 startTime: _startDateWrapper.date,
                                 endTime: _endDateWrapper.date,
-                                name: _eventNameController.text,
-                                details: _eventDescriptionController.text,
+                                name:
+                                    _eventNameController.text.capitalizeFirst!,
+                                details: _eventDescriptionController
+                                    .text.capitalizeFirst!,
                                 imageUrls: [
                                   "https://picsum.photos/200/300?random=0",
                                   "https://picsum.photos/200/300?random=1",
