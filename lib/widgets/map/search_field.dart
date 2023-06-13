@@ -31,6 +31,7 @@ class SearchField extends StatefulWidget {
 class SearchFieldState extends State<SearchField> {
   final TextEditingController _searchController = TextEditingController();
   List<places_sdk.AutocompletePrediction> _predictions = [];
+  List<String> _predictionStrings = [];
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class SearchFieldState extends State<SearchField> {
     } else {
       setState(() {
         _predictions = [];
+        _predictionStrings = [];
       });
     }
   }
@@ -60,6 +62,7 @@ class SearchFieldState extends State<SearchField> {
       _searchController.text = '';
       FocusScope.of(context).unfocus();
       _predictions = [];
+      _predictionStrings = [];
     });
   }
 
@@ -91,7 +94,32 @@ class SearchFieldState extends State<SearchField> {
 
     setState(() {
       _predictions = predictionsResponse.predictions;
+      _predictionStrings = _predictions
+          .map((prediction) => _getPredictionString(prediction))
+          .toList();
     });
+  }
+
+  void _handlePredictionSelection(int? index) {
+    widget.handlePredictionSelection(index, _predictions);
+    _clearPredictions();
+  }
+
+  String _getPredictionString(places_sdk.AutocompletePrediction prediction) {
+    final distanceMeters = prediction.distanceMeters;
+    String distance = '';
+
+    if (distanceMeters != null) {
+      if (distanceMeters >= 1000) {
+        distance = '${(distanceMeters / 1000).toStringAsFixed(1)} km';
+      } else {
+        distance = '${distanceMeters.toStringAsFixed(0)} m';
+      }
+    }
+
+    return distance.isNotEmpty
+        ? '($distance) ${prediction.fullText}'
+        : prediction.fullText;
   }
 
   @override
@@ -155,9 +183,8 @@ class SearchFieldState extends State<SearchField> {
           ),
           if (_predictions.isNotEmpty)
             AutocompleteContainer(
-              predictions: _predictions,
-              handlePredictionSelection: widget.handlePredictionSelection,
-              clearPredictions: _clearPredictions,
+              predictionStrings: _predictionStrings,
+              handlePredictionSelection: _handlePredictionSelection,
             ),
         ],
       ),
