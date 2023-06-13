@@ -4,6 +4,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:nomad/models/event/event.dart';
+import 'package:nomad/utils/place_icons.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/event_preview.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
@@ -54,39 +55,6 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  IconData getIconForPlaceType(PlaceType placeType) {
-    switch (placeType) {
-      case PlaceType.UNIVERSITY:
-        return FontAwesomeIcons.graduationCap;
-      case PlaceType.RESTAURANT:
-        return FontAwesomeIcons.utensils;
-      case PlaceType.CAFE:
-        return FontAwesomeIcons.mugSaucer;
-      case PlaceType.BAR:
-        return FontAwesomeIcons.champagneGlasses;
-      case PlaceType.NIGHT_CLUB:
-        return FontAwesomeIcons.champagneGlasses;
-      case PlaceType.PARK:
-        return FontAwesomeIcons.tree;
-      case PlaceType.SHOPPING_MALL:
-        return FontAwesomeIcons.bagShopping;
-      case PlaceType.HOSPITAL:
-        return FontAwesomeIcons.hospital;
-      case PlaceType.MOVIE_THEATER:
-        return FontAwesomeIcons.film;
-      case PlaceType.MUSEUM:
-        return FontAwesomeIcons.monument;
-      case PlaceType.STADIUM:
-        return FontAwesomeIcons.flag;
-      case PlaceType.TOURIST_ATTRACTION:
-        return FontAwesomeIcons.camera;
-      case PlaceType.SUBWAY_STATION:
-        return FontAwesomeIcons.trainSubway;
-      default:
-        return FontAwesomeIcons.locationPin; // Default icon
-    }
   }
 
   void _handleEventCreated(Event event) {
