@@ -4,6 +4,38 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:nomad/models/event/event.dart';
 
+class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const MyAppBar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(top: 30, left: 10),
+        alignment: Alignment.center,
+        color: Colors.transparent,
+        // we can set width here with conditions
+        width: 40,
+        height: kToolbarHeight,
+        child: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+
+  ///width doesnt matter
+  @override
+  Size get preferredSize => const Size(200, kToolbarHeight);
+}
+
 class EventPage extends StatefulWidget {
   final Event event;
 
@@ -37,19 +69,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: const MyAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -172,19 +192,32 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                             style: const TextStyle(fontSize: 14),
                           ),
                         const SizedBox(height: 16),
-                        TabBar(
-                          controller: _tabController,
-                          tabs: const [
-                            Tab(icon: Icon(Iconsax.link, color: Colors.black)),
-                            Tab(
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 42.0),
+                          child: TabBar(
+                            controller: _tabController,
+                            tabs: const [
+                              Tab(
+                                icon: Icon(Iconsax.link, color: Colors.black),
+                              ),
+                              Tab(
                                 icon:
-                                    Icon(Iconsax.gallery, color: Colors.black)),
-                            Tab(icon: Icon(Iconsax.video, color: Colors.black)),
-                          ],
+                                    Icon(Iconsax.gallery, color: Colors.black),
+                              ),
+                              Tab(
+                                icon: Icon(Iconsax.video, color: Colors.black),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(height: 16),
                         ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxHeight: MediaQuery.of(context).size.height - 270,
+                            // maxheight should be the available height of the safe area - 50 - appbar height
+                            maxHeight: MediaQuery.of(context).size.height -
+                                MediaQuery.of(context).padding.top -
+                                MediaQuery.of(context).padding.bottom -
+                                80,
                           ),
                           child: TabBarView(
                             controller: _tabController,
@@ -192,7 +225,11 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                               // Sub events or linked events tab
                               SingleChildScrollView(
                                 child: Center(
-                                  child: Text('Sub Events or Linked Events'),
+                                  child: Column(
+                                    children: [
+                                      Text('Sub Events or Linked Events'),
+                                    ],
+                                  ),
                                 ),
                               ),
                               // Pictures tab
