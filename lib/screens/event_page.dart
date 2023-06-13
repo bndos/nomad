@@ -49,8 +49,8 @@ class _EventPageState extends State<EventPage> {
               children: [
                 // container with image
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  width: double.infinity,
+                  height: 250,
+                  width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: NetworkImage(_event.imageUrls[0]),
@@ -72,9 +72,7 @@ class _EventPageState extends State<EventPage> {
                 ),
                 // container with event details and shadow
                 Container(
-                  margin: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.3,
-                  ),
+                  margin: const EdgeInsets.only(top: 240),
                   width: MediaQuery.of(context).size.width,
                   constraints: BoxConstraints(
                     minHeight: MediaQuery.of(context).size.height * 0.7,
@@ -90,8 +88,8 @@ class _EventPageState extends State<EventPage> {
                       ),
                     ],
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
                     ),
                   ),
                   child: Padding(
@@ -158,7 +156,7 @@ class _EventPageState extends State<EventPage> {
                           ),
                         if (_event.details != null &&
                             _event.details!.isNotEmpty)
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
                         if (_event.details != null &&
                             _event.details!.isNotEmpty)
                           Text(
