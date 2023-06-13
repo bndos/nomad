@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 
 class AutocompleteContainer extends StatelessWidget {
-  final List<AutocompletePrediction> predictions;
-  final void Function(int? index, List<AutocompletePrediction> predictions)
-      handlePredictionSelection;
-  final void Function() clearPredictions;
+  final List<String> predictionStrings;
+  final void Function(int? index) handlePredictionSelection;
 
   const AutocompleteContainer({
     Key? key,
-    required this.predictions,
+    required this.predictionStrings,
     required this.handlePredictionSelection,
-    required this.clearPredictions,
   }) : super(key: key);
 
   @override
@@ -35,30 +31,13 @@ class AutocompleteContainer extends StatelessWidget {
       child: ListView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,
-        itemCount: predictions.length,
+        itemCount: predictionStrings.length,
         itemBuilder: (context, index) {
-          final prediction = predictions[index];
-          final distanceMeters = prediction.distanceMeters;
-          String distance = '';
-
-          if (distanceMeters != null) {
-            if (distanceMeters >= 1000) {
-              distance = '${(distanceMeters / 1000).toStringAsFixed(1)} km';
-            } else {
-              distance = '${distanceMeters.toStringAsFixed(0)} m';
-            }
-          }
+          final predictionString = predictionStrings[index];
 
           return ListTile(
-            title: Text(
-              distance.isNotEmpty
-                  ? '($distance) ${prediction.fullText}'
-                  : prediction.fullText,
-            ),
-            onTap: () => {
-              clearPredictions(),
-              handlePredictionSelection(index, predictions)
-            },
+            title: Text(predictionString),
+            onTap: () => {handlePredictionSelection(index)},
           );
         },
       ),
