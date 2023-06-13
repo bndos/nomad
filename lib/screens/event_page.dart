@@ -16,13 +16,21 @@ class EventPage extends StatefulWidget {
   State<EventPage> createState() => _EventPageState();
 }
 
-class _EventPageState extends State<EventPage> {
+class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   late Event _event;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _event = widget.event;
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -74,8 +82,8 @@ class _EventPageState extends State<EventPage> {
                 Container(
                   margin: const EdgeInsets.only(top: 240),
                   width: MediaQuery.of(context).size.width,
-                  constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height * 0.7,
+                  constraints: const BoxConstraints(
+                    minHeight: 100,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -117,9 +125,10 @@ class _EventPageState extends State<EventPage> {
                               const SizedBox(width: 4),
                               // AUG 17 AT 7:00 PM - AUG 18 AT 12:00 AM
                               Text(
-                                DateFormat('MMM d AT h:mm a', 'en_US')
-                                    .format(_event.startTime!)
-                                    .toUpperCase(),
+                                DateFormat(
+                                  'MMM d AT h:mm a',
+                                  'en_US',
+                                ).format(_event.startTime!).toUpperCase(),
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,
@@ -136,7 +145,6 @@ class _EventPageState extends State<EventPage> {
                                 ),
                             ],
                           ),
-
                         if (_event.placeName != null) const SizedBox(height: 8),
                         if (_event.placeName != null)
                           Row(
@@ -163,9 +171,45 @@ class _EventPageState extends State<EventPage> {
                             _event.details!,
                             style: const TextStyle(fontSize: 14),
                           ),
-                        // Add the rest of the event variables here
-                        // Example: if (_event.placeName != null) Text(_event.placeName!),
-                        // Example: if (_event.address != null) Text(_event.address!),
+                        const SizedBox(height: 16),
+                        TabBar(
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(icon: Icon(Iconsax.link, color: Colors.black)),
+                            Tab(
+                                icon:
+                                    Icon(Iconsax.gallery, color: Colors.black)),
+                            Tab(icon: Icon(Iconsax.video, color: Colors.black)),
+                          ],
+                        ),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height - 270,
+                          ),
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: const [
+                              // Sub events or linked events tab
+                              SingleChildScrollView(
+                                child: Center(
+                                  child: Text('Sub Events or Linked Events'),
+                                ),
+                              ),
+                              // Pictures tab
+                              SingleChildScrollView(
+                                child: Center(
+                                  child: Text('Pictures'),
+                                ),
+                              ),
+                              // Videos tab
+                              SingleChildScrollView(
+                                child: Center(
+                                  child: Text('Videos'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
