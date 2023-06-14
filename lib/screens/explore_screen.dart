@@ -153,7 +153,9 @@ class ExploreScreenState extends State<ExploreScreen>
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 42.0, vertical: 4),
+                      horizontal: 42.0,
+                      vertical: 4,
+                    ),
                     child: TabBar(
                       indicatorSize: TabBarIndicatorSize.label,
                       controller: _tabController,
