@@ -5,19 +5,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nomad/widgets/search/autocomplete_container.dart';
 
 class SearchFieldUI extends StatelessWidget {
-  final TextEditingController searchController;
   final List<String> predictionStrings;
-  final void Function(int? index) handlePredictionSelection;
-  final void Function() clearPredictions;
-  final void Function() onSearchChanged;
+  final TextEditingController? searchController;
+  final void Function(int? index)? handlePredictionSelection;
+  final void Function()? clearPredictions;
+  final void Function()? onSearchChanged;
 
   const SearchFieldUI({
     Key? key,
-    required this.searchController,
-    required this.onSearchChanged,
     required this.predictionStrings,
-    required this.handlePredictionSelection,
-    required this.clearPredictions,
+    this.clearPredictions,
+    this.handlePredictionSelection,
+    this.searchController,
+    this.onSearchChanged,
   }) : super(key: key);
 
   @override
@@ -27,6 +27,7 @@ class SearchFieldUI extends StatelessWidget {
         children: [
           Container(
             width: Get.width,
+            height: 35,
             margin: const EdgeInsets.only(top: 20, bottom: 0),
             padding: const EdgeInsets.only(left: 5),
             decoration: BoxDecoration(
@@ -53,21 +54,27 @@ class SearchFieldUI extends StatelessWidget {
               children: [
                 if (predictionStrings.isNotEmpty)
                   IconButton(
-                    icon: const Icon(Icons.clear),
+                    icon: const Icon(
+                      Icons.clear,
+                      size: 20,
+                    ),
                     onPressed: clearPredictions,
                   )
                 else
                   const IconButton(
-                    icon: Icon(Icons.search),
+                    icon: Icon(
+                      Icons.search,
+                      size: 20,
+                    ),
                     onPressed: null,
                   ),
                 Expanded(
                   child: TextFormField(
                     controller: searchController,
-                    onChanged: (_) => onSearchChanged(),
+                    onChanged: (_) => onSearchChanged?.call(),
                     style: GoogleFonts.poppins(
                       color: Colors.black,
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
                     decoration: const InputDecoration(
@@ -79,10 +86,10 @@ class SearchFieldUI extends StatelessWidget {
               ],
             ),
           ),
-          if (predictionStrings.isNotEmpty)
+          if (predictionStrings.isNotEmpty && handlePredictionSelection != null)
             AutocompleteContainer(
               predictionStrings: predictionStrings,
-              handlePredictionSelection: handlePredictionSelection,
+              handlePredictionSelection: handlePredictionSelection!,
             ),
         ],
       ),
