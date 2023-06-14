@@ -100,7 +100,7 @@ class ExploreScreenState extends State<ExploreScreen>
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(
-                        top: 50,
+                        top: 90,
                       ),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(

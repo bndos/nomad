@@ -160,13 +160,21 @@ class EventFormState extends State<EventForm> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          RoundedIconButton(
-                            icon: FontAwesomeIcons.locationArrow,
-                            label: '${widget.placeName} (${widget.distance})',
-                            onPressed: () => {},
-                            color: const Color(0xFFE6F0FF),
-                            iconColor: const Color(0xFF4D8AF0),
-                          ),
+                          if (widget.placeName != null)
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.locationArrow,
+                              label: '${widget.placeName} (${widget.distance})',
+                              onPressed: () => {},
+                              color: const Color(0xFFE6F0FF),
+                              iconColor: const Color(0xFF4D8AF0),
+                            ),
+                          if (widget.placeName == null)
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.locationArrow,
+                              label: 'Select a place',
+                              onPressed: () => {},
+                              iconColor: const Color(0xFF4D8AF0),
+                            ),
                           IconButton(
                             padding: const EdgeInsets.all(0),
                             icon: const Icon(FontAwesomeIcons.xmark),
