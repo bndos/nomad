@@ -1,33 +1,59 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:nomad/models/event/event.dart';
+import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(top: 30, left: 10),
-        alignment: Alignment.center,
-        color: Colors.transparent,
-        // we can set width here with conditions
-        width: 40,
-        height: kToolbarHeight,
-        child: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            margin: const EdgeInsets.only(top: 30, left: 10),
+            alignment: Alignment.center,
+            color: Colors.transparent,
+            // we can set width here with conditions
+            width: 40,
+            height: kToolbarHeight,
+            child: IconButton(
+              icon: const Icon(
+                FontAwesomeIcons.chevronLeft,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
         ),
-      ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Container(
+            margin: const EdgeInsets.only(top: 30, right: 10),
+            alignment: Alignment.center,
+            color: Colors.transparent,
+            // we can set width here with conditions
+            width: 40,
+            height: kToolbarHeight,
+            child: IconButton(
+              icon: const Icon(
+                Iconsax.message,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                //TODO
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -51,6 +77,7 @@ class EventPage extends StatefulWidget {
 class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   late Event _event;
   late TabController _tabController;
+  bool _isParticipating = false;
 
   @override
   void initState() {
@@ -191,6 +218,36 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                             _event.details!,
                             style: const TextStyle(fontSize: 14),
                           ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RoundedIconButton(
+                              // participate
+                              icon: CupertinoIcons.person_badge_plus_fill,
+                              color: _isParticipating
+                                  ? Colors.grey.shade100
+                                  : Colors.blue.shade200,
+                              label: _isParticipating
+                                  ? 'Participating'
+                                  : 'Participate',
+                              onPressed: () {
+                                // Perform create event action
+                                setState(() {
+                                  _isParticipating = !_isParticipating;
+                                });
+                              },
+                            ),
+                            RoundedIconButton(
+                              icon: CupertinoIcons.paperplane_fill,
+                              label: 'Share',
+                              color: Colors.blue.shade200,
+                              onPressed: () {
+                                // Perform share action
+                              },
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 16),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 42.0),
