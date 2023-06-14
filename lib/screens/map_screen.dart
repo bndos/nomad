@@ -33,13 +33,23 @@ class MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  void getCurrentLocation() async {
+  void _handleHidePlaceDetails() {
+    setState(() {
+      _currentPlaceDetails = null;
+      _currentPlaceDistance = '';
+    });
+  }
+
+  void getCurrentLocation(bool shouldMoveCamera) async {
     try {
       Position position = await _locationService.getCurrentLocation();
 
       setState(() {
         _currentLocation =
             places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
+        if (shouldMoveCamera) {
+          _moveCameraToLocation(_currentLocation);
+        }
       });
     } catch (e) {
       // TODO Handle location error
@@ -47,8 +57,7 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void focusCurrentLocation() {
-    getCurrentLocation();
-    _moveCameraToLocation(_currentLocation, addMarker: false);
+    getCurrentLocation(true);
   }
 
   void _setMarker(LatLng position, String id) {
@@ -188,13 +197,6 @@ class MapScreenState extends State<MapScreen> {
         CurrentLocationButton(
           getCurrentLocation: focusCurrentLocation,
         ),
-        if (_currentPlaceDetails != null)
-          PlaceDetailsContainer(
-            placeName: _currentPlaceDetails!.place!.name!,
-            address: _currentPlaceDetails!.place!.address!,
-            types: _currentPlaceDetails!.place!.types!,
-            distance: _currentPlaceDistance,
-          ),
         SafeArea(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -205,6 +207,14 @@ class MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
+        if (_currentPlaceDetails != null)
+          PlaceDetailsContainer(
+            placeName: _currentPlaceDetails!.place!.name!,
+            address: _currentPlaceDetails!.place!.address!,
+            types: _currentPlaceDetails!.place!.types!,
+            distance: _currentPlaceDistance,
+            onHideContainer: _handleHidePlaceDetails,
+          ),
       ],
     );
   }

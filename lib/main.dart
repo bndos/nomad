@@ -18,9 +18,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      // default background color for the whole app
+      theme: ThemeData(
+        primaryColor: Colors.grey.shade900,
+      ),
+      color: Colors.white,
       title: 'My App',
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }

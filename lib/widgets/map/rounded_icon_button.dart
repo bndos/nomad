@@ -10,6 +10,7 @@ class RoundedIconButton extends StatelessWidget {
   final bool isDisabled; // New property for disabled state
   final Color color;
   final Color iconColor;
+  final Color foregroundColor;
 
   const RoundedIconButton({
     Key? key,
@@ -20,25 +21,25 @@ class RoundedIconButton extends StatelessWidget {
     this.isDisabled = false, // Set default value to false
     this.color = lightGreyColor,
     this.iconColor = Colors.black,
+    this.foregroundColor = Colors.black,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             elevation: 0, // Set elevation to 0 to remove the shadow
             backgroundColor: isDisabled
                 ? Colors.grey[50]
                 : color, // Use different background color for disabled state
-            foregroundColor: Colors.black, // Black foreground color
+            foregroundColor: foregroundColor, // Black foreground color
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(16.0),
             ),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 6.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 8.0),
           ),
           onPressed: isDisabled
               ? () => {}
