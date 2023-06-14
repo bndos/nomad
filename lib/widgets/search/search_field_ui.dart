@@ -71,6 +71,7 @@ class SearchFieldUI extends StatelessWidget {
                 Expanded(
                   child: TextFormField(
                     controller: searchController,
+                    autofocus: true,
                     onChanged: (_) => onSearchChanged?.call(),
                     style: GoogleFonts.poppins(
                       color: Colors.black,

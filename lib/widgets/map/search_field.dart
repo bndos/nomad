@@ -13,13 +13,15 @@ class SearchField extends StatefulWidget {
     int? index,
     List<places_sdk.AutocompletePrediction> predictions,
   ) handlePredictionSelection;
+  final void Function()? clearSearch;
   final places_sdk.LatLng? currentLocation;
 
   const SearchField({
     Key? key,
     required this.currentLocation,
-    required this.mapController,
     required this.handlePredictionSelection,
+    this.mapController,
+    this.clearSearch,
   }) : super(key: key);
 
   @override
@@ -61,27 +63,42 @@ class SearchFieldState extends State<SearchField> {
       FocusScope.of(context).unfocus();
       _predictions = [];
       _predictionStrings = [];
+      widget.clearSearch?.call();
     });
   }
 
   void _fetchAutocompletePredictions(String input) async {
-    final LatLng mapCenter = await widget.mapController!.getLatLng(
-      ScreenCoordinate(
-        x: MediaQuery.of(context).size.width ~/ 2,
-        y: MediaQuery.of(context).size.height ~/ 2,
-      ),
-    );
+    places_sdk.LatLngBounds locationBias;
+    if (widget.mapController != null) {
+      final LatLng mapCenter = await widget.mapController!.getLatLng(
+        ScreenCoordinate(
+          x: MediaQuery.of(context).size.width ~/ 2,
+          y: MediaQuery.of(context).size.height ~/ 2,
+        ),
+      );
 
-    final locationBias = places_sdk.LatLngBounds(
-      southwest: places_sdk.LatLng(
-        lat: mapCenter.latitude - 0.1,
-        lng: mapCenter.longitude - 0.1,
-      ),
-      northeast: places_sdk.LatLng(
-        lat: mapCenter.latitude + 0.1,
-        lng: mapCenter.longitude + 0.1,
-      ),
-    );
+      locationBias = places_sdk.LatLngBounds(
+        southwest: places_sdk.LatLng(
+          lat: mapCenter.latitude - 0.1,
+          lng: mapCenter.longitude - 0.1,
+        ),
+        northeast: places_sdk.LatLng(
+          lat: mapCenter.latitude + 0.1,
+          lng: mapCenter.longitude + 0.1,
+        ),
+      );
+    } else {
+      locationBias = places_sdk.LatLngBounds(
+        southwest: places_sdk.LatLng(
+          lat: widget.currentLocation!.lat - 0.1,
+          lng: widget.currentLocation!.lng - 0.1,
+        ),
+        northeast: places_sdk.LatLng(
+          lat: widget.currentLocation!.lat + 0.1,
+          lng: widget.currentLocation!.lng + 0.1,
+        ),
+      );
+    }
 
     final places_sdk.FindAutocompletePredictionsResponse predictionsResponse =
         await PlacesService.places!.findAutocompletePredictions(

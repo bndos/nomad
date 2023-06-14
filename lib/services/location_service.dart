@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 
 class LocationService {
   bool permissionGranted = false;
+  Position? position;
 
   Future<bool> checkPermission() async {
     bool serviceEnabled;
@@ -42,8 +43,8 @@ class LocationService {
       checkPermission();
     }
 
-    Position position = await Geolocator.getCurrentPosition();
-    return position;
+    position = await Geolocator.getCurrentPosition();
+    return position!;
   }
 
   String getDistanceBetween(LatLng position1, Position position2) {
