@@ -70,13 +70,16 @@ class RoundedIconButton extends StatelessWidget {
                         : iconColor, // Reduce opacity of the icon when disabled
                   ),
                   const SizedBox(width: 8.0),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      color: isDisabled
-                          ? Colors.grey[400]
-                          : null, // Reduce opacity of the text when disabled
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        color: isDisabled
+                            ? Colors.grey[400]
+                            : null, // Reduce opacity of the text when disabled
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
