@@ -9,14 +9,14 @@ import 'package:time_range_picker/time_range_picker.dart';
 import 'package:intl/intl.dart';
 
 class EventForm extends StatefulWidget {
-  final String distance;
-  final String placeName;
+  final String? distance;
+  final String? placeName;
   final Function(Event) onEventCreated;
 
   const EventForm({
     Key? key,
-    required this.distance,
-    required this.placeName,
+    this.distance,
+    this.placeName,
     required this.onEventCreated,
   }) : super(key: key);
 
