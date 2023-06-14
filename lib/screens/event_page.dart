@@ -195,17 +195,34 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 42.0),
                           child: TabBar(
+                            indicatorSize: TabBarIndicatorSize.label,
+                            indicatorColor: Colors.black,
                             controller: _tabController,
                             tabs: const [
                               Tab(
-                                icon: Icon(Iconsax.link, color: Colors.black),
+                                height: 24,
+                                iconMargin: EdgeInsets.all(0),
+                                icon: Icon(
+                                  Iconsax.link,
+                                  color: Colors.black,
+                                  size: 20,
+                                ),
                               ),
                               Tab(
-                                icon:
-                                    Icon(Iconsax.gallery, color: Colors.black),
+                                height: 24,
+                                icon: Icon(
+                                  Iconsax.grid_1,
+                                  color: Colors.black,
+                                  size: 20,
+                                ),
                               ),
                               Tab(
-                                icon: Icon(Iconsax.video, color: Colors.black),
+                                height: 24,
+                                icon: Icon(
+                                  Iconsax.video_circle,
+                                  color: Colors.black,
+                                  size: 20,
+                                ),
                               ),
                             ],
                           ),
@@ -235,7 +252,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                               // Pictures tab
                               SingleChildScrollView(
                                 child: Center(
-                                  child: Text('Pictures'),
+                                  child: Text('Feed'),
                                 ),
                               ),
                               // Videos tab
@@ -255,17 +272,6 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle the interaction or modification of the event details
-          // Here you can update the state of `_event` or perform any desired action
-          setState(() {
-            // Example of modifying the event name
-            _event.name = 'Updated Event Name';
-          });
-        },
-        child: const Icon(Icons.edit),
       ),
     );
   }
