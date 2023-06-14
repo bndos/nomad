@@ -36,7 +36,10 @@ class AutocompleteContainer extends StatelessWidget {
           final predictionString = predictionStrings[index];
 
           return ListTile(
-            title: Text(predictionString),
+            title: Text(
+              predictionString,
+              style: const TextStyle(fontSize: 13),
+            ),
             onTap: () => {handlePredictionSelection(index)},
           );
         },
