@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconsax/iconsax.dart';
 
 import 'package:nomad/screens/map_screen.dart';
-import 'package:nomad/screens/search_screen.dart';
+import 'package:nomad/screens/explore_screen.dart';
 import 'package:nomad/screens/camera_screen.dart';
 import 'package:nomad/screens/chats_screen.dart';
 import 'package:nomad/screens/profile_screen.dart';
@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _screens = [
     const MapScreen(),
-    const SearchScreen(),
+    const ExploreScreen(),
     const CameraScreen(),
     const ChatsScreen(),
     const ProfileScreen(),
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
             ),
             GButton(
               icon: Icons.search,
-              text: 'Search',
+              text: 'Explore',
             ),
             GButton(
               icon: Iconsax.camera,
