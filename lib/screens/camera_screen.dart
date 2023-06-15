@@ -96,6 +96,12 @@ class CameraScreenState extends State<CameraScreen> {
     });
   }
 
+  void _clearImagePreview() {
+    setState(() {
+      _capturedImage = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isCameraInitialized) {
@@ -125,60 +131,20 @@ class CameraScreenState extends State<CameraScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: _capturedImage != null
-                          ? Image.file(
-                              File(_capturedImage!.path),
-                              fit: BoxFit.cover,
+                          ? CapturedImage(
+                              imagePath: _capturedImage!.path,
+                              clearImagePreview: _clearImagePreview,
                             )
-                          : CameraPreview(
-                              _cameraController!,
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                  ),
-                                  color: Colors.transparent,
-                                  height: 70,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(
-                                          _isFlashOn
-                                              ? Iconsax.flash_15
-                                              : Iconsax.flash_slash5,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: () {
-                                          // Toggle flash mode
-                                          // Implement your flash control logic here
-                                          setState(() {
-                                            _isFlashOn = !_isFlashOn;
-                                          });
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          FontAwesomeIcons.circleDot,
-                                          color: Colors.white,
-                                          size: 42.0,
-                                        ),
-                                        onPressed: _capturePhoto,
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          FontAwesomeIcons.rotate,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: () async {
-                                          await _toggleCamera();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                          : CameraPreviewWidget(
+                              cameraController: _cameraController!,
+                              onFlashToggle: () {
+                                setState(() {
+                                  _isFlashOn = !_isFlashOn;
+                                });
+                              },
+                              onCapturePhoto: _capturePhoto,
+                              onCameraToggle: _toggleCamera,
+                              isFlashOn: _isFlashOn,
                             ),
                     ),
                   ),
@@ -187,6 +153,102 @@ class CameraScreenState extends State<CameraScreen> {
             ),
         ],
       ),
+    );
+  }
+}
+
+class CameraPreviewWidget extends StatelessWidget {
+  final CameraController cameraController;
+  final VoidCallback onFlashToggle;
+  final VoidCallback onCapturePhoto;
+  final VoidCallback onCameraToggle;
+  final bool isFlashOn;
+
+  const CameraPreviewWidget({
+    Key? key,
+    required this.cameraController,
+    required this.onFlashToggle,
+    required this.onCapturePhoto,
+    required this.onCameraToggle,
+    required this.isFlashOn,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CameraPreview(
+      cameraController,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          color: Colors.transparent,
+          height: 70,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(
+                  isFlashOn ? Iconsax.flash_15 : Iconsax.flash_slash5,
+                  color: Colors.white,
+                ),
+                onPressed: onFlashToggle,
+              ),
+              IconButton(
+                icon: const Icon(
+                  FontAwesomeIcons.circleDot,
+                  color: Colors.white,
+                  size: 42.0,
+                ),
+                onPressed: onCapturePhoto,
+              ),
+              IconButton(
+                icon: const Icon(
+                  FontAwesomeIcons.rotate,
+                  color: Colors.white,
+                ),
+                onPressed: onCameraToggle,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CapturedImage extends StatelessWidget {
+  final String imagePath;
+  final void Function() clearImagePreview;
+
+  const CapturedImage({
+    Key? key,
+    required this.imagePath,
+    required this.clearImagePreview,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        //iconbutton X to nullyfy the image
+        Image.file(
+          height: MediaQuery.of(context).size.height,
+          File(imagePath),
+          fit: BoxFit.fill,
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+            icon: const Icon(
+              FontAwesomeIcons.xmark,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              clearImagePreview();
+            },
+          ),
+        ),
+      ],
     );
   }
 }
