@@ -89,60 +89,61 @@ class ExploreScreenState extends State<ExploreScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            if (events.isNotEmpty) ...[
-              OverflowBox(
-                alignment: Alignment.topCenter,
-                maxHeight: double.infinity,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 90,
-                      ),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height - 100,
-                          minHeight: 0,
-                        ),
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: events.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final event = events[index];
-                            return EventPreview(event: event);
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            Container(
-              height: 90,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black54,
-                    blurRadius: 40,
-                    offset: Offset(0, 10),
-                  ),
-                ],
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-              ),
+      body: Stack(
+        children: [
+          if (events.isNotEmpty) ...[
+            OverflowBox(
+              alignment: Alignment.topCenter,
+              maxHeight: double.infinity,
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
+                    padding: const EdgeInsets.only(
+                      top: 90,
                     ),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height - 100,
+                        minHeight: 0,
+                      ),
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: events.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final event = events[index];
+                          return EventPreview(event: event);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          Container(
+            //height is the safeara height + 90
+            height: MediaQuery.of(context).padding.top + 90,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 40,
+                  offset: Offset(0, 10),
+                ),
+              ],
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  child: SafeArea(
                     child: SearchFieldUI(
                       searchController: _searchController,
                       onSearchChanged: _onSearchChanged,
@@ -151,49 +152,49 @@ class ExploreScreenState extends State<ExploreScreen>
                       clearPredictions: _clearPredictions,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 42.0,
-                      vertical: 4,
-                    ),
-                    child: TabBar(
-                      indicatorSize: TabBarIndicatorSize.label,
-                      controller: _tabController,
-                      indicatorColor: Colors.black,
-                      tabs: const [
-                        Tab(
-                          height: 24,
-                          iconMargin: EdgeInsets.all(0),
-                          icon: Icon(
-                            Iconsax.link,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                        ),
-                        Tab(
-                          height: 24,
-                          icon: Icon(
-                            Iconsax.grid_1,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                        ),
-                        Tab(
-                          height: 24,
-                          icon: Icon(
-                            Iconsax.location,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 42.0,
+                    vertical: 4,
                   ),
-                ],
-              ),
+                  child: TabBar(
+                    indicatorSize: TabBarIndicatorSize.label,
+                    controller: _tabController,
+                    indicatorColor: Colors.black,
+                    tabs: const [
+                      Tab(
+                        height: 24,
+                        iconMargin: EdgeInsets.all(0),
+                        icon: Icon(
+                          Iconsax.link,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                      Tab(
+                        height: 24,
+                        icon: Icon(
+                          Iconsax.grid_1,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                      Tab(
+                        height: 24,
+                        icon: Icon(
+                          Iconsax.location,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: IconButton(
         icon: const FaIcon(FontAwesomeIcons.plus),
