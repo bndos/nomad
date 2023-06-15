@@ -84,8 +84,9 @@ class EventPreview extends StatelessWidget {
                           ),
                         ],
                       ),
-                    if (event.placeName != null) const SizedBox(height: 16),
-                    if (event.placeName != null)
+                    if (event.placeName != null && event.placeName!.isNotEmpty)
+                      const SizedBox(height: 16),
+                    if (event.placeName != null && event.placeName!.isNotEmpty)
                       Row(
                         children: [
                           const Icon(

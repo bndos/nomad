@@ -34,7 +34,6 @@ class _HomePageState extends State<HomePage> {
         children: _screens,
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.only(top: 10),
         color: Colors.white,
         child: SafeArea(
           child: GNav(
