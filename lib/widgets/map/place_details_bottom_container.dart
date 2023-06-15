@@ -250,7 +250,6 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
                   ],
                 ),
                 if (events.isNotEmpty) ...[
-                  const SizedBox(height: 8.0),
                   ConstrainedBox(
                     constraints: BoxConstraints(
                       maxHeight: MediaQuery.of(context).size.height - 200,
