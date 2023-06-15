@@ -41,12 +41,12 @@ class _HomePageState extends State<HomePage> {
             gap: 2,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             tabBackgroundColor: _selectedIndex == 2
-                ? Colors.grey.shade900
+                ? Colors.grey.withOpacity(0.15)
                 : Colors.grey.shade100,
             backgroundColor: _selectedIndex == 2 ? Colors.black : Colors.white,
-            color: _selectedIndex == 2 ? Colors.grey.shade300 : Colors.black,
+            color: _selectedIndex == 2 ? Colors.grey.shade200 : Colors.black,
             activeColor:
-                _selectedIndex == 2 ? Colors.grey.shade300 : Colors.black,
+                _selectedIndex == 2 ? Colors.grey.shade200 : Colors.black,
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
             tabMargin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
             selectedIndex: _selectedIndex,
