@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({Key? key}) : super(key: key);
@@ -10,6 +12,10 @@ class CameraScreen extends StatefulWidget {
 
 class CameraScreenState extends State<CameraScreen> {
   CameraController? _cameraController;
+  bool _isFlashOn = false;
+  bool _isBackCamera = true;
+  bool _isCameraInitialized = false;
+  List<CameraDescription> cameras = [];
 
   @override
   void initState() {
@@ -23,16 +29,29 @@ class CameraScreenState extends State<CameraScreen> {
     super.dispose();
   }
 
-  Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
+  Future<void> _initializeCamera({
+    CameraLensDirection lensDirection = CameraLensDirection.back,
+  }) async {
+    cameras = await availableCameras();
+
     final backCamera = cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.back,
+      (camera) => camera.lensDirection == lensDirection,
     );
 
-    _cameraController = CameraController(backCamera, ResolutionPreset.medium);
+    setState(() {
+      _cameraController = CameraController(
+        backCamera,
+        ResolutionPreset.max,
+        enableAudio: false,
+      );
+    });
 
     try {
       await _cameraController!.initialize();
+      setState(() {
+        _isCameraInitialized =
+            _cameraController != null && _cameraController!.value.isInitialized;
+      });
     } catch (error) {
       // Handle camera initialization error
       print('Camera initialization failed: $error');
@@ -44,7 +63,7 @@ class CameraScreenState extends State<CameraScreen> {
   }
 
   void _capturePhoto() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+    if (!_isCameraInitialized) {
       return;
     }
 
@@ -54,11 +73,36 @@ class CameraScreenState extends State<CameraScreen> {
     print('Captured photo: ${image.path}');
   }
 
+  Future<void> _toggleCamera() async {
+    final lensDirection =
+        _isBackCamera ? CameraLensDirection.front : CameraLensDirection.back;
+
+    try {
+      setState(() {
+        _isCameraInitialized = false;
+      });
+      await _cameraController?.dispose();
+    } catch (e) {
+      // Handle dispose error, if any
+      print('Dispose error: $e');
+    }
+    _initializeCamera(lensDirection: lensDirection);
+    setState(() {
+      _isBackCamera = !_isBackCamera;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+    if (!_isCameraInitialized) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+            color: Colors.white,
+          ),
+        ),
       );
     }
 
@@ -66,8 +110,7 @@ class CameraScreenState extends State<CameraScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          if (_cameraController != null &&
-              _cameraController!.value.isInitialized)
+          if (_isCameraInitialized)
             Padding(
               padding: const EdgeInsets.only(top: 15),
               child: Center(
@@ -84,36 +127,41 @@ class CameraScreenState extends State<CameraScreen> {
                           child: Container(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 16.0),
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.transparent,
+                            height: 70,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.flash_off,
+                                  icon: Icon(
+                                    _isFlashOn
+                                        ? Iconsax.flash_15
+                                        : Iconsax.flash_slash5,
                                     color: Colors.white,
                                   ),
                                   onPressed: () {
                                     // Toggle flash mode
                                     // Implement your flash control logic here
+                                    setState(() {
+                                      _isFlashOn = !_isFlashOn;
+                                    });
                                   },
                                 ),
                                 IconButton(
                                   icon: const Icon(
-                                    Icons.camera_alt,
+                                    FontAwesomeIcons.circleDot,
                                     color: Colors.white,
-                                    size: 36.0,
+                                    size: 42.0,
                                   ),
                                   onPressed: _capturePhoto,
                                 ),
                                 IconButton(
                                   icon: const Icon(
-                                    Icons.flip_camera_ios,
+                                    FontAwesomeIcons.rotate,
                                     color: Colors.white,
                                   ),
-                                  onPressed: () {
-                                    // Switch camera
-                                    // Implement your camera switch logic here
+                                  onPressed: () async {
+                                    await _toggleCamera();
                                   },
                                 ),
                               ],
