@@ -69,52 +69,55 @@ class CameraScreenState extends State<CameraScreen> {
           if (_cameraController != null &&
               _cameraController!.value.isInitialized)
             Padding(
-              padding: const EdgeInsets.only(top: 28),
+              padding: const EdgeInsets.only(top: 15),
               child: Center(
                 child: Container(
                   color: Colors.black,
                   height: MediaQuery.of(context).size.height,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: CameraPreview(
-                      _cameraController!,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          color: Colors.black.withOpacity(0.5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.flash_off,
-                                  color: Colors.white,
+                  child: SafeArea(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: CameraPreview(
+                        _cameraController!,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            color: Colors.black.withOpacity(0.5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.flash_off,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    // Toggle flash mode
+                                    // Implement your flash control logic here
+                                  },
                                 ),
-                                onPressed: () {
-                                  // Toggle flash mode
-                                  // Implement your flash control logic here
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.white,
-                                  size: 36.0,
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 36.0,
+                                  ),
+                                  onPressed: _capturePhoto,
                                 ),
-                                onPressed: _capturePhoto,
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.flip_camera_ios,
-                                  color: Colors.white,
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.flip_camera_ios,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    // Switch camera
+                                    // Implement your camera switch logic here
+                                  },
                                 ),
-                                onPressed: () {
-                                  // Switch camera
-                                  // Implement your camera switch logic here
-                                },
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
