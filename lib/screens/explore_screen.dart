@@ -123,16 +123,16 @@ class ExploreScreenState extends State<ExploreScreen>
           Container(
             //height is the safeara height + 90
             height: MediaQuery.of(context).padding.top + 90,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black12,
+                  color: Colors.black12.withOpacity(0.075),
                   blurRadius: 40,
-                  offset: Offset(0, 10),
+                  offset: const Offset(0, 10),
                 ),
               ],
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20),
               ),
