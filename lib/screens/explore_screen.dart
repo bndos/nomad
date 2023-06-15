@@ -34,6 +34,7 @@ class ExploreScreenState extends State<ExploreScreen>
   @override
   void dispose() {
     _searchController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -91,35 +92,62 @@ class ExploreScreenState extends State<ExploreScreen>
     return Scaffold(
       body: Stack(
         children: [
-          if (events.isNotEmpty) ...[
-            OverflowBox(
-              alignment: Alignment.topCenter,
-              maxHeight: double.infinity,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 90,
-                    ),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height - 100,
-                        minHeight: 0,
-                      ),
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: events.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final event = events[index];
-                          return EventPreview(event: event);
-                        },
-                      ),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height,
+            ),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                if (events.isNotEmpty) ...[
+                  OverflowBox(
+                    alignment: Alignment.topCenter,
+                    maxHeight: double.infinity,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: 90,
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height - 100,
+                              minHeight: 0,
+                            ),
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: events.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final event = events[index];
+                                return EventPreview(event: event);
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
+                if (events.isEmpty)
+                  const Center(
+                    child: Text(
+                      'No events found',
+                    ),
+                  ),
+                const Center(
+                  child: Text(
+                    'No posts found',
+                  ),
+                ),
+                const Center(
+                  child: Text(
+                    'No places found',
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
           Container(
             //height is the safeara height + 90
             height: MediaQuery.of(context).padding.top + 90,
