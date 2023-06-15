@@ -9,7 +9,7 @@ import 'package:nomad/screens/chats_screen.dart';
 import 'package:nomad/screens/profile_screen.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, Key? key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -29,18 +29,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _selectedIndex == 2 ? Colors.black : Colors.white,
       body: IndexedStack(
         index: _selectedIndex,
         children: _screens,
       ),
       bottomNavigationBar: Container(
-        color: Colors.white,
+        color: _selectedIndex == 2 ? Colors.black : Colors.white,
         child: SafeArea(
           child: GNav(
             gap: 2,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            tabBackgroundColor: Colors.grey.shade100,
-            backgroundColor: Colors.white,
+            tabBackgroundColor: _selectedIndex == 2
+                ? Colors.grey.shade900
+                : Colors.grey.shade100,
+            backgroundColor: _selectedIndex == 2 ? Colors.black : Colors.white,
+            color: _selectedIndex == 2 ? Colors.grey.shade300 : Colors.black,
+            activeColor:
+                _selectedIndex == 2 ? Colors.grey.shade300 : Colors.black,
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
             tabMargin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
             selectedIndex: _selectedIndex,
