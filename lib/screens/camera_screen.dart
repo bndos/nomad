@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({Key? key}) : super(key: key);
@@ -248,6 +250,50 @@ class CapturedImage extends StatelessWidget {
             },
           ),
         ),
+        // bottom
+        const Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                RoundedIconButton(
+                  iconColor: Colors.white,
+                  icon: FontAwesomeIcons.download,
+                  containerColor: Colors.black54,
+                  label: '',
+                  height: 44,
+                  width: 44,
+                  expanded: false,
+                  radius: 30,
+                ),
+                RoundedIconButton(
+                  iconColor: Colors.white,
+                  icon: FontAwesomeIcons.circlePlus,
+                  foregroundColor: Colors.white,
+                  containerColor: Colors.black54,
+                  labelColor: Colors.white,
+                  label: 'Post',
+                  height: 44,
+                  width: 44,
+                  radius: 30,
+                ),
+                RoundedIconButton(
+                  iconColor: Colors.white,
+                  icon: CupertinoIcons.paperplane_fill,
+                  foregroundColor: Colors.white,
+                  containerColor: Color(0xFF1EA7FD),
+                  labelColor: Colors.white,
+                  label: 'Send',
+                  height: 44,
+                  width: 44,
+                  radius: 30,
+                ),
+              ],
+            ),
+          ),
+        )
       ],
     );
   }
