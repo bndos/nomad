@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,6 +18,7 @@ class CameraScreenState extends State<CameraScreen> {
   bool _isBackCamera = true;
   bool _isCameraInitialized = false;
   List<CameraDescription> cameras = [];
+  XFile? _capturedImage; // Store the captured image file
 
   @override
   void initState() {
@@ -68,9 +71,10 @@ class CameraScreenState extends State<CameraScreen> {
     }
 
     final image = await _cameraController!.takePicture();
-
-    // Do something with the captured photo (e.g., save it, display it)
-    print('Captured photo: ${image.path}');
+    // Store the captured image
+    setState(() {
+      _capturedImage = image;
+    });
   }
 
   Future<void> _toggleCamera() async {
@@ -120,55 +124,62 @@ class CameraScreenState extends State<CameraScreen> {
                   child: SafeArea(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
-                      child: CameraPreview(
-                        _cameraController!,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            color: Colors.transparent,
-                            height: 70,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    _isFlashOn
-                                        ? Iconsax.flash_15
-                                        : Iconsax.flash_slash5,
-                                    color: Colors.white,
+                      child: _capturedImage != null
+                          ? Image.file(
+                              File(_capturedImage!.path),
+                              fit: BoxFit.cover,
+                            )
+                          : CameraPreview(
+                              _cameraController!,
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
                                   ),
-                                  onPressed: () {
-                                    // Toggle flash mode
-                                    // Implement your flash control logic here
-                                    setState(() {
-                                      _isFlashOn = !_isFlashOn;
-                                    });
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    FontAwesomeIcons.circleDot,
-                                    color: Colors.white,
-                                    size: 42.0,
+                                  color: Colors.transparent,
+                                  height: 70,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          _isFlashOn
+                                              ? Iconsax.flash_15
+                                              : Iconsax.flash_slash5,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          // Toggle flash mode
+                                          // Implement your flash control logic here
+                                          setState(() {
+                                            _isFlashOn = !_isFlashOn;
+                                          });
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          FontAwesomeIcons.circleDot,
+                                          color: Colors.white,
+                                          size: 42.0,
+                                        ),
+                                        onPressed: _capturePhoto,
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          FontAwesomeIcons.rotate,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () async {
+                                          await _toggleCamera();
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: _capturePhoto,
                                 ),
-                                IconButton(
-                                  icon: const Icon(
-                                    FontAwesomeIcons.rotate,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () async {
-                                    await _toggleCamera();
-                                  },
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ),
