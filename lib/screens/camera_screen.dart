@@ -58,8 +58,7 @@ class CameraScreenState extends State<CameraScreen> {
             _cameraController != null && _cameraController!.value.isInitialized;
       });
     } catch (error) {
-      // Handle camera initialization error
-      print('Camera initialization failed: $error');
+      // TODO: Handle camera initialization error
     }
 
     if (mounted) {
@@ -89,8 +88,7 @@ class CameraScreenState extends State<CameraScreen> {
       });
       await _cameraController?.dispose();
     } catch (e) {
-      // Handle dispose error, if any
-      print('Dispose error: $e');
+      // TODO: handle error
     }
     _initializeCamera(lensDirection: lensDirection);
     setState(() {
