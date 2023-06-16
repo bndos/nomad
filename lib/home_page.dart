@@ -7,7 +7,7 @@ import 'package:nomad/screens/explore_screen.dart';
 import 'package:nomad/screens/chats_screen.dart';
 import 'package:nomad/screens/profile_screen.dart';
 
-import 'screens/camera_screen.dart';
+import 'package:nomad/screens/camera_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
