@@ -113,7 +113,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: MyAppBar(title: _event.placeName!),
+      appBar: MyAppBar(title: _event.name),
       body: SafeArea(
         child: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
