@@ -419,7 +419,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 if (events.isEmpty)
                   const Center(
                     child: Text(
-                      'No events found',
+                      'No events yet',
                     ),
                   ),
 
