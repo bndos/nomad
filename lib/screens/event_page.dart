@@ -97,14 +97,14 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: const MyAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverToBoxAdapter(
+            child: Stack(
               children: [
                 // container with image
                 Container(
-                  height: 250,
+                  height: 300,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -125,211 +125,236 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-                // container with event details and shadow
+                // Content after the AppBar
                 Container(
-                  margin: const EdgeInsets.only(top: 240),
                   width: MediaQuery.of(context).size.width,
-                  constraints: const BoxConstraints(
-                    minHeight: 100,
-                  ),
+                  margin: const EdgeInsets.only(top: 250),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
                   decoration: BoxDecoration(
                     color: Colors.white,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.6),
-                        blurRadius: 100,
-                        spreadRadius: 2,
-                        offset: const Offset(0, -20),
-                      ),
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 20,
+                        offset: const Offset(0, -30),
+                      )
                     ],
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        // event name
-                        Text(
-                          _event.name,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                          ),
+                  child: Column(
+                    children: [
+                      // event name
+                      Text(
+                        _event.name,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
                         ),
-                        if (_event.startTime != null) const SizedBox(height: 8),
-                        if (_event.startTime != null)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Iconsax.calendar_1,
-                                size: 16,
+                      ),
+                      if (_event.startTime != null) const SizedBox(height: 8),
+                      if (_event.startTime != null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Iconsax.calendar_1,
+                              size: 16,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(width: 4),
+                            // AUG 17 AT 7:00 PM - AUG 18 AT 12:00 AM
+                            Text(
+                              DateFormat(
+                                'MMM d AT h:mm a',
+                                'en_US',
+                              ).format(_event.startTime!).toUpperCase(),
+                              style: const TextStyle(
                                 color: Colors.black,
+                                fontSize: 12,
                               ),
-                              const SizedBox(width: 4),
-                              // AUG 17 AT 7:00 PM - AUG 18 AT 12:00 AM
+                            ),
+                            if (_event.endTime != null)
                               Text(
-                                DateFormat(
-                                  'MMM d AT h:mm a',
-                                  'en_US',
-                                ).format(_event.startTime!).toUpperCase(),
+                                " - ${DateFormat('MMM d AT h:mm a', 'en_US').format(_event.endTime!)}"
+                                    .toUpperCase(),
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,
                                 ),
                               ),
-                              if (_event.endTime != null)
-                                Text(
-                                  " - ${DateFormat('MMM d AT h:mm a', 'en_US').format(_event.endTime!)}"
-                                      .toUpperCase(),
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        if (_event.placeName != null) const SizedBox(height: 8),
-                        if (_event.placeName != null)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                FontAwesomeIcons.locationArrow,
-                                size: 16,
-                                color: Colors.blue,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                _event.placeName ?? '',
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        if (_event.details != null &&
-                            _event.details!.isNotEmpty)
-                          const SizedBox(height: 16),
-                        if (_event.details != null &&
-                            _event.details!.isNotEmpty)
-                          Text(
-                            _event.details!,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        const SizedBox(height: 16),
+                          ],
+                        ),
+                      if (_event.placeName != null) const SizedBox(height: 8),
+                      if (_event.placeName != null)
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            RoundedIconButton(
-                              // participate
-                              icon: CupertinoIcons.person_badge_plus_fill,
-                              color: _isParticipating
-                                  ? Colors.grey.shade100
-                                  : Colors.blue.shade200,
-                              label: _isParticipating
-                                  ? 'Participating'
-                                  : 'Participate',
-                              onPressed: () {
-                                // Perform create event action
-                                setState(() {
-                                  _isParticipating = !_isParticipating;
-                                });
-                              },
+                            const Icon(
+                              FontAwesomeIcons.locationArrow,
+                              size: 16,
+                              color: Colors.blue,
                             ),
-                            RoundedIconButton(
-                              icon: CupertinoIcons.paperplane_fill,
-                              label: 'Share',
-                              color: Colors.blue.shade200,
-                              onPressed: () {
-                                // Perform share action
-                              },
+                            const SizedBox(width: 4),
+                            Text(
+                              _event.placeName ?? '',
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           ],
                         ),
+                      if (_event.details != null && _event.details!.isNotEmpty)
                         const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 42.0),
-                          child: TabBar(
-                            indicatorSize: TabBarIndicatorSize.label,
-                            indicatorColor: Colors.black,
-                            controller: _tabController,
-                            tabs: const [
-                              Tab(
-                                height: 24,
-                                iconMargin: EdgeInsets.all(0),
-                                icon: Icon(
-                                  Iconsax.link,
-                                  color: Colors.black,
-                                  size: 20,
-                                ),
-                              ),
-                              Tab(
-                                height: 24,
-                                icon: Icon(
-                                  Iconsax.grid_1,
-                                  color: Colors.black,
-                                  size: 20,
-                                ),
-                              ),
-                              Tab(
-                                height: 24,
-                                icon: Icon(
-                                  Iconsax.video_circle,
-                                  color: Colors.black,
-                                  size: 20,
-                                ),
-                              ),
-                            ],
-                          ),
+                      if (_event.details != null && _event.details!.isNotEmpty)
+                        Text(
+                          _event.details!,
+                          style: const TextStyle(fontSize: 14),
                         ),
-                        const SizedBox(height: 16),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            // maxheight should be the available height of the safe area - 50 - appbar height
-                            maxHeight: MediaQuery.of(context).size.height -
-                                MediaQuery.of(context).padding.top -
-                                MediaQuery.of(context).padding.bottom -
-                                80,
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RoundedIconButton(
+                            // participate
+                            icon: CupertinoIcons.person_badge_plus_fill,
+                            color: _isParticipating
+                                ? Colors.grey.shade100
+                                : Colors.blue.shade200,
+                            label: _isParticipating
+                                ? 'Participating'
+                                : 'Participate',
+                            onPressed: () {
+                              // Perform create event action
+                              setState(() {
+                                _isParticipating = !_isParticipating;
+                              });
+                            },
                           ),
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: const [
-                              // Sub events or linked events tab
-                              SingleChildScrollView(
-                                child: Center(
-                                  child: Column(
-                                    children: [
-                                      Text('Sub Events or Linked Events'),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Pictures tab
-                              SingleChildScrollView(
-                                child: Center(
-                                  child: Text('Feed'),
-                                ),
-                              ),
-                              // Videos tab
-                              SingleChildScrollView(
-                                child: Center(
-                                  child: Text('Videos'),
-                                ),
-                              ),
-                            ],
+                          RoundedIconButton(
+                            icon: CupertinoIcons.paperplane_fill,
+                            label: 'Share',
+                            color: Colors.blue.shade200,
+                            onPressed: () {
+                              // Perform share action
+                            },
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
+            ),
+          ),
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _SliverAppBarDelegate(
+              minHeight: 48.0,
+              maxHeight: 48.0,
+              child: Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 42.0),
+                  child: TabBar(
+                    indicatorSize: TabBarIndicatorSize.label,
+                    indicatorColor: Colors.black,
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(
+                        height: 24,
+                        iconMargin: EdgeInsets.all(0),
+                        icon: Icon(
+                          Iconsax.link,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                      Tab(
+                        height: 24,
+                        icon: Icon(
+                          Iconsax.grid_1,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                      Tab(
+                        height: 24,
+                        icon: Icon(
+                          Iconsax.video_circle,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+        body: TabBarView(
+          controller: _tabController,
+          children: const [
+            // Sub events or linked events tab
+            SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  children: [
+                    Text('Sub Events or Linked Events'),
+                  ],
+                ),
+              ),
+            ),
+            // Pictures tab
+            SingleChildScrollView(
+              child: Center(
+                child: Text('Feed'),
+              ),
+            ),
+            // Videos tab
+            SingleChildScrollView(
+              child: Center(
+                child: Text('Videos'),
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _SliverAppBarDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }
