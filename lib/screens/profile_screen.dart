@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:nomad/models/event/event.dart';
+import 'package:nomad/widgets/events/event_form.dart';
+import 'package:nomad/widgets/events/event_preview.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar({Key? key}) : super(key: key);
@@ -85,6 +89,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  List<Event> events = [];
 
   @override
   void initState() {
@@ -96,6 +101,24 @@ class _ProfileScreenState extends State<ProfileScreen>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _handleEventCreated(Event event) {
+    setState(() {
+      events.add(event);
+    });
+  }
+
+  void _openEventForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return EventForm(
+          onEventCreated: _handleEventCreated,
+        );
+      },
+    );
   }
 
   @override
@@ -144,7 +167,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                   child: Container(
                     color: Colors.white,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 42.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 42.0,
+                        vertical: 8.0,
+                      ),
                       child: TabBar(
                         indicatorSize: TabBarIndicatorSize.label,
                         indicatorColor: Colors.black,
@@ -184,25 +210,47 @@ class _ProfileScreenState extends State<ProfileScreen>
             ],
             body: TabBarView(
               controller: _tabController,
-              children: const [
+              children: [
                 // Sub events or linked events tab
-                SingleChildScrollView(
-                  child: Center(
+                if (events.isNotEmpty) ...[
+                  OverflowBox(
+                    alignment: Alignment.topCenter,
+                    maxHeight: double.infinity,
                     child: Column(
                       children: [
-                        Text('Sub Events or Linked Events'),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height - 100,
+                            minHeight: 0,
+                          ),
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: events.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final event = events[index];
+                              return EventPreview(event: event);
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
+                ],
+                if (events.isEmpty)
+                  const Center(
+                    child: Text(
+                      'No events found',
+                    ),
+                  ),
+
                 // Pictures tab
-                SingleChildScrollView(
+                const SingleChildScrollView(
                   child: Center(
                     child: Text('Feed'),
                   ),
                 ),
                 // Videos tab
-                SingleChildScrollView(
+                const SingleChildScrollView(
                   child: Center(
                     child: Text('Videos'),
                   ),
@@ -211,6 +259,11 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ),
         ),
+      ),
+      floatingActionButton: IconButton(
+        icon: const FaIcon(FontAwesomeIcons.plus),
+        iconSize: 20.0,
+        onPressed: () => _openEventForm(context),
       ),
     );
   }
