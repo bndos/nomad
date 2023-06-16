@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _screens = [
     const MapScreen(),
     const ExploreScreen(),
+    const CameraScreen(),
     const ChatsScreen(),
     const ProfileScreen(),
   ];
@@ -34,7 +35,9 @@ class _HomePageState extends State<HomePage> {
         children: [
           IndexedStack(
             index: _selectedIndex,
-            children: _screens,
+            children: [
+              for (var screen in _screens) screen,
+            ],
           ),
           if (_selectedIndex == 2) // Only show the CameraScreen when selected
             const CameraScreen(),
