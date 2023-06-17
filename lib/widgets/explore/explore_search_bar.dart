@@ -32,20 +32,7 @@ class _ExploreSearchBarState extends State<ExploreSearchBar> {
   Widget build(BuildContext context) {
     return Container(
       height: widget.height,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12.withOpacity(0.075),
-            blurRadius: 40,
-            offset: const Offset(0, 10),
-          ),
-        ],
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-      ),
+      color: Colors.white,
       child: Column(
         children: [
           Padding(
@@ -61,7 +48,7 @@ class _ExploreSearchBarState extends State<ExploreSearchBar> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 42.0, vertical: 4),
+            padding: const EdgeInsets.only(top: 8),
             child: CustomTabBar(
               tabController: widget.tabController,
               icons: const [

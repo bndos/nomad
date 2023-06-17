@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
-class CustomSliverHeader extends SliverPersistentHeaderDelegate {
+class CustomSliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final double maxHeight;
   final Widget child;
 
-  CustomSliverHeader({
+  CustomSliverHeaderDelegate({
     required this.minHeight,
     required this.maxHeight,
     required this.child,
@@ -29,7 +29,7 @@ class CustomSliverHeader extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(CustomSliverHeader oldDelegate) {
+  bool shouldRebuild(CustomSliverHeaderDelegate oldDelegate) {
     return maxHeight != oldDelegate.maxHeight ||
         minHeight != oldDelegate.minHeight ||
         child != oldDelegate.child;
@@ -48,21 +48,18 @@ class SliverTabHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverPersistentHeader(
       pinned: true,
-      delegate: CustomSliverHeader(
+      delegate: CustomSliverHeaderDelegate(
         minHeight: 48.0,
         maxHeight: 48.0,
         child: Container(
           color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 42.0),
-            child: CustomTabBar(
-              tabController: tabController,
-              icons: const [
-                Iconsax.link,
-                Iconsax.grid_1,
-                Iconsax.video_circle,
-              ],
-            ),
+          child: CustomTabBar(
+            tabController: tabController,
+            icons: const [
+              Iconsax.link,
+              Iconsax.grid_1,
+              Iconsax.video_circle,
+            ],
           ),
         ),
       ),
