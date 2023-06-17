@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/event_preview.dart';
 import 'package:nomad/widgets/places/place_details.dart';
+import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
 class PlaceDetailsContainer extends StatefulWidget {
   final String placeName;
@@ -27,12 +29,13 @@ class PlaceDetailsContainer extends StatefulWidget {
 }
 
 class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   double containerHeight = 200.0; // Initial height of the container
   double dragOffset = 0.0; // Offset for tracking the drag gesture
   List<Event> events = [];
   late AnimationController _animationController;
   late SpringDescription _spring;
+  late TabController _tabController;
 
   @override
   void initState() {
@@ -46,11 +49,13 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       stiffness: 100,
       damping: 10.0,
     );
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -169,6 +174,14 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
                   onShare: () {
                     // Perform share action
                   },
+                ),
+                CustomTabBar(
+                  tabController: _tabController,
+                  icons: const [
+                    Iconsax.link,
+                    Iconsax.grid_1,
+                    Iconsax.video_circle,
+                  ],
                 ),
                 if (events.isNotEmpty) ...[
                   ConstrainedBox(
