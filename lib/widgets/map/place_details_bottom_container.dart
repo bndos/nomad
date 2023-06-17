@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:nomad/models/event/event.dart';
-import 'package:nomad/utils/place_icons.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/event_preview.dart';
-import 'package:nomad/widgets/map/rounded_icon_button.dart';
+import 'package:nomad/widgets/gallery/grid_gallery.dart';
+import 'package:nomad/widgets/places/place_details.dart';
+import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
 class PlaceDetailsContainer extends StatefulWidget {
   final String placeName;
@@ -30,12 +30,14 @@ class PlaceDetailsContainer extends StatefulWidget {
 }
 
 class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
-    with SingleTickerProviderStateMixin {
-  double containerHeight = 200.0; // Initial height of the container
-  double dragOffset = 0.0; // Offset for tracking the drag gesture
+    with TickerProviderStateMixin {
+  double previousHeight = 200.0;
+  double containerHeight = 200.0;
+  double dragOffset = 0.0;
   List<Event> events = [];
   late AnimationController _animationController;
   late SpringDescription _spring;
+  late TabController _tabController;
 
   @override
   void initState() {
@@ -49,11 +51,13 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       stiffness: 100,
       damping: 10.0,
     );
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -79,6 +83,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
 
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
     setState(() {
+      previousHeight = containerHeight;
       containerHeight -= details.delta.dy;
     });
   }
@@ -93,19 +98,36 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
 
     final snapPoints = [0.0, 200.0, screenHeight * 1 / 2, availableHeight];
     final currentHeight = containerHeight;
-    final closestSnapPoint = snapPoints.reduce((prev, point) {
-      if ((currentHeight - prev).abs() < (currentHeight - point).abs()) {
-        return prev;
-      } else {
-        return point;
+    final dragVelocity = currentHeight - previousHeight;
+
+    double closestSnapPoint = currentHeight;
+
+    if (dragVelocity > 0) {
+      // Dragging downwards
+      for (final point in snapPoints) {
+        if (point > currentHeight) {
+          closestSnapPoint = point;
+          break;
+        }
       }
-    });
+    } else {
+      // Dragging upwards
+      for (var i = snapPoints.length - 1; i >= 0; i--) {
+        final point = snapPoints[i];
+        if (point < currentHeight) {
+          closestSnapPoint = point;
+          break;
+        }
+      }
+    }
+
+    closestSnapPoint = closestSnapPoint.clamp(0.0, availableHeight);
 
     final simulation = SpringSimulation(
       _spring,
       containerHeight,
       closestSnapPoint,
-      1000 * details.velocity.pixelsPerSecond.dy,
+      details.velocity.pixelsPerSecond.dy,
     );
     containerHeight = closestSnapPoint;
     _animationController.animateWith(simulation);
@@ -126,8 +148,8 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
           height: containerHeight,
           padding: const EdgeInsets.only(
             top: 16.0,
-            left: 16.0,
-            right: 16.0,
+            left: 4.0,
+            right: 4.0,
             bottom: 0.0,
           ),
           duration: const Duration(milliseconds: 500),
@@ -158,113 +180,88 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width *
-                              0.2, // 25% of the screen width
-                          height: MediaQuery.of(context).size.width *
-                              0.2, // Set the height equal to the width for a circular shape
-                          decoration: BoxDecoration(
-                            color:
-                                Colors.grey[100], // Pale grey background color
-                            shape: BoxShape.circle, // Circular shape
-                          ),
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              iconTheme: IconThemeData(
-                                color: Colors.grey[
-                                    800], // Set the desired foreground color
-                              ),
-                            ),
-                            child: Icon(
-                              getIconForPlaceType(widget.types[0]),
-                              size: 32.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.distance.isNotEmpty
-                                    ? '${widget.placeName} (${widget.distance})'
-                                    : widget.placeName,
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                widget.types[0].name
-                                    .replaceAll('_', ' ')
-                                    .capitalize!,
-                                style: const TextStyle(fontSize: 12.0),
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                widget.address,
-                                style: const TextStyle(fontSize: 12.0),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        RoundedIconButton(
-                          icon: FontAwesomeIcons
-                              .plus, // Replace with the appropriate Font Awesome icon
-                          label: 'Event',
-                          onPressed: () {
-                            // Perform create event action
-                            _openEventForm(context);
-                          },
-                        ),
-                        RoundedIconButton(
-                          icon: FontAwesomeIcons
-                              .locationPin, // Replace with the appropriate Font Awesome icon
-                          label: 'Directions',
-                          onPressed: () {
-                            // Perform directions action
-                          },
-                        ),
-                        RoundedIconButton(
-                          icon: FontAwesomeIcons
-                              .share, // Replace with the appropriate Font Awesome icon
-                          label: 'Share',
-                          onPressed: () {
-                            // Perform share action
-                          },
-                        ),
-                      ],
-                    ),
+                PlaceDetails(
+                  placeName: widget.placeName,
+                  address: widget.address,
+                  distance: widget.distance,
+                  types: widget.types,
+                  onAddEvent: () {
+                    _openEventForm(context);
+                  },
+                  onDirections: () {
+                    // Perform directions action
+                  },
+                  onShare: () {
+                    // Perform share action
+                  },
+                ),
+                CustomTabBar(
+                  tabController: _tabController,
+                  icons: const [
+                    Iconsax.link,
+                    Iconsax.grid_1,
+                    Iconsax.video_circle,
                   ],
                 ),
-                if (events.isNotEmpty) ...[
-                  ConstrainedBox(
+                MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ConstrainedBox(
                     constraints: BoxConstraints(
                       maxHeight: MediaQuery.of(context).size.height - 200,
                       minHeight: 0,
                     ),
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: events.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final event = events[index];
-                        return EventPreview(event: event);
-                      },
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        if (events.isNotEmpty) ...[
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height - 200,
+                              minHeight: 0,
+                            ),
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: events.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final event = events[index];
+                                return EventPreview(event: event);
+                              },
+                            ),
+                          ),
+                        ],
+                        if (events.isEmpty)
+                          const Center(
+                            child: Text(
+                              'No events found',
+                            ),
+                          ),
+                        const GridGallery(
+                          imageUrls: [
+                            "https://picsum.photos/500/800?random=0",
+                            "https://picsum.photos/500/800?random=1",
+                            "https://picsum.photos/500/800?random=2",
+                            "https://picsum.photos/500/800?random=3",
+                            "https://picsum.photos/500/800?random=4",
+                            "https://picsum.photos/500/800?random=5",
+                            "https://picsum.photos/500/800?random=6",
+                            "https://picsum.photos/500/800?random=7",
+                            "https://picsum.photos/500/800?random=8",
+                            "https://picsum.photos/500/800?random=9",
+                            "https://picsum.photos/500/800?random=10",
+                          ],
+                          backgroundColor: Colors.white,
+                        ),
+                        const Center(
+                          child: Text(
+                            'No places found',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ],
             ),
           ),

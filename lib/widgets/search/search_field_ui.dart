@@ -4,12 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:nomad/widgets/search/autocomplete_container.dart';
 
-class SearchFieldUI extends StatelessWidget {
+class SearchFieldUI extends StatefulWidget {
   final List<String> predictionStrings;
   final TextEditingController? searchController;
   final void Function(int? index)? handlePredictionSelection;
   final void Function()? clearPredictions;
   final void Function()? onSearchChanged;
+  final bool shouldAutofocus;
 
   const SearchFieldUI({
     Key? key,
@@ -18,7 +19,32 @@ class SearchFieldUI extends StatelessWidget {
     this.handlePredictionSelection,
     this.searchController,
     this.onSearchChanged,
+    this.shouldAutofocus = false,
   }) : super(key: key);
+
+  @override
+  State<SearchFieldUI> createState() => _SearchFieldUIState();
+}
+
+class _SearchFieldUIState extends State<SearchFieldUI> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,23 +68,23 @@ class SearchFieldUI extends StatelessWidget {
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(20),
                 topRight: const Radius.circular(20),
-                bottomLeft: predictionStrings.isNotEmpty
+                bottomLeft: widget.predictionStrings.isNotEmpty
                     ? const Radius.circular(0)
                     : const Radius.circular(20),
-                bottomRight: predictionStrings.isNotEmpty
+                bottomRight: widget.predictionStrings.isNotEmpty
                     ? const Radius.circular(0)
                     : const Radius.circular(20),
               ),
             ),
             child: Row(
               children: [
-                if (predictionStrings.isNotEmpty)
+                if (widget.predictionStrings.isNotEmpty || _focusNode.hasFocus)
                   IconButton(
                     icon: const Icon(
                       Icons.clear,
                       size: 20,
                     ),
-                    onPressed: clearPredictions,
+                    onPressed: widget.clearPredictions,
                   )
                 else
                   const IconButton(
@@ -70,9 +96,10 @@ class SearchFieldUI extends StatelessWidget {
                   ),
                 Expanded(
                   child: TextFormField(
-                    controller: searchController,
-                    autofocus: true,
-                    onChanged: (_) => onSearchChanged?.call(),
+                    controller: widget.searchController,
+                    focusNode: _focusNode,
+                    autofocus: widget.shouldAutofocus,
+                    onChanged: (_) => widget.onSearchChanged?.call(),
                     style: GoogleFonts.poppins(
                       color: Colors.black,
                       fontSize: 13,
@@ -87,10 +114,11 @@ class SearchFieldUI extends StatelessWidget {
               ],
             ),
           ),
-          if (predictionStrings.isNotEmpty && handlePredictionSelection != null)
+          if (widget.predictionStrings.isNotEmpty &&
+              widget.handlePredictionSelection != null)
             AutocompleteContainer(
-              predictionStrings: predictionStrings,
-              handlePredictionSelection: handlePredictionSelection!,
+              predictionStrings: widget.predictionStrings,
+              handlePredictionSelection: widget.handlePredictionSelection!,
             ),
         ],
       ),

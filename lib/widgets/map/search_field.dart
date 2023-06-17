@@ -15,6 +15,7 @@ class SearchField extends StatefulWidget {
   ) handlePredictionSelection;
   final void Function()? clearSearch;
   final places_sdk.LatLng? currentLocation;
+  final bool shouldAutofocus;
 
   const SearchField({
     Key? key,
@@ -22,6 +23,7 @@ class SearchField extends StatefulWidget {
     required this.handlePredictionSelection,
     this.mapController,
     this.clearSearch,
+    this.shouldAutofocus = false,
   }) : super(key: key);
 
   @override
@@ -145,6 +147,7 @@ class SearchFieldState extends State<SearchField> {
       predictionStrings: _predictionStrings,
       handlePredictionSelection: _handlePredictionSelection,
       clearPredictions: _clearPredictions,
+      shouldAutofocus: widget.shouldAutofocus,
     );
   }
 }

@@ -4,12 +4,13 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:nomad/screens/map_screen.dart';
 import 'package:nomad/screens/explore_screen.dart';
-import 'package:nomad/screens/camera_screen.dart';
 import 'package:nomad/screens/chats_screen.dart';
 import 'package:nomad/screens/profile_screen.dart';
 
+import 'package:nomad/screens/camera_screen.dart';
+
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _screens = [
     const MapScreen(),
     const ExploreScreen(),
-    const CameraScreen(),
+    Container(),
     const ChatsScreen(),
     const ProfileScreen(),
   ];
@@ -30,9 +31,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _selectedIndex == 2 ? Colors.black : Colors.white,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: _selectedIndex,
+            children: [
+              for (var screen in _screens) screen,
+            ],
+          ),
+          if (_selectedIndex == 2) // Only show the CameraScreen when selected
+            const CameraScreen(),
+        ],
       ),
       bottomNavigationBar: Container(
         color: _selectedIndex == 2 ? Colors.black : Colors.white,
