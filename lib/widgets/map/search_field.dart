@@ -147,6 +147,7 @@ class SearchFieldState extends State<SearchField> {
       predictionStrings: _predictionStrings,
       handlePredictionSelection: _handlePredictionSelection,
       clearPredictions: _clearPredictions,
+      shouldAutofocus: widget.shouldAutofocus,
     );
   }
 }
