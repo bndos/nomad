@@ -13,24 +13,20 @@ class CustomTabBar extends StatelessWidget {
 
     return Container(
       color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 42.0),
-        child: TabBar(
-          indicatorSize: TabBarIndicatorSize.label,
-          indicatorColor: Colors.black,
-          controller: controller,
-          tabs: icons.map((icon) {
-            return Tab(
-              height: 24,
-              iconMargin: const EdgeInsets.all(0),
-              icon: Icon(
-                icon,
-                color: Colors.black,
-                size: 20,
-              ),
-            );
-          }).toList(),
-        ),
+      child: TabBar(
+        indicatorColor: Colors.black,
+        controller: controller,
+        tabs: icons.map((icon) {
+          return Tab(
+            height: 24,
+            iconMargin: const EdgeInsets.all(0),
+            icon: Icon(
+              icon,
+              color: Colors.black,
+              size: 20,
+            ),
+          );
+        }).toList(),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/event_preview.dart';
+import 'package:nomad/widgets/gallery/grid_gallery.dart';
 import 'package:nomad/widgets/places/place_details.dart';
 import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
@@ -147,8 +148,8 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
           height: containerHeight,
           padding: const EdgeInsets.only(
             top: 16.0,
-            left: 16.0,
-            right: 16.0,
+            left: 4.0,
+            right: 4.0,
             bottom: 0.0,
           ),
           duration: const Duration(milliseconds: 500),
@@ -202,22 +203,65 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
                     Iconsax.video_circle,
                   ],
                 ),
-                if (events.isNotEmpty) ...[
-                  ConstrainedBox(
+                MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ConstrainedBox(
                     constraints: BoxConstraints(
                       maxHeight: MediaQuery.of(context).size.height - 200,
                       minHeight: 0,
                     ),
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: events.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final event = events[index];
-                        return EventPreview(event: event);
-                      },
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        if (events.isNotEmpty) ...[
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height - 200,
+                              minHeight: 0,
+                            ),
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: events.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final event = events[index];
+                                return EventPreview(event: event);
+                              },
+                            ),
+                          ),
+                        ],
+                        if (events.isEmpty)
+                          const Center(
+                            child: Text(
+                              'No events found',
+                            ),
+                          ),
+                        const GridGallery(
+                          imageUrls: [
+                            "https://picsum.photos/500/800?random=0",
+                            "https://picsum.photos/500/800?random=1",
+                            "https://picsum.photos/500/800?random=2",
+                            "https://picsum.photos/500/800?random=3",
+                            "https://picsum.photos/500/800?random=4",
+                            "https://picsum.photos/500/800?random=5",
+                            "https://picsum.photos/500/800?random=6",
+                            "https://picsum.photos/500/800?random=7",
+                            "https://picsum.photos/500/800?random=8",
+                            "https://picsum.photos/500/800?random=9",
+                            "https://picsum.photos/500/800?random=10",
+                          ],
+                          backgroundColor: Colors.white,
+                        ),
+                        const Center(
+                          child: Text(
+                            'No places found',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ],
             ),
           ),

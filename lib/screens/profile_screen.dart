@@ -6,6 +6,7 @@ import 'package:nomad/slivers/sliver_tab_header.dart';
 import 'package:nomad/widgets/appbar/title_app_bar.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/events_list_view.dart';
+import 'package:nomad/widgets/gallery/grid_gallery.dart';
 import 'package:nomad/widgets/profile/profile_details.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -76,12 +77,26 @@ class _ProfileScreenState extends State<ProfileScreen>
               children: [
                 // Sub events or linked events tab
                 EventsListView(events: events, emptyListText: 'No events yet'),
-
-                // Pictures tab
-                const SingleChildScrollView(
-                  child: Center(
-                    child: Text('Feed'),
-                  ),
+                const GridGallery(
+                  imageUrls: [
+                    "https://picsum.photos/500/800?random=0",
+                    "https://picsum.photos/500/800?random=1",
+                    "https://picsum.photos/500/800?random=2",
+                    "https://picsum.photos/500/800?random=3",
+                    "https://picsum.photos/500/800?random=4",
+                    "https://picsum.photos/500/800?random=5",
+                    "https://picsum.photos/500/800?random=6",
+                    "https://picsum.photos/500/800?random=7",
+                    "https://picsum.photos/500/800?random=8",
+                    "https://picsum.photos/500/800?random=9",
+                    "https://picsum.photos/500/800?random=11",
+                    "https://picsum.photos/500/800?random=12",
+                    "https://picsum.photos/500/800?random=13",
+                    "https://picsum.photos/500/800?random=14",
+                    "https://picsum.photos/500/800?random=15",
+                    "https://picsum.photos/500/800?random=16",
+                  ],
+                  backgroundColor: Colors.white,
                 ),
                 // Videos tab
                 const SingleChildScrollView(

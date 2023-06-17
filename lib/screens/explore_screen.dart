@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nomad/models/event/event.dart';
+import 'package:nomad/slivers/sliver_tab_header.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/event_preview.dart';
 import 'package:nomad/widgets/explore/explore_search_bar.dart';
@@ -98,7 +99,7 @@ class ExploreScreenState extends State<ExploreScreen>
               return [
                 SliverPersistentHeader(
                   pinned: true,
-                  delegate: _SliverAppBarDelegate(
+                  delegate: CustomSliverHeaderDelegate(
                     minHeight: headerHeight,
                     maxHeight: headerHeight,
                     child: ExploreSearchBar(
@@ -112,61 +113,70 @@ class ExploreScreenState extends State<ExploreScreen>
                 ),
               ];
             },
-            body: TabBarView(
-              controller: _tabController,
-              children: [
-                if (events.isNotEmpty) ...[
-                  OverflowBox(
-                    alignment: Alignment.topCenter,
-                    maxHeight: double.infinity,
-                    child: Column(
-                      children: [
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: MediaQuery.of(context).size.height - 100,
-                            minHeight: 0,
+            body: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  if (events.isNotEmpty) ...[
+                    OverflowBox(
+                      alignment: Alignment.topCenter,
+                      maxHeight: double.infinity,
+                      child: Column(
+                        children: [
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height,
+                              minHeight: 0,
+                            ),
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: events.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final event = events[index];
+                                return EventPreview(event: event);
+                              },
+                            ),
                           ),
-                          child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: events.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final event = events[index];
-                              return EventPreview(event: event);
-                            },
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (events.isEmpty)
+                    const Center(
+                      child: Text(
+                        'No events found',
+                      ),
+                    ),
+                  const GridGallery(
+                    imageUrls: [
+                      "https://picsum.photos/500/800?random=0",
+                      "https://picsum.photos/500/800?random=1",
+                      "https://picsum.photos/500/800?random=2",
+                      "https://picsum.photos/500/800?random=3",
+                      "https://picsum.photos/500/800?random=4",
+                      "https://picsum.photos/500/800?random=5",
+                      "https://picsum.photos/500/800?random=6",
+                      "https://picsum.photos/500/800?random=7",
+                      "https://picsum.photos/500/800?random=8",
+                      "https://picsum.photos/500/800?random=9",
+                      "https://picsum.photos/500/800?random=11",
+                      "https://picsum.photos/500/800?random=12",
+                      "https://picsum.photos/500/800?random=13",
+                      "https://picsum.photos/500/800?random=14",
+                      "https://picsum.photos/500/800?random=15",
+                      "https://picsum.photos/500/800?random=16",
+                    ],
+                    backgroundColor: Colors.white,
+                  ),
+                  const Center(
+                    child: Text(
+                      'No places found',
                     ),
                   ),
                 ],
-                if (events.isEmpty)
-                  const Center(
-                    child: Text(
-                      'No events found',
-                    ),
-                  ),
-                GridGallery(
-                  imageUrls: const [
-                    "https://picsum.photos/500/800?random=0",
-                    "https://picsum.photos/500/800?random=1",
-                    "https://picsum.photos/500/800?random=2",
-                    "https://picsum.photos/500/800?random=3",
-                    "https://picsum.photos/500/800?random=4",
-                    "https://picsum.photos/500/800?random=5",
-                    "https://picsum.photos/500/800?random=6",
-                    "https://picsum.photos/500/800?random=7",
-                    "https://picsum.photos/500/800?random=8",
-                    "https://picsum.photos/500/800?random=9",
-                    "https://picsum.photos/500/800?random=10",
-                  ],
-                  backgroundColor: Colors.grey.shade100,
-                ),
-                const Center(
-                  child: Text(
-                    'No places found',
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -177,39 +187,5 @@ class ExploreScreenState extends State<ExploreScreen>
         onPressed: () => _openEventForm(context),
       ),
     );
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  final double minHeight;
-  final double maxHeight;
-  final Widget child;
-
-  _SliverAppBarDelegate({
-    required this.minHeight,
-    required this.maxHeight,
-    required this.child,
-  });
-
-  @override
-  double get minExtent => minHeight;
-
-  @override
-  double get maxExtent => maxHeight;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return SizedBox.expand(child: child);
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight ||
-        child != oldDelegate.child;
   }
 }
