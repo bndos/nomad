@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
-class SliverTabHeader extends SliverPersistentHeaderDelegate {
+class CustomSliverHeader extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final double maxHeight;
   final Widget child;
 
-  SliverTabHeader({
+  CustomSliverHeader({
     required this.minHeight,
     required this.maxHeight,
     required this.child,
@@ -28,7 +29,7 @@ class SliverTabHeader extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(SliverTabHeader oldDelegate) {
+  bool shouldRebuild(CustomSliverHeader oldDelegate) {
     return maxHeight != oldDelegate.maxHeight ||
         minHeight != oldDelegate.minHeight ||
         child != oldDelegate.child;
@@ -47,43 +48,19 @@ class SliverTabHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverPersistentHeader(
       pinned: true,
-      delegate: SliverTabHeader(
+      delegate: CustomSliverHeader(
         minHeight: 48.0,
         maxHeight: 48.0,
         child: Container(
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 42.0),
-            child: TabBar(
-              indicatorSize: TabBarIndicatorSize.label,
-              indicatorColor: Colors.black,
-              controller: tabController,
-              tabs: const [
-                Tab(
-                  height: 24,
-                  iconMargin: EdgeInsets.all(0),
-                  icon: Icon(
-                    Iconsax.link,
-                    color: Colors.black,
-                    size: 20,
-                  ),
-                ),
-                Tab(
-                  height: 24,
-                  icon: Icon(
-                    Iconsax.grid_1,
-                    color: Colors.black,
-                    size: 20,
-                  ),
-                ),
-                Tab(
-                  height: 24,
-                  icon: Icon(
-                    Iconsax.video_circle,
-                    color: Colors.black,
-                    size: 20,
-                  ),
-                ),
+            child: CustomTabBar(
+              tabController: tabController,
+              icons: const [
+                Iconsax.link,
+                Iconsax.grid_1,
+                Iconsax.video_circle,
               ],
             ),
           ),
