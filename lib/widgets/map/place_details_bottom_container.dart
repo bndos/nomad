@@ -30,8 +30,9 @@ class PlaceDetailsContainer extends StatefulWidget {
 
 class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
     with TickerProviderStateMixin {
-  double containerHeight = 200.0; // Initial height of the container
-  double dragOffset = 0.0; // Offset for tracking the drag gesture
+  double previousHeight = 200.0;
+  double containerHeight = 200.0;
+  double dragOffset = 0.0;
   List<Event> events = [];
   late AnimationController _animationController;
   late SpringDescription _spring;
@@ -81,6 +82,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
 
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
     setState(() {
+      previousHeight = containerHeight;
       containerHeight -= details.delta.dy;
     });
   }
@@ -95,19 +97,34 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
 
     final snapPoints = [0.0, 200.0, screenHeight * 1 / 2, availableHeight];
     final currentHeight = containerHeight;
-    final closestSnapPoint = snapPoints.reduce((prev, point) {
-      if ((currentHeight - prev).abs() < (currentHeight - point).abs()) {
-        return prev;
-      } else {
-        return point;
+    final dragVelocity = currentHeight - previousHeight;
+
+    double closestSnapPoint = currentHeight;
+
+    if (dragVelocity > 0) {
+      // Dragging downwards
+      for (final point in snapPoints) {
+        if (point > currentHeight) {
+          closestSnapPoint = point;
+          break;
+        }
       }
-    });
+    } else {
+      // Dragging upwards
+      for (var i = snapPoints.length - 1; i >= 0; i--) {
+        final point = snapPoints[i];
+        if (point < currentHeight) {
+          closestSnapPoint = point;
+          break;
+        }
+      }
+    }
 
     final simulation = SpringSimulation(
       _spring,
       containerHeight,
       closestSnapPoint,
-      1000 * details.velocity.pixelsPerSecond.dy,
+      details.velocity.pixelsPerSecond.dy,
     );
     containerHeight = closestSnapPoint;
     _animationController.animateWith(simulation);
