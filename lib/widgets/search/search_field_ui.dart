@@ -33,12 +33,17 @@ class _SearchFieldUIState extends State<SearchFieldUI> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {});
   }
 
   @override
