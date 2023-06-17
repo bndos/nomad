@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _screens = [
     const MapScreen(),
     const ExploreScreen(),
-    const CameraScreen(),
+    Container(),
     const ChatsScreen(),
     const ProfileScreen(),
   ];
