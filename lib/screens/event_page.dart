@@ -7,6 +7,7 @@ import 'package:nomad/widgets/appbar/title_app_bar.dart';
 import 'package:nomad/widgets/events/event_details.dart';
 import 'package:nomad/widgets/events/event_form.dart';
 import 'package:nomad/widgets/events/events_list_view.dart';
+import 'package:nomad/widgets/gallery/grid_gallery.dart';
 
 class EventPage extends StatefulWidget {
   final Event event;
@@ -89,11 +90,21 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
               // Sub events or linked events tab
               EventsListView(events: events, emptyListText: 'No sub events'),
 
-              // Pictures tab
-              const SingleChildScrollView(
-                child: Center(
-                  child: Text('Feed'),
-                ),
+              const GridGallery(
+                imageUrls: [
+                  "https://picsum.photos/500/800?random=0",
+                  "https://picsum.photos/500/800?random=1",
+                  "https://picsum.photos/500/800?random=2",
+                  "https://picsum.photos/500/800?random=3",
+                  "https://picsum.photos/500/800?random=4",
+                  "https://picsum.photos/500/800?random=5",
+                  "https://picsum.photos/500/800?random=6",
+                  "https://picsum.photos/500/800?random=7",
+                  "https://picsum.photos/500/800?random=8",
+                  "https://picsum.photos/500/800?random=9",
+                  "https://picsum.photos/500/800?random=10",
+                ],
+                backgroundColor: Colors.white,
               ),
               // Videos tab
               const SingleChildScrollView(
