@@ -411,6 +411,7 @@ class EventFormState extends State<EventForm> {
                       margin:
                           const EdgeInsets.only(right: 20, left: 20, top: 50),
                       child: SearchField(
+                        shouldAutofocus: true,
                         currentLocation: _currentLocation,
                         handlePredictionSelection: _handlePredictionSelection,
                         clearSearch: _clearSearch,
