@@ -49,12 +49,12 @@ class GridGallery extends StatelessWidget {
             ),
             child: GridView.builder(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: imageUrls.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3, // Adjust the number of columns as needed
-                crossAxisSpacing: 8.0, // Adjust the spacing between columns
-                mainAxisSpacing: 8.0, // Adjust the spacing between rows
+                crossAxisSpacing: 1.0, // Adjust the spacing between columns
+                mainAxisSpacing: 1.0, // Adjust the spacing between rows
               ),
               itemBuilder: (context, index) {
                 final imageUrl = imageUrls[index];
