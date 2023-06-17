@@ -37,7 +37,9 @@ class CameraScreenState extends State<CameraScreen> {
   Future<void> _initializeCamera({
     CameraLensDirection lensDirection = CameraLensDirection.back,
   }) async {
-    cameras = await availableCameras();
+    if (cameras.isEmpty) {
+      cameras = await availableCameras();
+    }
 
     final backCamera = cameras.firstWhere(
       (camera) => camera.lensDirection == lensDirection,
@@ -59,10 +61,6 @@ class CameraScreenState extends State<CameraScreen> {
       });
     } catch (error) {
       // TODO: Handle camera initialization error
-    }
-
-    if (mounted) {
-      setState(() {});
     }
   }
 
@@ -107,12 +105,6 @@ class CameraScreenState extends State<CameraScreen> {
     if (!_isCameraInitialized) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 3,
-            color: Colors.white,
-          ),
-        ),
       );
     }
 
@@ -230,7 +222,7 @@ class CapturedImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        //iconbutton X to nullyfy the image
+        //iconbutton X to nullify the image
         Image.file(
           height: MediaQuery.of(context).size.height,
           File(imagePath),
