@@ -120,6 +120,8 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       }
     }
 
+    closestSnapPoint = closestSnapPoint.clamp(0.0, availableHeight);
+
     final simulation = SpringSimulation(
       _spring,
       containerHeight,
