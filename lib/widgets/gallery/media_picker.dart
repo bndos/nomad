@@ -1,4 +1,3 @@
-// statefullwidget MediaPicker
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -50,29 +49,32 @@ class _MediaPickerState extends State<MediaPicker> {
             color: Colors.black,
           ),
         ),
-        centerWidget: TextButton.icon(
-          onPressed: () {
-            // Handle button press
-          },
-          icon: const Icon(
-            FontAwesomeIcons.chevronDown,
-            color: Colors.white,
-            size: 10,
-          ),
-          label: Text(
-            album?.name ?? 'No album',
-            style: const TextStyle(
+        centerWidget: SizedBox(
+          height: 30,
+          child: TextButton.icon(
+            onPressed: () {
+              // Handle album selection
+            },
+            icon: const Icon(
+              FontAwesomeIcons.chevronDown,
               color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
+              size: 10,
             ),
-          ),
-          style: TextButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+            label: Text(
+              album?.name ?? 'No album',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            backgroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              backgroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+            ),
           ),
         ),
         rightWidget: IconButton(
