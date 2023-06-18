@@ -6,6 +6,7 @@ import 'package:nomad/models/event/event.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
 import 'package:nomad/widgets/gallery/grid_gallery.dart';
+import 'package:nomad/widgets/gallery/media_gallery.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 import 'package:nomad/widgets/map/search_field.dart';
 import 'package:time_range_picker/time_range_picker.dart';
@@ -217,6 +218,26 @@ class EventFormState extends State<EventForm> {
     });
   }
 
+  Future<void> _handleAddPictureAction() async {
+    // final media =
+    await showModalBottomSheet<List<Media>>(
+      context: context,
+      builder: (context) {
+        return MediaGalleryWidget(
+          onMediaSelected: (media) {
+            Navigator.of(context).pop([media]);
+          },
+        );
+      },
+    );
+
+    // if (media != null && media.isNotEmpty) {
+    //   setState(() {
+    //     selectedMedia.addAll(media);
+    //   });
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -335,8 +356,9 @@ class EventFormState extends State<EventForm> {
                                     RoundedIconButton(
                                       icon: FontAwesomeIcons.plus,
                                       label: 'Add Picture',
-                                      onPressed: () {
+                                      onPressed: () async {
                                         // TODO: Handle add picture action
+                                        await _handleAddPictureAction();
                                       },
                                     ),
                                   ],
