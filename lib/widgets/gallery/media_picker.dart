@@ -1,8 +1,10 @@
 // statefullwidget MediaPicker
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:nomad/services/media_service.dart';
+import 'package:nomad/widgets/appbar/custom_app_bar.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaPicker extends StatefulWidget {
@@ -37,48 +39,66 @@ class _MediaPickerState extends State<MediaPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          title: DropdownButton<AssetPathEntity>(
-            value: album,
-            onChanged: (AssetPathEntity? value) {
-              setState(() {
-                album = value;
-              });
-              MediaService().loadAssets(album!).then((value) {
-                setState(() {
-                  assets = value;
-                });
-              });
-            },
-            items: albums.map<DropdownMenuItem<AssetPathEntity>>((value) {
-              return DropdownMenuItem<AssetPathEntity>(
-                value: value,
-                child: Text(value.name),
-              );
-            }).toList(),
+    return Scaffold(
+      appBar: CustomAppBar(
+        leftWidget: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Iconsax.arrow_left_2,
+            color: Colors.black,
           ),
         ),
-        body: assets.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            : GridView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: assets.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
-                itemBuilder: (context, index) {
-                  AssetEntity asset = assets[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: assetWidget(asset),
-                  );
-                },
-              ),
+        centerWidget: TextButton.icon(
+          onPressed: () {
+            // Handle button press
+          },
+          icon: const Icon(
+            FontAwesomeIcons.chevronDown,
+            color: Colors.white,
+            size: 10,
+          ),
+          label: Text(
+            album?.name ?? 'No album',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            backgroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+          ),
+        ),
+        rightWidget: IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Iconsax.tick_circle,
+            color: Colors.black,
+          ),
+        ),
       ),
+      body: assets.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : GridView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: assets.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+              ),
+              itemBuilder: (context, index) {
+                AssetEntity asset = assets[index];
+                return Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: assetWidget(asset),
+                );
+              },
+            ),
     );
   }
 
