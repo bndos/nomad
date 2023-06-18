@@ -6,11 +6,13 @@ import 'package:nomad/models/event/event.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
 import 'package:nomad/widgets/gallery/grid_gallery.dart';
-import 'package:nomad/widgets/gallery/media_gallery.dart';
+import 'package:nomad/widgets/gallery/media_picker.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 import 'package:nomad/widgets/map/search_field.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:time_range_picker/time_range_picker.dart';
-import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
+    as places_sdk;
 
 import 'package:intl/intl.dart';
 
@@ -47,7 +49,7 @@ class EventFormState extends State<EventForm> {
   bool _isSearchingPlace = false;
   final DateWrapper _startDateWrapper = DateWrapper();
   final DateWrapper _endDateWrapper = DateWrapper();
-  LatLng? _currentLocation;
+  places_sdk.LatLng? _currentLocation;
   String _currentPlaceDistance = '';
   String _currentPlaceName = '';
 
@@ -98,17 +100,17 @@ class EventFormState extends State<EventForm> {
 
   void _handlePredictionSelection(
     int? index,
-    List<AutocompletePrediction> predictions,
+    List<places_sdk.AutocompletePrediction> predictions,
   ) async {
     if (index != null) {
       final prediction = predictions[index];
       final details = await PlacesService.places!.fetchPlace(
         prediction.placeId,
         fields: [
-          PlaceField.Types,
-          PlaceField.Name,
-          PlaceField.Address,
-          PlaceField.Location,
+          places_sdk.PlaceField.Types,
+          places_sdk.PlaceField.Name,
+          places_sdk.PlaceField.Address,
+          places_sdk.PlaceField.Location,
         ],
       );
 
@@ -210,7 +212,7 @@ class EventFormState extends State<EventForm> {
     }
 
     setState(() {
-      _currentLocation = LatLng(
+      _currentLocation = places_sdk.LatLng(
         lat: position.latitude,
         lng: position.longitude,
       );
@@ -220,15 +222,12 @@ class EventFormState extends State<EventForm> {
 
   Future<void> _handleAddPictureAction() async {
     // final media =
-    await showModalBottomSheet<List<Media>>(
-      context: context,
-      builder: (context) {
-        return MediaGalleryWidget(
-          onMediaSelected: (media) {
-            Navigator.of(context).pop([media]);
-          },
-        );
-      },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            const MediaPicker(requestType: RequestType.common),
+      ),
     );
 
     // if (media != null && media.isNotEmpty) {
