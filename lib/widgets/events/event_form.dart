@@ -402,19 +402,7 @@ class EventFormState extends State<EventForm> {
                                       .text.capitalizeFirst!,
                                   details: _eventDescriptionController
                                       .text.capitalizeFirst!,
-                                  imageUrls: [
-                                    "https://picsum.photos/500/800?random=0",
-                                    "https://picsum.photos/500/800?random=1",
-                                    "https://picsum.photos/500/800?random=2",
-                                    "https://picsum.photos/500/800?random=3",
-                                    "https://picsum.photos/500/800?random=4",
-                                    "https://picsum.photos/500/800?random=5",
-                                    "https://picsum.photos/500/800?random=6",
-                                    "https://picsum.photos/500/800?random=7",
-                                    "https://picsum.photos/500/800?random=8",
-                                    "https://picsum.photos/500/800?random=9",
-                                    "https://picsum.photos/500/800?random=10",
-                                  ],
+                                  imageUrls: _imageUrls,
                                 );
 
                                 // call handler to create event
