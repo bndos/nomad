@@ -114,31 +114,29 @@ class CameraScreenState extends State<CameraScreen> {
         children: [
           if (_isCameraInitialized)
             Padding(
-              padding: const EdgeInsets.only(top: 15),
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
               child: Center(
                 child: Container(
                   color: Colors.black,
-                  height: MediaQuery.of(context).size.height,
-                  child: SafeArea(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: _capturedImage != null
-                          ? CapturedImage(
-                              imagePath: _capturedImage!.path,
-                              clearImagePreview: _clearImagePreview,
-                            )
-                          : CameraPreviewWidget(
-                              cameraController: _cameraController!,
-                              onFlashToggle: () {
-                                setState(() {
-                                  _isFlashOn = !_isFlashOn;
-                                });
-                              },
-                              onCapturePhoto: _capturePhoto,
-                              onCameraToggle: _toggleCamera,
-                              isFlashOn: _isFlashOn,
-                            ),
-                    ),
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: _capturedImage != null
+                        ? CapturedImage(
+                            imagePath: _capturedImage!.path,
+                            clearImagePreview: _clearImagePreview,
+                          )
+                        : CameraPreviewWidget(
+                            cameraController: _cameraController!,
+                            onFlashToggle: () {
+                              setState(() {
+                                _isFlashOn = !_isFlashOn;
+                              });
+                            },
+                            onCapturePhoto: _capturePhoto,
+                            onCameraToggle: _toggleCamera,
+                            isFlashOn: _isFlashOn,
+                          ),
                   ),
                 ),
               ),
@@ -225,6 +223,7 @@ class CapturedImage extends StatelessWidget {
         //iconbutton X to nullify the image
         Image.file(
           height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           File(imagePath),
           fit: BoxFit.fill,
         ),
