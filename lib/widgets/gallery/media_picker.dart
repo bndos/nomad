@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:nomad/services/media_service.dart';
 import 'package:nomad/widgets/appbar/custom_app_bar.dart';
-import 'package:nomad/widgets/gallery/album_bottom_sheet.dart';
+import 'package:nomad/widgets/gallery/album_picker_sheet.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaPicker extends StatefulWidget {
@@ -41,7 +41,7 @@ class _MediaPickerState extends State<MediaPicker> {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlbumBottomSheet(
+        return AlbumPickerSheet(
           selectedAlbum: album!,
           albums: albums,
           onAlbumSelected: (selectedAlbum) {
@@ -70,7 +70,7 @@ class _MediaPickerState extends State<MediaPicker> {
             Navigator.pop(context);
           },
           icon: const Icon(
-            Iconsax.arrow_left_2,
+            Icons.chevron_left,
             color: Colors.black,
           ),
         ),
@@ -103,13 +103,15 @@ class _MediaPickerState extends State<MediaPicker> {
             ),
           ),
         ),
-        rightWidget: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Iconsax.tick_circle,
-            color: Colors.black,
-          ),
-        ),
+        rightWidget: selectedAssets.isNotEmpty
+            ? IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.check_circle,
+                  color: Colors.black,
+                ),
+              )
+            : Container(),
       ),
       body: assets.isEmpty
           ? const Center(child: CircularProgressIndicator())
