@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:nomad/services/media_service.dart';
 import 'package:nomad/widgets/appbar/custom_app_bar.dart';
+import 'package:nomad/widgets/gallery/album_bottom_sheet.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class MediaPicker extends StatefulWidget {
@@ -36,6 +37,30 @@ class _MediaPickerState extends State<MediaPicker> {
     super.initState();
   }
 
+  void _showAlbumBottomSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlbumBottomSheet(
+          selectedAlbum: album!,
+          albums: albums,
+          onAlbumSelected: (selectedAlbum) {
+            setState(() {
+              album = selectedAlbum;
+              assets.clear();
+            });
+            MediaService().loadAssets(album!).then((value) {
+              setState(() {
+                assets = value;
+              });
+            });
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +79,7 @@ class _MediaPickerState extends State<MediaPicker> {
           child: TextButton.icon(
             onPressed: () {
               // Handle album selection
+              _showAlbumBottomSheet();
             },
             icon: const Icon(
               FontAwesomeIcons.chevronDown,
