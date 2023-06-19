@@ -6,10 +6,13 @@ import 'package:nomad/models/event/event.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
 import 'package:nomad/widgets/gallery/grid_gallery.dart';
+import 'package:nomad/widgets/gallery/media_picker.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 import 'package:nomad/widgets/map/search_field.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:time_range_picker/time_range_picker.dart';
-import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
+    as places_sdk;
 
 import 'package:intl/intl.dart';
 
@@ -46,9 +49,10 @@ class EventFormState extends State<EventForm> {
   bool _isSearchingPlace = false;
   final DateWrapper _startDateWrapper = DateWrapper();
   final DateWrapper _endDateWrapper = DateWrapper();
-  LatLng? _currentLocation;
+  places_sdk.LatLng? _currentLocation;
   String _currentPlaceDistance = '';
   String _currentPlaceName = '';
+  final List<String> _imageUrls = [];
 
   @override
   void initState() {
@@ -97,17 +101,17 @@ class EventFormState extends State<EventForm> {
 
   void _handlePredictionSelection(
     int? index,
-    List<AutocompletePrediction> predictions,
+    List<places_sdk.AutocompletePrediction> predictions,
   ) async {
     if (index != null) {
       final prediction = predictions[index];
       final details = await PlacesService.places!.fetchPlace(
         prediction.placeId,
         fields: [
-          PlaceField.Types,
-          PlaceField.Name,
-          PlaceField.Address,
-          PlaceField.Location,
+          places_sdk.PlaceField.Types,
+          places_sdk.PlaceField.Name,
+          places_sdk.PlaceField.Address,
+          places_sdk.PlaceField.Location,
         ],
       );
 
@@ -209,12 +213,44 @@ class EventFormState extends State<EventForm> {
     }
 
     setState(() {
-      _currentLocation = LatLng(
+      _currentLocation = places_sdk.LatLng(
         lat: position.latitude,
         lng: position.longitude,
       );
       _isSearchingPlace = true;
     });
+  }
+
+  Future<void> _handleSelectedAssets(List<AssetEntity> selectedAssets) async {
+    if (selectedAssets.isNotEmpty) {
+      List<String> filePaths = [];
+      for (var asset in selectedAssets) {
+        final filePath = await asset.file;
+        filePaths.add(filePath!.path);
+      }
+      setState(() {
+        _imageUrls.addAll(filePaths);
+      });
+    }
+  }
+
+  Future<void> _handleAddPictureAction() async {
+    // final media =
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MediaPicker(
+          requestType: RequestType.common,
+          onHandleSelectedAssets: _handleSelectedAssets,
+        ),
+      ),
+    );
+
+    // if (media != null && media.isNotEmpty) {
+    //   setState(() {
+    //     selectedMedia.addAll(media);
+    //   });
+    // }
   }
 
   @override
@@ -229,181 +265,155 @@ class EventFormState extends State<EventForm> {
               child: Stack(
                 children: [
                   Container(
-                    margin: const EdgeInsets.only(top: 50, left: 10, right: 10),
+                    margin: const EdgeInsets.only(top: 50, left: 5, right: 5),
                     color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              if (_currentPlaceName.isNotEmpty)
-                                RoundedIconButton(
-                                  icon: FontAwesomeIcons.locationArrow,
-                                  label:
-                                      '$_currentPlaceName ($_currentPlaceDistance)',
-                                  onPressed: () async {
-                                    await _onSelectPlacePressed();
-                                  },
-                                  color: const Color(0xFFE6F0FF),
-                                  iconColor: const Color(0xFF4D8AF0),
-                                ),
-                              if (_currentPlaceName.isEmpty)
-                                RoundedIconButton(
-                                  icon: FontAwesomeIcons.locationArrow,
-                                  label: 'Select a place',
-                                  iconColor: const Color(0xFF4D8AF0),
-                                  onPressed: () async {
-                                    await _onSelectPlacePressed();
-                                  },
-                                ),
-                              IconButton(
-                                padding: const EdgeInsets.all(0),
-                                icon: const Icon(FontAwesomeIcons.xmark),
-                                onPressed: () {
-                                  // Close the modal when the close button is pressed
-                                  Navigator.of(context).pop();
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            if (_currentPlaceName.isNotEmpty)
+                              RoundedIconButton(
+                                icon: FontAwesomeIcons.locationArrow,
+                                label:
+                                    '$_currentPlaceName ($_currentPlaceDistance)',
+                                onPressed: () async {
+                                  await _onSelectPlacePressed();
                                 },
-                                iconSize: 16,
+                                color: const Color(0xFFE6F0FF),
+                                iconColor: const Color(0xFF4D8AF0),
                               ),
-                            ],
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 24),
-                                  CustomTextField(
-                                    controller: _eventNameController,
-                                    focusNode: _eventNameFocusNode,
-                                    isTextFieldFocused: _isEventNameFocused,
-                                    label: 'Event Name',
-                                  ),
-                                  const SizedBox(height: 24),
-                                  CustomTextField(
-                                    controller: _eventDescriptionController,
-                                    focusNode: _eventDescriptionFocusNode,
-                                    isTextFieldFocused:
-                                        _isEventDescriptionFocused,
-                                    label: 'Event Details',
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    children: [
-                                      RoundedIconButton(
-                                        icon: FontAwesomeIcons.calendar,
-                                        textLabel: 'Start date',
-                                        label: _startDateWrapper.date != null
-                                            ? DateFormat('yyyy-MM-dd HH:mm')
-                                                .format(_startDateWrapper.date!)
-                                            : 'Select Date',
-                                        onPressed: () => _selectDate(
-                                          context,
-                                          _startDateWrapper,
-                                        ),
-                                      ),
-                                      RoundedIconButton(
-                                        icon: FontAwesomeIcons.calendar,
-                                        textLabel: 'End date',
-                                        label: _endDateWrapper.date != null
-                                            ? DateFormat('yyyy-MM-dd HH:mm')
-                                                .format(_endDateWrapper.date!)
-                                            : 'Select Date',
-                                        onPressed: () => _selectDate(
-                                          context,
-                                          _endDateWrapper,
-                                          initialDate: _startDateWrapper.date,
-                                        ),
-                                        isDisabled:
-                                            _startDateWrapper.date == null,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      RoundedIconButton(
-                                        icon: FontAwesomeIcons.camera,
-                                        label: 'Take Picture',
-                                        onPressed: () {
-                                          // TODO: Handle take picture action
-                                        },
-                                      ),
-                                      const SizedBox(width: 10),
-                                      RoundedIconButton(
-                                        icon: FontAwesomeIcons.plus,
-                                        label: 'Add Picture',
-                                        onPressed: () {
-                                          // TODO: Handle add picture action
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const GridGallery(
-                                    imageUrls: [
-                                      "https://picsum.photos/500/800?random=0",
-                                      "https://picsum.photos/500/800?random=1",
-                                      "https://picsum.photos/500/800?random=2",
-                                      "https://picsum.photos/500/800?random=3",
-                                      "https://picsum.photos/500/800?random=4",
-                                      "https://picsum.photos/500/800?random=5",
-                                      "https://picsum.photos/500/800?random=6",
-                                      "https://picsum.photos/500/800?random=7",
-                                      "https://picsum.photos/500/800?random=8",
-                                      "https://picsum.photos/500/800?random=9",
-                                      "https://picsum.photos/500/800?random=10",
-                                    ],
-                                    backgroundColor: lightGreyColor,
-                                  ),
-                                  const SizedBox(height: 16),
-                                ],
+                            if (_currentPlaceName.isEmpty)
+                              RoundedIconButton(
+                                icon: FontAwesomeIcons.locationArrow,
+                                label: 'Select a place',
+                                iconColor: const Color(0xFF4D8AF0),
+                                onPressed: () async {
+                                  await _onSelectPlacePressed();
+                                },
                               ),
+                            IconButton(
+                              padding: const EdgeInsets.all(0),
+                              icon: const Icon(FontAwesomeIcons.xmark),
+                              onPressed: () {
+                                // Close the modal when the close button is pressed
+                                Navigator.of(context).pop();
+                              },
+                              iconSize: 16,
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 24),
+                                CustomTextField(
+                                  controller: _eventNameController,
+                                  focusNode: _eventNameFocusNode,
+                                  isTextFieldFocused: _isEventNameFocused,
+                                  label: 'Event Name',
+                                ),
+                                const SizedBox(height: 24),
+                                CustomTextField(
+                                  controller: _eventDescriptionController,
+                                  focusNode: _eventDescriptionFocusNode,
+                                  isTextFieldFocused:
+                                      _isEventDescriptionFocused,
+                                  label: 'Event Details',
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    RoundedIconButton(
+                                      icon: FontAwesomeIcons.calendar,
+                                      textLabel: 'Start date',
+                                      label: _startDateWrapper.date != null
+                                          ? DateFormat('yyyy-MM-dd HH:mm')
+                                              .format(_startDateWrapper.date!)
+                                          : 'Select Date',
+                                      onPressed: () => _selectDate(
+                                        context,
+                                        _startDateWrapper,
+                                      ),
+                                    ),
+                                    RoundedIconButton(
+                                      icon: FontAwesomeIcons.calendar,
+                                      textLabel: 'End date',
+                                      label: _endDateWrapper.date != null
+                                          ? DateFormat('yyyy-MM-dd HH:mm')
+                                              .format(_endDateWrapper.date!)
+                                          : 'Select Date',
+                                      onPressed: () => _selectDate(
+                                        context,
+                                        _endDateWrapper,
+                                        initialDate: _startDateWrapper.date,
+                                      ),
+                                      isDisabled:
+                                          _startDateWrapper.date == null,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    RoundedIconButton(
+                                      icon: FontAwesomeIcons.camera,
+                                      label: 'Take Picture',
+                                      onPressed: () {
+                                        // TODO: Handle take picture action
+                                      },
+                                    ),
+                                    const SizedBox(width: 10),
+                                    RoundedIconButton(
+                                      icon: FontAwesomeIcons.plus,
+                                      label: 'Add Picture',
+                                      onPressed: () async {
+                                        // TODO: Handle add picture action
+                                        await _handleAddPictureAction();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                GridGallery(
+                                  imageUrls: _imageUrls,
+                                  backgroundColor: lightGreyColor,
+                                ),
+                                const SizedBox(height: 16),
+                              ],
                             ),
                           ),
-                          Row(
-                            children: [
-                              RoundedIconButton(
-                                icon: FontAwesomeIcons.floppyDisk,
-                                label: 'Create Event',
-                                onPressed: () {
-                                  Event event = Event(
-                                    placeName: _currentPlaceName,
-                                    startTime: _startDateWrapper.date,
-                                    endTime: _endDateWrapper.date,
-                                    name: _eventNameController
-                                        .text.capitalizeFirst!,
-                                    details: _eventDescriptionController
-                                        .text.capitalizeFirst!,
-                                    imageUrls: [
-                                      "https://picsum.photos/500/800?random=0",
-                                      "https://picsum.photos/500/800?random=1",
-                                      "https://picsum.photos/500/800?random=2",
-                                      "https://picsum.photos/500/800?random=3",
-                                      "https://picsum.photos/500/800?random=4",
-                                      "https://picsum.photos/500/800?random=5",
-                                      "https://picsum.photos/500/800?random=6",
-                                      "https://picsum.photos/500/800?random=7",
-                                      "https://picsum.photos/500/800?random=8",
-                                      "https://picsum.photos/500/800?random=9",
-                                      "https://picsum.photos/500/800?random=10",
-                                    ],
-                                  );
+                        ),
+                        Row(
+                          children: [
+                            RoundedIconButton(
+                              icon: FontAwesomeIcons.floppyDisk,
+                              label: 'Create Event',
+                              onPressed: () {
+                                Event event = Event(
+                                  placeName: _currentPlaceName,
+                                  startTime: _startDateWrapper.date,
+                                  endTime: _endDateWrapper.date,
+                                  name: _eventNameController
+                                      .text.capitalizeFirst!,
+                                  details: _eventDescriptionController
+                                      .text.capitalizeFirst!,
+                                  imageUrls: _imageUrls,
+                                );
 
-                                  // call handler to create event
-                                  widget.onEventCreated(event);
-                                  // close modal
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                                // call handler to create event
+                                widget.onEventCreated(event);
+                                // close modal
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   if (_isSearchingPlace && _currentLocation != null)

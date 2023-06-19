@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:nomad/widgets/gallery/image_loader.dart';
 
 class GridGallery extends StatelessWidget {
   final List<String> imageUrls;
@@ -40,8 +40,7 @@ class GridGallery extends StatelessWidget {
 
         if (snapshot.connectionState == ConnectionState.done) {
           final double screenWidth = MediaQuery.of(context).size.width;
-          final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) /
-              3; // Adjust the spacing as needed
+          final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) / 3;
 
           return Container(
             decoration: BoxDecoration(
@@ -52,31 +51,22 @@ class GridGallery extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               itemCount: imageUrls.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Adjust the number of columns as needed
-                crossAxisSpacing: 1.0, // Adjust the spacing between columns
-                mainAxisSpacing: 1.0, // Adjust the spacing between rows
+                crossAxisCount: 3,
+                crossAxisSpacing: 1.0,
+                mainAxisSpacing: 1.0,
               ),
               itemBuilder: (context, index) {
                 final imageUrl = imageUrls[index];
 
-                return ClipRRect(
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    cacheManager: cacheManager,
-                    fit: BoxFit.cover,
-                    width: itemSize,
-                    height: itemSize,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
+                return ImageLoader(
+                  imageUrl: imageUrl,
+                  width: itemSize,
+                  height: itemSize,
                 );
               },
             ),
           );
         } else {
-          // Cache manager is still initializing, show a loading indicator or placeholder
           return const CircularProgressIndicator();
         }
       },
@@ -84,6 +74,8 @@ class GridGallery extends StatelessWidget {
   }
 
   Future<void> _initializeCacheManager(DefaultCacheManager cacheManager) async {
-    await cacheManager.getFileFromCache(imageUrls[0]);
+    if (imageUrls.isNotEmpty && imageUrls[0].startsWith('http')) {
+      await cacheManager.getFileFromCache(imageUrls[0]);
+    }
   }
 }
