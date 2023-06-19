@@ -9,7 +9,12 @@ import 'package:photo_manager/photo_manager.dart';
 
 class MediaPicker extends StatefulWidget {
   final RequestType requestType;
-  const MediaPicker({super.key, required this.requestType});
+  final void Function(List<AssetEntity> selectedAssets) onHandleSelectedAssets;
+  const MediaPicker({
+    super.key,
+    required this.requestType,
+    required this.onHandleSelectedAssets,
+  });
 
   @override
   State<MediaPicker> createState() => _MediaPickerState();
@@ -105,7 +110,10 @@ class _MediaPickerState extends State<MediaPicker> {
         ),
         rightWidget: selectedAssets.isNotEmpty
             ? IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  widget.onHandleSelectedAssets(selectedAssets);
+                  Navigator.pop(context);
+                },
                 icon: const Icon(
                   Icons.check_circle,
                   color: Colors.black,

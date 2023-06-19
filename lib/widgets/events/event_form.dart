@@ -52,6 +52,7 @@ class EventFormState extends State<EventForm> {
   places_sdk.LatLng? _currentLocation;
   String _currentPlaceDistance = '';
   String _currentPlaceName = '';
+  final List<String> _imageUrls = [];
 
   @override
   void initState() {
@@ -220,13 +221,28 @@ class EventFormState extends State<EventForm> {
     });
   }
 
+  Future<void> _handleSelectedAssets(List<AssetEntity> selectedAssets) async {
+    if (selectedAssets.isNotEmpty) {
+      List<String> filePaths = [];
+      for (var asset in selectedAssets) {
+        final filePath = await asset.file;
+        filePaths.add(filePath!.path);
+      }
+      setState(() {
+        _imageUrls.addAll(filePaths);
+      });
+    }
+  }
+
   Future<void> _handleAddPictureAction() async {
     // final media =
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            const MediaPicker(requestType: RequestType.common),
+        builder: (context) => MediaPicker(
+          requestType: RequestType.common,
+          onHandleSelectedAssets: _handleSelectedAssets,
+        ),
       ),
     );
 
@@ -363,20 +379,8 @@ class EventFormState extends State<EventForm> {
                                   ],
                                 ),
                                 const SizedBox(height: 16),
-                                const GridGallery(
-                                  imageUrls: [
-                                    "https://picsum.photos/500/800?random=0",
-                                    "https://picsum.photos/500/800?random=1",
-                                    "https://picsum.photos/500/800?random=2",
-                                    "https://picsum.photos/500/800?random=3",
-                                    "https://picsum.photos/500/800?random=4",
-                                    "https://picsum.photos/500/800?random=5",
-                                    "https://picsum.photos/500/800?random=6",
-                                    "https://picsum.photos/500/800?random=7",
-                                    "https://picsum.photos/500/800?random=8",
-                                    "https://picsum.photos/500/800?random=9",
-                                    "https://picsum.photos/500/800?random=10",
-                                  ],
+                                GridGallery(
+                                  imageUrls: _imageUrls,
                                   backgroundColor: lightGreyColor,
                                 ),
                                 const SizedBox(height: 16),
