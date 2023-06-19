@@ -45,15 +45,16 @@ class EventPreview extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16.0)),
-                child: ImageLoader(
-                  imageUrl: event.imageUrls[0],
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width * 2 / 5,
+              if (event.imageUrls.isNotEmpty)
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16.0)),
+                  child: ImageLoader(
+                    imageUrl: event.imageUrls[0],
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width * 2 / 5,
+                  ),
                 ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
