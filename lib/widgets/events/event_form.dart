@@ -52,7 +52,7 @@ class EventFormState extends State<EventForm> {
   places_sdk.LatLng? _currentLocation;
   String _currentPlaceDistance = '';
   String _currentPlaceName = '';
-  final List<String> _imageUrls = [];
+  List<AssetEntity> assets = [];
 
   @override
   void initState() {
@@ -223,13 +223,8 @@ class EventFormState extends State<EventForm> {
 
   Future<void> _handleSelectedAssets(List<AssetEntity> selectedAssets) async {
     if (selectedAssets.isNotEmpty) {
-      List<String> filePaths = [];
-      for (var asset in selectedAssets) {
-        final filePath = await asset.file;
-        filePaths.add(filePath!.path);
-      }
       setState(() {
-        _imageUrls.addAll(filePaths);
+        assets.addAll(selectedAssets);
       });
     }
   }
@@ -380,7 +375,7 @@ class EventFormState extends State<EventForm> {
                                 ),
                                 const SizedBox(height: 16),
                                 GridGallery(
-                                  imageUrls: _imageUrls,
+                                  assets: assets,
                                   backgroundColor: lightGreyColor,
                                 ),
                                 const SizedBox(height: 16),
@@ -402,7 +397,8 @@ class EventFormState extends State<EventForm> {
                                       .text.capitalizeFirst!,
                                   details: _eventDescriptionController
                                       .text.capitalizeFirst!,
-                                  imageUrls: _imageUrls,
+                                  assets: assets,
+                                  imageUrls: [],
                                 );
 
                                 // call handler to create event

@@ -1,3 +1,5 @@
+import 'package:photo_manager/photo_manager.dart';
+
 class Event {
   String? placeName;
   String? address;
@@ -7,6 +9,7 @@ class Event {
   String? details;
   String name;
   List<String> imageUrls;
+  List<AssetEntity>? assets;
 
   Event({
     this.placeName,
@@ -17,5 +20,6 @@ class Event {
     required this.name,
     required this.details,
     required this.imageUrls,
+    this.assets,
   });
 }
