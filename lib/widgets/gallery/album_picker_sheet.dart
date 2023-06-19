@@ -34,7 +34,7 @@ class AlbumPickerSheet extends StatelessWidget {
             itemCount: albums.length,
             itemBuilder: (context, index) {
               final album = albums[index];
-              return GestureDetector(
+              return InkWell(
                 onTap: () => onAlbumSelected(album),
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
