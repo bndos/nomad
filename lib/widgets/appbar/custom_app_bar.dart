@@ -15,6 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 64,
       decoration: const BoxDecoration(
         color: Colors.white,
       ),
@@ -23,7 +24,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              margin: const EdgeInsets.only(top: 30, left: 10),
+              margin: const EdgeInsets.only(top: 24, left: 10),
               alignment: Alignment.center,
               color: Colors.transparent,
               // we can set width here with conditions
@@ -35,14 +36,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Align(
             alignment: Alignment.center,
             child: Padding(
-              padding: const EdgeInsets.only(top: 30),
+              padding: const EdgeInsets.only(top: 24),
               child: centerWidget,
             ),
           ),
           Align(
             alignment: Alignment.centerRight,
             child: Container(
-              margin: const EdgeInsets.only(top: 30, right: 10),
+              margin: const EdgeInsets.only(top: 24, right: 10),
               alignment: Alignment.center,
               color: Colors.transparent,
               // we can set width here with conditions
