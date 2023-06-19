@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:nomad/models/event/event.dart';
+import 'package:nomad/widgets/gallery/image_loader.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
 class EventDetails extends StatelessWidget {
@@ -23,27 +24,10 @@ class EventDetails extends StatelessWidget {
     return Stack(
       children: [
         // Container with image
-        Container(
+        ImageLoader(
+          imageUrl: event.imageUrls[0],
           height: 300,
           width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(event.imageUrls[0]),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black.withOpacity(0.5),
-                  Colors.black.withOpacity(0.0),
-                ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              ),
-            ),
-          ),
         ),
         // Content after the AppBar
         Container(

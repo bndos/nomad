@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:nomad/widgets/gallery/image_loader.dart';
 
 class GridGallery extends StatelessWidget {
   final List<String> imageUrls;
@@ -60,30 +58,11 @@ class GridGallery extends StatelessWidget {
               itemBuilder: (context, index) {
                 final imageUrl = imageUrls[index];
 
-                if (imageUrl.startsWith('http')) {
-                  return ClipRRect(
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      cacheManager: cacheManager,
-                      fit: BoxFit.cover,
-                      width: itemSize,
-                      height: itemSize,
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
-                  );
-                } else {
-                  return ClipRRect(
-                    child: Image.file(
-                      File(imageUrl),
-                      fit: BoxFit.cover,
-                      width: itemSize,
-                      height: itemSize,
-                    ),
-                  );
-                }
+                return ImageLoader(
+                  imageUrl: imageUrl,
+                  width: itemSize,
+                  height: itemSize,
+                );
               },
             ),
           );
