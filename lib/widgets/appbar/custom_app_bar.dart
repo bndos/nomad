@@ -14,45 +14,44 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 64,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              margin: const EdgeInsets.only(top: 24, left: 10),
-              alignment: Alignment.center,
-              color: Colors.transparent,
-              // we can set width here with conditions
-              width: 40,
-              height: kToolbarHeight,
-              child: leftWidget,
+    return SafeArea(
+      child: Container(
+        height: 34,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+        ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                margin: const EdgeInsets.only(left: 10),
+                alignment: Alignment.center,
+                color: Colors.transparent,
+                // we can set width here with conditions
+                width: 40,
+                height: kToolbarHeight,
+                child: leftWidget,
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 24),
+            Align(
+              alignment: Alignment.center,
               child: centerWidget,
             ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Container(
-              margin: const EdgeInsets.only(top: 24, right: 10),
-              alignment: Alignment.center,
-              color: Colors.transparent,
-              // we can set width here with conditions
-              width: 40,
-              height: kToolbarHeight,
-              child: rightWidget,
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                margin: const EdgeInsets.only(right: 10),
+                alignment: Alignment.center,
+                color: Colors.transparent,
+                // we can set width here with conditions
+                width: 40,
+                height: kToolbarHeight,
+                child: rightWidget,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
