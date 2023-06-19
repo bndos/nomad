@@ -24,11 +24,18 @@ class EventDetails extends StatelessWidget {
     return Stack(
       children: [
         // Container with image
-        ImageLoader(
-          imageUrl: event.imageUrls[0],
-          height: 300,
-          width: MediaQuery.of(context).size.width,
-        ),
+        if (event.imageUrls.isNotEmpty)
+          ImageLoader(
+            imageUrl: event.imageUrls[0],
+            height: 300,
+            width: MediaQuery.of(context).size.width,
+          ),
+        if (event.imageUrls.isEmpty)
+          Container(
+            height: 300,
+            width: MediaQuery.of(context).size.width,
+            color: Colors.grey.shade100,
+          ),
         // Content after the AppBar
         Container(
           width: MediaQuery.of(context).size.width,

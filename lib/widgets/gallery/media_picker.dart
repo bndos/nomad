@@ -31,13 +31,17 @@ class _MediaPickerState extends State<MediaPicker> {
     MediaService().loadAlbums(widget.requestType).then((value) {
       setState(() {
         albums = value;
-        album = albums[0];
+        if (albums.isNotEmpty) {
+          album = albums[0];
+        }
       });
-      MediaService().loadAssets(album!).then((value) {
-        setState(() {
-          assets = value;
+      if (album != null) {
+        MediaService().loadAssets(album!).then((value) {
+          setState(() {
+            assets = value;
+          });
         });
-      });
+      }
     });
     super.initState();
   }
@@ -84,7 +88,9 @@ class _MediaPickerState extends State<MediaPicker> {
           child: TextButton.icon(
             onPressed: () {
               // Handle album selection
-              _showAlbumBottomSheet();
+              if (albums.isNotEmpty) {
+                _showAlbumBottomSheet();
+              }
             },
             icon: const Icon(
               FontAwesomeIcons.chevronDown,
@@ -92,7 +98,7 @@ class _MediaPickerState extends State<MediaPicker> {
               size: 10,
             ),
             label: Text(
-              album?.name ?? 'No album',
+              album?.name ?? 'No album found',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
@@ -122,7 +128,7 @@ class _MediaPickerState extends State<MediaPicker> {
             : Container(),
       ),
       body: assets.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: Text('No media found'))
           : GridView.builder(
               physics: const BouncingScrollPhysics(),
               itemCount: assets.length,
