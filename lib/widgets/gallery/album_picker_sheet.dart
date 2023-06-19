@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -34,89 +32,94 @@ class AlbumPickerSheet extends StatelessWidget {
             itemCount: albums.length,
             itemBuilder: (context, index) {
               final album = albums[index];
-              return InkWell(
-                onTap: () => onAlbumSelected(album),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Row(
+              return FutureBuilder<int>(
+                future: album.assetCountAsync,
+                builder: (context, snapshot) {
+                  final assetCount = snapshot.data;
+                  if (!snapshot.hasData ||
+                      assetCount == null ||
+                      assetCount == 0) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return InkWell(
+                    onTap: () => onAlbumSelected(album),
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
                         children: [
-                          FutureBuilder<Widget>(
-                            future: album
-                                .getAssetListRange(start: 0, end: 1)
-                                .then(
-                                  (assets) => assets.isNotEmpty
-                                      ? Container(
-                                          width: 70,
-                                          height: 70,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: AssetEntityImage(
-                                              assets.first,
-                                              isOriginal: false,
-                                              thumbnailSize:
-                                                  const ThumbnailSize.square(
-                                                70,
-                                              ),
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        )
-                                      : Container(),
-                                ),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.data != null) {
-                                return snapshot.data!;
-                              } else {
-                                return Container();
-                              }
-                            },
-                          ),
-                          const SizedBox(width: 16),
-                          Column(
+                          Row(
                             children: [
-                              Text(
-                                album.name,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: album == selectedAlbum
-                                      ? Colors.blue
-                                      : Colors.black,
-                                ),
+                              FutureBuilder<List<AssetEntity>>(
+                                future:
+                                    album.getAssetListRange(start: 0, end: 1),
+                                builder: (context, snapshot) {
+                                  final assets = snapshot.data;
+                                  if (snapshot.connectionState ==
+                                          ConnectionState.done &&
+                                      assets != null &&
+                                      assets.isNotEmpty) {
+                                    final firstAsset = assets.first;
+                                    return Container(
+                                      width: 70,
+                                      height: 70,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: AssetEntityImage(
+                                          firstAsset,
+                                          isOriginal: false,
+                                          thumbnailSize:
+                                              const ThumbnailSize.square(70),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                },
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                album.assetCount > 1
-                                    ? '${album.assetCount} items'
-                                    : '${album.assetCount} item',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
+                              const SizedBox(width: 16),
+                              Column(
+                                children: [
+                                  Text(
+                                    album.name,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: album == selectedAlbum
+                                          ? Colors.blue
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '$assetCount ${assetCount > 1 ? 'items' : 'item'}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
+                          // chevron right icon
+                          const Spacer(),
+                          Icon(
+                            Icons.chevron_right,
+                            color: album == selectedAlbum
+                                ? Colors.blue
+                                : Colors.black,
+                          ),
                         ],
                       ),
-                      // chevron right icon
-                      const Spacer(),
-                      Icon(
-                        Icons.chevron_right,
-                        color:
-                            album == selectedAlbum ? Colors.blue : Colors.black,
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             },
           ),
