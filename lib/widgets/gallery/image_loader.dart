@@ -29,23 +29,13 @@ class ImageLoader extends StatelessWidget {
     }
 
     if (assentEntity != null) {
-      return FutureBuilder<File?>(
-        future: assentEntity!.file,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Image.file(
-              snapshot.data!,
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
-            );
-          }
-          return Container(
-            width: width,
-            height: height,
-            color: Colors.grey[300],
-          );
-        },
+      return ClipRRect(
+        child: AssetEntityImage(
+          assentEntity!,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
       );
     }
 
