@@ -91,6 +91,7 @@ class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
               EventsListView(events: events, emptyListText: 'No sub events'),
 
               GridGallery(
+                assets: _event.assets,
                 imageUrls: _event.imageUrls,
                 backgroundColor: Colors.white,
               ),

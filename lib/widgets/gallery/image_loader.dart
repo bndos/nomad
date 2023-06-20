@@ -34,6 +34,7 @@ class ImageLoader extends StatelessWidget {
           assentEntity!,
           width: width,
           height: height,
+          thumbnailSize: ThumbnailSize(width.toInt(), height.toInt()),
           fit: BoxFit.cover,
         ),
       );
