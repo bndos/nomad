@@ -26,6 +26,8 @@ class _GridGalleryState extends State<GridGallery> {
     final assetsExist = widget.assets != null && widget.assets!.isNotEmpty;
     final imageUrlsExist =
         widget.imageUrls != null && widget.imageUrls!.isNotEmpty;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) / 3;
 
     return FutureBuilder<void>(
       future: _initializeCacheManager(cacheManager),
@@ -66,16 +68,17 @@ class _GridGalleryState extends State<GridGallery> {
               itemBuilder: (context, index) {
                 final asset = widget.assets![index];
 
-                return assetWidget(asset);
+                return ImageLoader(
+                  assentEntity: asset,
+                  width: itemSize,
+                  height: itemSize,
+                );
               },
             ),
           );
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          final double screenWidth = MediaQuery.of(context).size.width;
-          final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) / 3;
-
           return Container(
             decoration: BoxDecoration(
               color: widget.backgroundColor,
