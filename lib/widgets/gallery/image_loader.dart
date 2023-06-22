@@ -43,8 +43,9 @@ class _ImageLoaderState extends State<ImageLoader> {
         setState(() {
           _videoPlayerController = VideoPlayerController.file(videoFile!);
         });
-
-        _videoPlayerController!.initialize();
+        _videoPlayerController!.initialize().then((_) {
+          setState(() {});
+        });
         _videoPlayerController!.setLooping(true);
         _videoPlayerController!.play();
       }
