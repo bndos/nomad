@@ -146,54 +146,81 @@ class _MediaPickerState extends State<MediaPicker> {
     );
   }
 
-  Widget assetWidget(AssetEntity assetEntity) => Stack(
-        children: [
+  Widget assetWidget(AssetEntity assetEntity) {
+    final isVideo = assetEntity.type == AssetType.video;
+    final int? videoDuration = isVideo ? assetEntity.duration : null;
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedAssets.add(assetEntity);
+              });
+            },
+            child: AssetEntityImage(
+              assetEntity,
+              isOriginal: false,
+              thumbnailSize: const ThumbnailSize.square(250),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(
+                  child: Icon(
+                    Icons.error,
+                    color: Colors.red,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        if (isVideo) // Show video icon for video assets
+          Positioned(
+            bottom: 5,
+            right: 5,
+            child: Row(
+              children: [
+                Text(
+                  '${(videoDuration! ~/ 60).toString().padLeft(2, '0')}:${(videoDuration % 60).toString().padLeft(2, '0')}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        if (selectedAssets.contains(assetEntity))
           Positioned.fill(
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  selectedAssets.add(assetEntity);
+                  selectedAssets.remove(assetEntity);
                 });
               },
-              child: AssetEntityImage(
-                assetEntity,
-                isOriginal: false,
-                thumbnailSize: const ThumbnailSize.square(250),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.error,
-                      color: Colors.red,
-                    ),
-                  );
-                },
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
               ),
             ),
           ),
-          if (selectedAssets.contains(assetEntity))
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedAssets.remove(assetEntity);
-                  });
-                },
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-              ),
-            ),
-          Positioned(
-            top: 5,
-            right: 5,
-            child: Icon(
-              selectedAssets.contains(assetEntity)
-                  ? Iconsax.tick_circle1
-                  : CupertinoIcons.circle,
-              color: Colors.white,
-            ),
+        Positioned(
+          top: 5,
+          right: 5,
+          child: Icon(
+            selectedAssets.contains(assetEntity)
+                ? Iconsax.tick_circle1
+                : CupertinoIcons.circle,
+            color: Colors.white,
           ),
-        ],
-      );
+        ),
+      ],
+    );
+  }
 }

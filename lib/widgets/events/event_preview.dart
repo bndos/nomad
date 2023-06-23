@@ -45,6 +45,18 @@ class EventPreview extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (event.assets != null && event.assets!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0),
+                  ),
+                  child: ImageLoader(
+                    assentEntity: event.assets!.first,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width * 2 / 5,
+                  ),
+                ),
               if (event.imageUrls.isNotEmpty)
                 ClipRRect(
                   borderRadius:
