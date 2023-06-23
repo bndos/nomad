@@ -47,7 +47,7 @@ class _ImageLoaderState extends State<ImageLoader> {
           setState(() {});
         });
         _videoPlayerController!.setLooping(true);
-        _videoPlayerController!.play();
+        // _videoPlayerController!.play();
       }
     }
   }
@@ -73,11 +73,19 @@ class _ImageLoaderState extends State<ImageLoader> {
       if (widget.assentEntity!.type == AssetType.video) {
         if (_videoPlayerController != null &&
             _videoPlayerController!.value.isInitialized) {
-          return ClipRRect(
-            child: SizedBox(
-              width: widget.width,
-              height: widget.height,
-              child: VideoPlayer(_videoPlayerController!),
+          return SizedBox(
+            width: widget.width,
+            height: widget.height,
+            child: ClipRRect(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: widget.width,
+                  height:
+                      widget.width / _videoPlayerController!.value.aspectRatio,
+                  child: VideoPlayer(_videoPlayerController!),
+                ),
+              ),
             ),
           );
         }
