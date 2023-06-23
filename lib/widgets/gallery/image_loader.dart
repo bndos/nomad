@@ -28,7 +28,6 @@ class _ImageLoaderState extends State<ImageLoader> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initializeVideoPlayer();
   }
@@ -54,7 +53,6 @@ class _ImageLoaderState extends State<ImageLoader> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _videoPlayerController?.dispose();
   }
