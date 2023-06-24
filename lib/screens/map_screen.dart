@@ -25,6 +25,7 @@ class MapScreenState extends State<MapScreen> {
 
   places_sdk.LatLng? _currentLocation;
   places_sdk.FetchPlaceResponse? _currentPlaceDetails;
+  final List<Image> _placeImages = [];
   String _currentPlaceDistance = '';
 
   @override
@@ -110,6 +111,7 @@ class MapScreenState extends State<MapScreen> {
           places_sdk.PlaceField.Name,
           places_sdk.PlaceField.Address,
           places_sdk.PlaceField.Location,
+          places_sdk.PlaceField.PhotoMetadatas,
         ],
       );
 
@@ -125,6 +127,24 @@ class MapScreenState extends State<MapScreen> {
         }
       } else {
         distance = await _locationService.getDistanceFromMe(location!);
+      }
+
+      setState(() {
+        _placeImages.clear();
+      });
+
+      for (final photoMetadata in details.place!.photoMetadatas!) {
+        PlacesService.places!
+            .fetchPlacePhoto(
+          photoMetadata,
+        )
+            .then((photo) {
+          setState(() {
+            if (photo.image != null) {
+              _placeImages.add(photo.image!);
+            }
+          });
+        });
       }
 
       _moveCameraToLocation(location);
@@ -212,6 +232,7 @@ class MapScreenState extends State<MapScreen> {
             placeName: _currentPlaceDetails!.place!.name!,
             address: _currentPlaceDetails!.place!.address!,
             types: _currentPlaceDetails!.place!.types!,
+            placeImages: _placeImages,
             distance: _currentPlaceDistance,
             onHideContainer: _handleHidePlaceDetails,
           ),

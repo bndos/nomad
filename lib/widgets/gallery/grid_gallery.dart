@@ -6,11 +6,13 @@ import 'package:photo_manager/photo_manager.dart';
 class GridGallery extends StatefulWidget {
   final Color backgroundColor;
   final List<AssetEntity>? assets;
+  final List<Image>? images;
   final List<String>? imageUrls;
 
   const GridGallery({
     Key? key,
     this.imageUrls,
+    this.images,
     this.assets,
     this.backgroundColor = Colors.transparent,
   }) : super(key: key);
@@ -26,13 +28,14 @@ class _GridGalleryState extends State<GridGallery> {
     final assetsExist = widget.assets != null && widget.assets!.isNotEmpty;
     final imageUrlsExist =
         widget.imageUrls != null && widget.imageUrls!.isNotEmpty;
+    final imagesExist = widget.images != null && widget.images!.isNotEmpty;
     final double screenWidth = MediaQuery.of(context).size.width;
     final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) / 3;
 
     return FutureBuilder<void>(
       future: _initializeCacheManager(cacheManager),
       builder: (context, snapshot) {
-        if (!assetsExist && !imageUrlsExist) {
+        if (!assetsExist && !imageUrlsExist && !imagesExist) {
           return Container(
             padding: const EdgeInsets.all(50),
             decoration: BoxDecoration(
@@ -72,6 +75,34 @@ class _GridGalleryState extends State<GridGallery> {
                   assentEntity: asset,
                   width: itemSize,
                   height: itemSize,
+                );
+              },
+            ),
+          );
+        }
+
+        if (imagesExist) {
+          return Container(
+            decoration: BoxDecoration(
+              color: widget.backgroundColor,
+            ),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              itemCount: widget.images!.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 1.0,
+                mainAxisSpacing: 1.0,
+              ),
+              itemBuilder: (context, index) {
+                final image = widget.images![index];
+
+                return Image(
+                  image: image.image,
+                  width: itemSize,
+                  height: itemSize,
+                  fit: BoxFit.cover,
                 );
               },
             ),
