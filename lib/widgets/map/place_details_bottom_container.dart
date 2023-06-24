@@ -14,6 +14,7 @@ class PlaceDetailsContainer extends StatefulWidget {
   final String address;
   final String distance;
   final List<PlaceType> types;
+  final List<Image> placeImages;
   final VoidCallback? onHideContainer; // New callback function
 
   const PlaceDetailsContainer({
@@ -21,6 +22,7 @@ class PlaceDetailsContainer extends StatefulWidget {
     required this.placeName,
     required this.address,
     required this.types,
+    required this.placeImages,
     required this.distance,
     this.onHideContainer,
   }) : super(key: key);
@@ -237,20 +239,8 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
                               'No events found',
                             ),
                           ),
-                        const GridGallery(
-                          imageUrls: [
-                            "https://picsum.photos/500/800?random=0",
-                            "https://picsum.photos/500/800?random=1",
-                            "https://picsum.photos/500/800?random=2",
-                            "https://picsum.photos/500/800?random=3",
-                            "https://picsum.photos/500/800?random=4",
-                            "https://picsum.photos/500/800?random=5",
-                            "https://picsum.photos/500/800?random=6",
-                            "https://picsum.photos/500/800?random=7",
-                            "https://picsum.photos/500/800?random=8",
-                            "https://picsum.photos/500/800?random=9",
-                            "https://picsum.photos/500/800?random=10",
-                          ],
+                        GridGallery(
+                          images: widget.placeImages,
                           backgroundColor: Colors.white,
                         ),
                         const Center(
