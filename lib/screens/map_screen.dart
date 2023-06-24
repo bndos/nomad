@@ -133,18 +133,20 @@ class MapScreenState extends State<MapScreen> {
         _placeImages.clear();
       });
 
-      for (final photoMetadata in details.place!.photoMetadatas!) {
-        PlacesService.places!
-            .fetchPlacePhoto(
-          photoMetadata,
-        )
-            .then((photo) {
-          setState(() {
-            if (photo.image != null) {
-              _placeImages.add(photo.image!);
-            }
+      if (details.place!.photoMetadatas != null) {
+        for (final photoMetadata in details.place!.photoMetadatas!) {
+          PlacesService.places!
+              .fetchPlacePhoto(
+            photoMetadata,
+          )
+              .then((photo) {
+            setState(() {
+              if (photo.image != null) {
+                _placeImages.add(photo.image!);
+              }
+            });
           });
-        });
+        }
       }
 
       _moveCameraToLocation(location);
