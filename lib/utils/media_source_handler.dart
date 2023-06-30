@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nomad/widgets/gallery/image_loader.dart';
+import 'package:nomad/widgets/gallery/media_loader.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 List<Widget> getMediaListWidgets({
@@ -21,7 +21,7 @@ List<Widget> getMediaListWidgets({
 
       return GestureDetector(
         onTap: onTap != null ? () => onTap(index) : null,
-        child: ImageLoader(
+        child: MediaLoader(
           assentEntity: asset,
           width: width,
           height: height,
@@ -54,7 +54,7 @@ List<Widget> getMediaListWidgets({
 
       return GestureDetector(
         onTap: onTap != null ? () => onTap(index) : null,
-        child: ImageLoader(
+        child: MediaLoader(
           imageUrl: imageUrl,
           width: width,
           height: height,

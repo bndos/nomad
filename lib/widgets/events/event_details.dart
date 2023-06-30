@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:nomad/models/event/event.dart';
-import 'package:nomad/widgets/gallery/image_loader.dart';
+import 'package:nomad/widgets/gallery/media_loader.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 
 class EventDetails extends StatelessWidget {
@@ -25,13 +25,13 @@ class EventDetails extends StatelessWidget {
       children: [
         // Container with image
         if (event.assets != null && event.assets!.isNotEmpty) ...[
-          ImageLoader(
+          MediaLoader(
             assentEntity: event.assets!.first,
             height: 300,
             width: MediaQuery.of(context).size.width,
           ),
         ] else if (event.imageUrls.isNotEmpty) ...[
-          ImageLoader(
+          MediaLoader(
             imageUrl: event.imageUrls[0],
             height: 300,
             width: MediaQuery.of(context).size.width,

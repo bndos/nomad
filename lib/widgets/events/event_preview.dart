@@ -4,7 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:nomad/models/event/event.dart';
 import 'package:nomad/screens/event_page.dart';
-import 'package:nomad/widgets/gallery/image_loader.dart';
+import 'package:nomad/widgets/gallery/media_loader.dart';
 
 class EventPreview extends StatelessWidget {
   final Event event;
@@ -51,7 +51,7 @@ class EventPreview extends StatelessWidget {
                     topLeft: Radius.circular(16.0),
                     topRight: Radius.circular(16.0),
                   ),
-                  child: ImageLoader(
+                  child: MediaLoader(
                     assentEntity: event.assets!.first,
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.width * 2 / 5,
@@ -61,7 +61,7 @@ class EventPreview extends StatelessWidget {
                 ClipRRect(
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(16.0)),
-                  child: ImageLoader(
+                  child: MediaLoader(
                     imageUrl: event.imageUrls[0],
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.width * 2 / 5,
