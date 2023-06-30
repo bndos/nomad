@@ -133,8 +133,31 @@ class EventFormState extends State<EventForm> {
     }
   }
 
+  List<DropdownMenuEntry<String>> dropdownMenuEntries = [];
+  bool isPrivate = false;
+  String? eventType;
+
   @override
   Widget build(BuildContext context) {
+    dropdownMenuEntries.add(
+      const DropdownMenuEntry(
+        value: 'Sporting event',
+        label: 'Sporting event',
+      ),
+    );
+    dropdownMenuEntries.add(
+      const DropdownMenuEntry(value: 'Party', label: 'Party'),
+    );
+    dropdownMenuEntries.add(
+      const DropdownMenuEntry(value: 'Leolist', label: 'Leolist'),
+    );
+    dropdownMenuEntries.add(
+      const DropdownMenuEntry(
+        value: 'Religious gathering',
+        label: 'Religious gathering',
+      ),
+    );
+
     return Material(
       color: Colors.transparent,
       child: Column(
@@ -188,6 +211,53 @@ class EventFormState extends State<EventForm> {
                                 focusNode: _eventDescriptionFocusNode,
                                 isTextFieldFocused: _isEventDescriptionFocused,
                                 label: 'Event Details',
+                              ),
+                              const SizedBox(height: 18),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  DropdownMenu<String>(
+                                    label: const Text('Event type'),
+                                    dropdownMenuEntries: dropdownMenuEntries,
+                                    initialSelection:
+                                        dropdownMenuEntries[0].label,
+                                    onSelected: (String? str) {
+                                      setState(() {
+                                        eventType = str;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: ColoredBox(
+                                        color: isPrivate
+                                            ? Colors.blueGrey.shade100
+                                            : lightGreyColor,
+                                        child: CheckboxListTile(
+                                          title: const Text(
+                                            'Make event private',
+                                          ),
+                                          value: isPrivate,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              isPrivate = value!;
+                                            });
+                                          },
+                                          secondary: isPrivate
+                                              ? const Icon(Icons.lock_outline)
+                                              : const Icon(Icons.lock_open),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 16),
                               Row(
