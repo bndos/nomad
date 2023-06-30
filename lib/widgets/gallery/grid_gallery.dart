@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:nomad/screens/media_feed_page.dart';
-import 'package:nomad/widgets/gallery/image_loader.dart';
+import 'package:nomad/utils/media_source_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class GridGallery extends StatefulWidget {
@@ -71,49 +71,21 @@ class _GridGalleryState extends State<GridGallery> {
           );
         }
 
-        if (assetsExist) {
-          final children = widget.assets!.map((asset) {
-            return GestureDetector(
-              onTap: () => _navigateToMediaFeedPage(context),
-              child: ImageLoader(
-                assentEntity: asset,
-                width: itemSize,
-                height: itemSize,
-              ),
-            );
-          }).toList();
+        final children = getMediaListWidgets(
+          assets: widget.assets,
+          imageUrls: widget.imageUrls,
+          images: widget.images,
+          itemSize: itemSize,
+          onTap: () => {
+            _navigateToMediaFeedPage(context),
+          },
+        );
 
-          return buildGridView(children);
-        }
-
-        if (imagesExist) {
-          final children = widget.images!.map((image) {
-            return GestureDetector(
-              onTap: () => _navigateToMediaFeedPage(context),
-              child: Image(
-                image: image.image,
-                width: itemSize,
-                height: itemSize,
-                fit: BoxFit.cover,
-              ),
-            );
-          }).toList();
-
+        if (assetsExist || imagesExist) {
           return buildGridView(children);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          final children = widget.imageUrls!.map((imageUrl) {
-            return GestureDetector(
-              onTap: () => _navigateToMediaFeedPage(context),
-              child: ImageLoader(
-                imageUrl: imageUrl,
-                width: itemSize,
-                height: itemSize,
-              ),
-            );
-          }).toList();
-
           return buildGridView(children);
         } else {
           return const CircularProgressIndicator();
