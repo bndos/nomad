@@ -46,6 +46,7 @@ class _MediaFeedPageState extends State<MediaFeedPage> {
       assets: widget.assets,
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
+      shouldPlayVideo: true,
     );
     return Scaffold(
       extendBodyBehindAppBar: true, // Set to true to extend body behind AppBar
