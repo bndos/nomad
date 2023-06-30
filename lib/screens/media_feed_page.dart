@@ -33,6 +33,12 @@ class _MediaFeedPageState extends State<MediaFeedPage> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<Widget> medias = getMediaListWidgets(
       imageUrls: widget.imageUrls,
