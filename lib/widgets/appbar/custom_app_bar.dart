@@ -4,12 +4,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget leftWidget;
   final Widget centerWidget;
   final Widget rightWidget;
+  final Color backgroundColor;
 
   const CustomAppBar({
     Key? key,
     required this.leftWidget,
     required this.centerWidget,
     required this.rightWidget,
+    this.backgroundColor = Colors.white,
   }) : super(key: key);
 
   @override
@@ -17,8 +19,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return SafeArea(
       child: Container(
         height: 34,
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: backgroundColor,
         ),
         child: Stack(
           children: [
