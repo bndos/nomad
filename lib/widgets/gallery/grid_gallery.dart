@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:nomad/widgets/gallery/image_loader.dart';
+import 'package:nomad/screens/media_feed_page.dart';
+import 'package:nomad/utils/media_source_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class GridGallery extends StatefulWidget {
@@ -32,6 +33,22 @@ class _GridGalleryState extends State<GridGallery> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) / 3;
 
+    Widget buildGridView(List<Widget> children) {
+      return Container(
+        decoration: BoxDecoration(
+          color: widget.backgroundColor,
+        ),
+        child: GridView.count(
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          crossAxisCount: 3,
+          crossAxisSpacing: 1.0,
+          mainAxisSpacing: 1.0,
+          children: children,
+        ),
+      );
+    }
+
     return FutureBuilder<void>(
       future: _initializeCacheManager(cacheManager),
       builder: (context, snapshot) {
@@ -54,86 +71,23 @@ class _GridGalleryState extends State<GridGallery> {
           );
         }
 
-        if (assetsExist) {
-          return Container(
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-            ),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: widget.assets!.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 1.0,
-                mainAxisSpacing: 1.0,
-              ),
-              itemBuilder: (context, index) {
-                final asset = widget.assets![index];
+        final children = getMediaListWidgets(
+          assets: widget.assets,
+          imageUrls: widget.imageUrls,
+          images: widget.images,
+          width: itemSize,
+          height: itemSize,
+          onTap: (index) => {
+            _navigateToMediaFeedPage(context, index),
+          },
+        );
 
-                return ImageLoader(
-                  assentEntity: asset,
-                  width: itemSize,
-                  height: itemSize,
-                );
-              },
-            ),
-          );
-        }
-
-        if (imagesExist) {
-          return Container(
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-            ),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: widget.images!.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 1.0,
-                mainAxisSpacing: 1.0,
-              ),
-              itemBuilder: (context, index) {
-                final image = widget.images![index];
-
-                return Image(
-                  image: image.image,
-                  width: itemSize,
-                  height: itemSize,
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-          );
+        if (assetsExist || imagesExist) {
+          return buildGridView(children);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          return Container(
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-            ),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: widget.imageUrls!.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 1.0,
-                mainAxisSpacing: 1.0,
-              ),
-              itemBuilder: (context, index) {
-                final imageUrl = widget.imageUrls![index];
-
-                return ImageLoader(
-                  imageUrl: imageUrl,
-                  width: itemSize,
-                  height: itemSize,
-                );
-              },
-            ),
-          );
+          return buildGridView(children);
         } else {
           return const CircularProgressIndicator();
         }
@@ -149,51 +103,20 @@ class _GridGalleryState extends State<GridGallery> {
     }
   }
 
-  Widget assetWidget(AssetEntity assetEntity) {
-    final isVideo = assetEntity.type == AssetType.video;
-    final int? videoDuration = isVideo ? assetEntity.duration : null;
-
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: AssetEntityImage(
-            assetEntity,
-            isOriginal: false,
-            thumbnailSize: const ThumbnailSize.square(250),
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return const Center(
-                child: Icon(
-                  Icons.error,
-                  color: Colors.red,
-                ),
-              );
-            },
-          ),
+  void _navigateToMediaFeedPage(
+    BuildContext context,
+    int index,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MediaFeedPage(
+          index: index,
+          images: widget.images,
+          assets: widget.assets,
+          imageUrls: widget.imageUrls,
         ),
-        if (isVideo) // Show video icon for video assets
-          Positioned(
-            bottom: 5,
-            right: 5,
-            child: Row(
-              children: [
-                Text(
-                  '${(videoDuration! ~/ 60).toString().padLeft(2, '0')}:${(videoDuration % 60).toString().padLeft(2, '0')}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const Icon(
-                  Icons.play_arrow_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-      ],
+      ),
     );
   }
 }

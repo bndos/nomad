@@ -5,25 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
 
-class ImageLoader extends StatefulWidget {
+class MediaLoader extends StatefulWidget {
   final String? imageUrl;
   final AssetEntity? assentEntity;
   final double width;
   final double height;
+  final bool shouldPlayVideo;
 
-  const ImageLoader({
+  const MediaLoader({
     Key? key,
     required this.width,
     required this.height,
     this.assentEntity,
     this.imageUrl,
+    this.shouldPlayVideo = false,
   }) : super(key: key);
 
   @override
-  State<ImageLoader> createState() => _ImageLoaderState();
+  State<MediaLoader> createState() => _MediaLoaderState();
 }
 
-class _ImageLoaderState extends State<ImageLoader> {
+class _MediaLoaderState extends State<MediaLoader> {
   VideoPlayerController? _videoPlayerController;
 
   @override
@@ -46,7 +48,10 @@ class _ImageLoaderState extends State<ImageLoader> {
           setState(() {});
         });
         _videoPlayerController!.setLooping(true);
-        // _videoPlayerController!.play();
+
+        if (widget.shouldPlayVideo) {
+          _videoPlayerController!.play();
+        }
       }
     }
   }
