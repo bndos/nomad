@@ -24,6 +24,14 @@ class MediaFeedPage extends StatefulWidget {
 }
 
 class _MediaFeedPageState extends State<MediaFeedPage> {
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: widget.index);
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> medias = getMediaListWidgets(
@@ -46,6 +54,7 @@ class _MediaFeedPageState extends State<MediaFeedPage> {
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.vertical,
         itemCount: medias.length,
+        controller: _pageController,
         itemBuilder: (context, index) {
           return medias[index];
         },
