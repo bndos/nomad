@@ -6,34 +6,41 @@ List<Widget> getMediaListWidgets({
   List<AssetEntity>? assets,
   List<Image>? images,
   List<String>? imageUrls,
-  required double itemSize,
-  void Function()? onTap,
+  required double width,
+  required double height,
+  void Function(int index)? onTap,
 }) {
   final assetsExist = assets != null && assets.isNotEmpty;
   final imagesExist = images != null && images.isNotEmpty;
   final imageUrlsExist = imageUrls != null && imageUrls.isNotEmpty;
 
   if (assetsExist) {
-    return assets.map((asset) {
+    return assets.asMap().entries.map((entry) {
+      final index = entry.key;
+      final asset = entry.value;
+
       return GestureDetector(
-        onTap: onTap,
+        onTap: onTap != null ? () => onTap(index) : null,
         child: ImageLoader(
           assentEntity: asset,
-          width: itemSize,
-          height: itemSize,
+          width: width,
+          height: height,
         ),
       );
     }).toList();
   }
 
   if (imagesExist) {
-    return images.map((image) {
+    return images.asMap().entries.map((entry) {
+      final index = entry.key;
+      final image = entry.value;
+
       return GestureDetector(
-        onTap: onTap,
+        onTap: onTap != null ? () => onTap(index) : null,
         child: Image(
           image: image.image,
-          width: itemSize,
-          height: itemSize,
+          width: width,
+          height: height,
           fit: BoxFit.cover,
         ),
       );
@@ -41,13 +48,16 @@ List<Widget> getMediaListWidgets({
   }
 
   if (imageUrlsExist) {
-    return imageUrls.map((imageUrl) {
+    return imageUrls.asMap().entries.map((entry) {
+      final index = entry.key;
+      final imageUrl = entry.value;
+
       return GestureDetector(
-        onTap: onTap,
+        onTap: onTap != null ? () => onTap(index) : null,
         child: ImageLoader(
           imageUrl: imageUrl,
-          width: itemSize,
-          height: itemSize,
+          width: width,
+          height: height,
         ),
       );
     }).toList();
