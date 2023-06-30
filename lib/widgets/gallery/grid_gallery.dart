@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:nomad/screens/media_feed_page.dart';
 import 'package:nomad/widgets/gallery/image_loader.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -71,10 +72,20 @@ class _GridGalleryState extends State<GridGallery> {
               itemBuilder: (context, index) {
                 final asset = widget.assets![index];
 
-                return ImageLoader(
-                  assentEntity: asset,
-                  width: itemSize,
-                  height: itemSize,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MediaFeedPage(),
+                      ),
+                    );
+                  },
+                  child: ImageLoader(
+                    assentEntity: asset,
+                    width: itemSize,
+                    height: itemSize,
+                  ),
                 );
               },
             ),
@@ -98,11 +109,21 @@ class _GridGalleryState extends State<GridGallery> {
               itemBuilder: (context, index) {
                 final image = widget.images![index];
 
-                return Image(
-                  image: image.image,
-                  width: itemSize,
-                  height: itemSize,
-                  fit: BoxFit.cover,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MediaFeedPage(),
+                      ),
+                    );
+                  },
+                  child: Image(
+                    image: image.image,
+                    width: itemSize,
+                    height: itemSize,
+                    fit: BoxFit.cover,
+                  ),
                 );
               },
             ),
@@ -126,10 +147,20 @@ class _GridGalleryState extends State<GridGallery> {
               itemBuilder: (context, index) {
                 final imageUrl = widget.imageUrls![index];
 
-                return ImageLoader(
-                  imageUrl: imageUrl,
-                  width: itemSize,
-                  height: itemSize,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MediaFeedPage(),
+                      ),
+                    );
+                  },
+                  child: ImageLoader(
+                    imageUrl: imageUrl,
+                    width: itemSize,
+                    height: itemSize,
+                  ),
                 );
               },
             ),

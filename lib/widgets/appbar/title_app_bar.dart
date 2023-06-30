@@ -7,6 +7,7 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onLeftIconPressed;
   final IconData rightIcon;
   final VoidCallback? onRightIconPressed;
+  final Color backgroundColor;
 
   const TitleAppBar({
     Key? key,
@@ -15,15 +16,17 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onLeftIconPressed,
     required this.rightIcon,
     this.onRightIconPressed,
+    this.backgroundColor = Colors.white,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: backgroundColor,
       ),
       child: CustomAppBar(
+        backgroundColor: backgroundColor,
         leftWidget: IconButton(
           icon: Icon(
             leftIcon,
