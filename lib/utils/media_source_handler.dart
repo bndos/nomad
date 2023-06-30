@@ -9,6 +9,7 @@ List<Widget> getMediaListWidgets({
   required double width,
   required double height,
   void Function(int index)? onTap,
+  bool shouldPlayVideo = false,
 }) {
   final assetsExist = assets != null && assets.isNotEmpty;
   final imagesExist = images != null && images.isNotEmpty;
@@ -25,6 +26,7 @@ List<Widget> getMediaListWidgets({
           assentEntity: asset,
           width: width,
           height: height,
+          shouldPlayVideo: shouldPlayVideo,
         ),
       );
     }).toList();

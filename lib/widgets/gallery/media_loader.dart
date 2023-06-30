@@ -10,6 +10,7 @@ class MediaLoader extends StatefulWidget {
   final AssetEntity? assentEntity;
   final double width;
   final double height;
+  final bool shouldPlayVideo;
 
   const MediaLoader({
     Key? key,
@@ -17,6 +18,7 @@ class MediaLoader extends StatefulWidget {
     required this.height,
     this.assentEntity,
     this.imageUrl,
+    this.shouldPlayVideo = false,
   }) : super(key: key);
 
   @override
@@ -46,7 +48,10 @@ class _MediaLoaderState extends State<MediaLoader> {
           setState(() {});
         });
         _videoPlayerController!.setLooping(true);
-        // _videoPlayerController!.play();
+
+        if (widget.shouldPlayVideo) {
+          _videoPlayerController!.play();
+        }
       }
     }
   }
