@@ -75,9 +75,10 @@ class _GridGalleryState extends State<GridGallery> {
           assets: widget.assets,
           imageUrls: widget.imageUrls,
           images: widget.images,
-          itemSize: itemSize,
-          onTap: () => {
-            _navigateToMediaFeedPage(context),
+          width: itemSize,
+          height: itemSize,
+          onTap: (index) => {
+            _navigateToMediaFeedPage(context, index),
           },
         );
 
@@ -102,11 +103,19 @@ class _GridGalleryState extends State<GridGallery> {
     }
   }
 
-  void _navigateToMediaFeedPage(BuildContext context) {
+  void _navigateToMediaFeedPage(
+    BuildContext context,
+    int index,
+  ) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MediaFeedPage(),
+        builder: (context) => MediaFeedPage(
+          index: index,
+          images: widget.images,
+          assets: widget.assets,
+          imageUrls: widget.imageUrls,
+        ),
       ),
     );
   }
