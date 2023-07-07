@@ -19,12 +19,14 @@ import 'package:intl/intl.dart';
 class EventForm extends StatefulWidget {
   final String? distance;
   final String? placeName;
+  final places_sdk.LatLng? location;
   final Function(Event) onEventCreated;
 
   const EventForm({
     Key? key,
     this.distance,
     this.placeName,
+    this.location,
     required this.onEventCreated,
   }) : super(key: key);
 
@@ -52,6 +54,7 @@ class EventFormState extends State<EventForm> {
   places_sdk.LatLng? _currentLocation;
   String _currentPlaceDistance = '';
   String _currentPlaceName = '';
+  places_sdk.LatLng? _currentPlaceLocation;
   List<AssetEntity> assets = [];
 
   @override
@@ -65,6 +68,7 @@ class EventFormState extends State<EventForm> {
     if (widget.distance != null) {
       _currentPlaceDistance = widget.distance!;
     }
+    _currentPlaceLocation = widget.location;
   }
 
   @override
@@ -132,6 +136,7 @@ class EventFormState extends State<EventForm> {
       setState(() {
         _currentPlaceDistance = distance;
         _currentPlaceName = details.place!.name!;
+        _currentPlaceLocation = location;
       });
     }
   }
@@ -391,6 +396,7 @@ class EventFormState extends State<EventForm> {
                               onPressed: () {
                                 Event event = Event(
                                   placeName: _currentPlaceName,
+                                  location: _currentPlaceLocation,
                                   startTime: _startDateWrapper.date,
                                   endTime: _endDateWrapper.date,
                                   name: _eventNameController

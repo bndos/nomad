@@ -3,6 +3,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
     as places_sdk;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:nomad/models/event/event.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
 import 'package:nomad/widgets/map/current_location_button.dart';
@@ -182,6 +183,15 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
+  void _handleEventCreated(Event event) {
+    setState(() {
+      // events.add(event);
+      print('------------------------------------');
+      print(event.location);
+      print('------------------------------------');
+    });
+  }
+
   void _handleMapLongPress(LatLng latLng) {
     if (_isTouchAroundMarker(latLng)) {
       _clearMarkers();
@@ -234,9 +244,11 @@ class MapScreenState extends State<MapScreen> {
             placeName: _currentPlaceDetails!.place!.name!,
             address: _currentPlaceDetails!.place!.address!,
             types: _currentPlaceDetails!.place!.types!,
+            location: _currentPlaceDetails!.place!.latLng!,
             placeImages: _placeImages,
             distance: _currentPlaceDistance,
             onHideContainer: _handleHidePlaceDetails,
+            onEventCreated: _handleEventCreated,
           ),
       ],
     );
