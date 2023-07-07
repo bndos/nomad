@@ -13,9 +13,11 @@ class PlaceDetailsContainer extends StatefulWidget {
   final String placeName;
   final String address;
   final String distance;
+  final LatLng location;
   final List<PlaceType> types;
   final List<Image> placeImages;
   final VoidCallback? onHideContainer; // New callback function
+  final void Function(Event event)? onEventCreated;
 
   const PlaceDetailsContainer({
     Key? key,
@@ -24,7 +26,9 @@ class PlaceDetailsContainer extends StatefulWidget {
     required this.types,
     required this.placeImages,
     required this.distance,
+    required this.location,
     this.onHideContainer,
+    this.onEventCreated,
   }) : super(key: key);
 
   @override
@@ -66,6 +70,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
   void _handleEventCreated(Event event) {
     setState(() {
       events.add(event);
+      widget.onEventCreated?.call(event);
     });
   }
 
@@ -77,6 +82,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
         return EventForm(
           placeName: widget.placeName,
           distance: widget.distance,
+          location: widget.location,
           onEventCreated: _handleEventCreated,
         );
       },
