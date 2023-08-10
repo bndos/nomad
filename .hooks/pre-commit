@@ -57,6 +57,7 @@ if ! $(echo $(git rev-parse --abbrev-ref HEAD) | grep -q -E "$branch_regex"); th
   exit 1
 fi
 
+dart fix --apply
 flutter analyze --no-pub
 output=$(dart format . --set-exit-if-changed)
 

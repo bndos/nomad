@@ -25,6 +25,7 @@ class MapScreenState extends State<MapScreen> {
 
   places_sdk.LatLng? _currentLocation;
   places_sdk.FetchPlaceResponse? _currentPlaceDetails;
+  final List<Image> _placeImages = [];
   String _currentPlaceDistance = '';
 
   @override
@@ -33,13 +34,23 @@ class MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  void getCurrentLocation() async {
+  void _handleHidePlaceDetails() {
+    setState(() {
+      _currentPlaceDetails = null;
+      _currentPlaceDistance = '';
+    });
+  }
+
+  void getCurrentLocation(bool shouldMoveCamera) async {
     try {
       Position position = await _locationService.getCurrentLocation();
 
       setState(() {
         _currentLocation =
             places_sdk.LatLng(lat: position.latitude, lng: position.longitude);
+        if (shouldMoveCamera) {
+          _moveCameraToLocation(_currentLocation);
+        }
       });
     } catch (e) {
       // TODO Handle location error
@@ -47,8 +58,7 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void focusCurrentLocation() {
-    getCurrentLocation();
-    _moveCameraToLocation(_currentLocation, addMarker: false);
+    getCurrentLocation(true);
   }
 
   void _setMarker(LatLng position, String id) {
@@ -101,6 +111,7 @@ class MapScreenState extends State<MapScreen> {
           places_sdk.PlaceField.Name,
           places_sdk.PlaceField.Address,
           places_sdk.PlaceField.Location,
+          places_sdk.PlaceField.PhotoMetadatas,
         ],
       );
 
@@ -116,6 +127,26 @@ class MapScreenState extends State<MapScreen> {
         }
       } else {
         distance = await _locationService.getDistanceFromMe(location!);
+      }
+
+      setState(() {
+        _placeImages.clear();
+      });
+
+      if (details.place!.photoMetadatas != null) {
+        for (final photoMetadata in details.place!.photoMetadatas!) {
+          PlacesService.places!
+              .fetchPlacePhoto(
+            photoMetadata,
+          )
+              .then((photo) {
+            setState(() {
+              if (photo.image != null) {
+                _placeImages.add(photo.image!);
+              }
+            });
+          });
+        }
       }
 
       _moveCameraToLocation(location);
@@ -168,46 +199,46 @@ class MapScreenState extends State<MapScreen> {
       zoom: 14.4746,
     );
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          GoogleMap(
-            zoomControlsEnabled: false,
-            mapType: MapType.terrain,
-            markers: Set<Marker>.of(_markers),
-            onMapCreated: (GoogleMapController controller) {
-              setState(() {
-                _mapController = controller;
-                focusCurrentLocation();
-              });
-            },
-            onLongPress: _handleMapLongPress,
-            onTap: _handleMapTap,
-            myLocationButtonEnabled: false,
-            initialCameraPosition: kGooglePlex,
-          ),
-          CurrentLocationButton(
-            getCurrentLocation: focusCurrentLocation,
-          ),
-          if (_currentPlaceDetails != null)
-            PlaceDetailsContainer(
-              placeName: _currentPlaceDetails!.place!.name!,
-              address: _currentPlaceDetails!.place!.address!,
-              types: _currentPlaceDetails!.place!.types!,
-              distance: _currentPlaceDistance,
-            ),
-          SafeArea(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: SearchField(
-                currentLocation: _currentLocation,
-                mapController: _mapController,
-                handlePredictionSelection: _focusPredictionClicked,
-              ),
+    return Stack(
+      children: [
+        GoogleMap(
+          zoomControlsEnabled: false,
+          mapType: MapType.terrain,
+          markers: Set<Marker>.of(_markers),
+          onMapCreated: (GoogleMapController controller) {
+            setState(() {
+              _mapController = controller;
+              focusCurrentLocation();
+            });
+          },
+          onLongPress: _handleMapLongPress,
+          onTap: _handleMapTap,
+          myLocationButtonEnabled: false,
+          initialCameraPosition: kGooglePlex,
+        ),
+        CurrentLocationButton(
+          getCurrentLocation: focusCurrentLocation,
+        ),
+        SafeArea(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: SearchField(
+              currentLocation: _currentLocation,
+              mapController: _mapController,
+              handlePredictionSelection: _focusPredictionClicked,
             ),
           ),
-        ],
-      ),
+        ),
+        if (_currentPlaceDetails != null)
+          PlaceDetailsContainer(
+            placeName: _currentPlaceDetails!.place!.name!,
+            address: _currentPlaceDetails!.place!.address!,
+            types: _currentPlaceDetails!.place!.types!,
+            placeImages: _placeImages,
+            distance: _currentPlaceDistance,
+            onHideContainer: _handleHidePlaceDetails,
+          ),
+      ],
     );
   }
 }
