@@ -184,11 +184,15 @@ class MapScreenState extends State<MapScreen> {
   }
 
   void _handleEventCreated(Event event) {
+    // event id generated in firestore
+    const eventId = '1234567890';
     setState(() {
-      // events.add(event);
-      print('------------------------------------');
-      print(event.location);
-      print('------------------------------------');
+      _markers = [
+        Marker(
+          markerId: const MarkerId(eventId),
+          position: LatLng(event.location!.lat, event.location!.lng),
+        )
+      ];
     });
   }
 
