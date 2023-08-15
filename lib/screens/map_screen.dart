@@ -22,7 +22,7 @@ class MapScreenState extends State<MapScreen> {
   final LocationService _locationService = LocationService();
 
   List<Marker> _currentMarker = [];
-  List<Marker> _eventMarkers = [];
+  final List<Marker> _eventMarkers = [];
   GoogleMapController? _mapController;
 
   places_sdk.LatLng? _currentLocation;
