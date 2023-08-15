@@ -21,7 +21,8 @@ class MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   final LocationService _locationService = LocationService();
 
-  List<Marker> _markers = [];
+  List<Marker> _currentMarker = [];
+  List<Marker> _eventMarkers = [];
   GoogleMapController? _mapController;
 
   places_sdk.LatLng? _currentLocation;
@@ -64,7 +65,7 @@ class MapScreenState extends State<MapScreen> {
 
   void _setMarker(LatLng position, String id) {
     setState(() {
-      _markers = [
+      _currentMarker = [
         Marker(
           markerId: MarkerId(id),
           position: position,
@@ -73,9 +74,9 @@ class MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _clearMarkers() {
+  void _clearCurrentMarker() {
     setState(() {
-      _markers = [];
+      _currentMarker = [];
     });
   }
 
@@ -160,8 +161,8 @@ class MapScreenState extends State<MapScreen> {
   }
 
   bool _isTouchAroundMarker(LatLng position) {
-    if (_markers.isNotEmpty) {
-      final markerPosition = _markers.first.position;
+    if (_currentMarker.isNotEmpty) {
+      final markerPosition = _currentMarker.first.position;
       final distance = Geolocator.distanceBetween(
         markerPosition.latitude,
         markerPosition.longitude,
@@ -179,21 +180,27 @@ class MapScreenState extends State<MapScreen> {
         places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
       );
     } else {
-      _clearMarkers();
+      _clearCurrentMarker();
     }
   }
 
   void _handleEventCreated(Event event) {
     // event id generated in firestore
-    final eventId = _markers.length;
-    print('------------------------------------');
-    print(_markers.length);
-    print('------------------------------------');
+    final eventId = _eventMarkers.length;
     setState(() {
-      _markers.add(
+      _eventMarkers.add(
         Marker(
           markerId: MarkerId(eventId.toString()),
           position: LatLng(event.location!.lat, event.location!.lng),
+          onTap: () {
+            _moveCameraToLocation(
+              places_sdk.LatLng(
+                lat: event.location!.lat,
+                lng: event.location!.lng,
+              ),
+              addMarker: false,
+            );
+          },
         ),
       );
     });
@@ -201,7 +208,7 @@ class MapScreenState extends State<MapScreen> {
 
   void _handleMapLongPress(LatLng latLng) {
     if (_isTouchAroundMarker(latLng)) {
-      _clearMarkers();
+      _clearCurrentMarker();
     } else {
       _moveCameraToLocation(
         places_sdk.LatLng(lat: latLng.latitude, lng: latLng.longitude),
@@ -221,7 +228,7 @@ class MapScreenState extends State<MapScreen> {
         GoogleMap(
           zoomControlsEnabled: false,
           mapType: MapType.terrain,
-          markers: Set<Marker>.of(_markers),
+          markers: Set<Marker>.of({..._currentMarker, ..._eventMarkers}),
           onMapCreated: (GoogleMapController controller) {
             setState(() {
               _mapController = controller;
