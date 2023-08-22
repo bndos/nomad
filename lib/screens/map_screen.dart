@@ -29,6 +29,8 @@ class MapScreenState extends State<MapScreen> {
   places_sdk.FetchPlaceResponse? _currentPlaceDetails;
   final List<Image> _placeImages = [];
   String _currentPlaceDistance = '';
+  // events maps a map location to multiple events
+  final Map<places_sdk.LatLng, List<Event>> _eventMap = {};
 
   @override
   void dispose() {
@@ -69,7 +71,7 @@ class MapScreenState extends State<MapScreen> {
         Marker(
           markerId: MarkerId(id),
           position: position,
-        )
+        ),
       ];
     });
   }
@@ -186,20 +188,26 @@ class MapScreenState extends State<MapScreen> {
 
   void _handleEventCreated(Event event) {
     // event id generated in firestore
-    final eventId = _eventMarkers.length;
+    if (event.location == null) {
+      return;
+    }
+
+    if (_eventMap.containsKey(event.location!)) {
+      _eventMap[event.location!]!.add(event);
+    } else {
+      _eventMap[event.location!] = [event];
+    }
+
     setState(() {
       _eventMarkers.add(
         Marker(
-          markerId: MarkerId(eventId.toString()),
+          markerId: MarkerId(event.location!.toString()),
           position: LatLng(event.location!.lat, event.location!.lng),
           onTap: () {
-            _moveCameraToLocation(
-              places_sdk.LatLng(
-                lat: event.location!.lat,
-                lng: event.location!.lng,
-              ),
-              addMarker: false,
-            );
+            // marker id
+            for (final event in _eventMap[event.location!]!) {
+              print(event.name);
+            }
           },
         ),
       );
