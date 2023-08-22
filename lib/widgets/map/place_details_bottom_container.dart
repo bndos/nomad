@@ -15,6 +15,8 @@ class PlaceDetailsContainer extends StatefulWidget {
   final String address;
   final String distance;
   final LatLng location;
+  final List<Event> events;
+
   final List<PlaceType> types;
   final List<Image> placeImages;
   final VoidCallback? onHideContainer; // New callback function
@@ -29,6 +31,7 @@ class PlaceDetailsContainer extends StatefulWidget {
     required this.placeImages,
     required this.distance,
     required this.location,
+    required this.events,
     this.onHideContainer,
     this.onEventCreated,
   }) : super(key: key);
@@ -60,6 +63,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       damping: 10.0,
     );
     _tabController = TabController(length: 3, vsync: this);
+    events = widget.events;
   }
 
   @override
