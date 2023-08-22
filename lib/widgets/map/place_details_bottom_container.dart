@@ -10,6 +10,7 @@ import 'package:nomad/widgets/places/place_details.dart';
 import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
 class PlaceDetailsContainer extends StatefulWidget {
+  final String placeId;
   final String placeName;
   final String address;
   final String distance;
@@ -21,6 +22,7 @@ class PlaceDetailsContainer extends StatefulWidget {
 
   const PlaceDetailsContainer({
     Key? key,
+    required this.placeId,
     required this.placeName,
     required this.address,
     required this.types,
@@ -80,6 +82,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       isScrollControlled: true,
       builder: (BuildContext context) {
         return EventForm(
+          placeId: widget.placeId,
           placeName: widget.placeName,
           distance: widget.distance,
           location: widget.location,
@@ -166,7 +169,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
             if (containerHeight < 10)
               {
                 widget.onHideContainer?.call(),
-              }
+              },
           },
           decoration: const BoxDecoration(
             color: Colors.white,
