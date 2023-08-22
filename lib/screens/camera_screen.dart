@@ -282,7 +282,7 @@ class CapturedImage extends StatelessWidget {
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }
