@@ -109,59 +109,65 @@ class MapScreenState extends State<MapScreen> {
   ) async {
     if (index != null) {
       final prediction = predictions[index];
-      final details = await PlacesService.places!.fetchPlace(
+      _focusPlace(
         prediction.placeId,
-        fields: [
-          places_sdk.PlaceField.Types,
-          places_sdk.PlaceField.Name,
-          places_sdk.PlaceField.Address,
-          places_sdk.PlaceField.Location,
-          places_sdk.PlaceField.PhotoMetadatas,
-        ],
+        distanceMeters: prediction.distanceMeters,
       );
-
-      final location = details.place!.latLng;
-      final distanceMeters = prediction.distanceMeters;
-      String distance = '';
-
-      if (distanceMeters != null) {
-        if (distanceMeters >= 1000) {
-          distance = '${(distanceMeters / 1000).toStringAsFixed(1)} km';
-        } else {
-          distance = '${distanceMeters.toStringAsFixed(0)} m';
-        }
-      } else {
-        distance = await _locationService.getDistanceFromMe(location!);
-      }
-
-      setState(() {
-        _placeImages.clear();
-      });
-
-      if (details.place!.photoMetadatas != null) {
-        for (final photoMetadata in details.place!.photoMetadatas!) {
-          PlacesService.places!
-              .fetchPlacePhoto(
-            photoMetadata,
-          )
-              .then((photo) {
-            setState(() {
-              if (photo.image != null) {
-                _placeImages.add(photo.image!);
-              }
-            });
-          });
-        }
-      }
-
-      _moveCameraToLocation(location);
-
-      setState(() {
-        _currentPlaceDetails = details;
-        _currentPlaceId = prediction.placeId;
-        _currentPlaceDistance = distance;
-      });
     }
+  }
+
+  void _focusPlace(String placeId, {int? distanceMeters}) async {
+    final details = await PlacesService.places!.fetchPlace(
+      placeId,
+      fields: [
+        places_sdk.PlaceField.Types,
+        places_sdk.PlaceField.Name,
+        places_sdk.PlaceField.Address,
+        places_sdk.PlaceField.Location,
+        places_sdk.PlaceField.PhotoMetadatas,
+      ],
+    );
+
+    final location = details.place!.latLng;
+    String distance = '';
+
+    if (distanceMeters != null) {
+      if (distanceMeters >= 1000) {
+        distance = '${(distanceMeters / 1000).toStringAsFixed(1)} km';
+      } else {
+        distance = '${distanceMeters.toStringAsFixed(0)} m';
+      }
+    } else {
+      distance = await _locationService.getDistanceFromMe(location!);
+    }
+
+    setState(() {
+      _placeImages.clear();
+    });
+
+    if (details.place!.photoMetadatas != null) {
+      for (final photoMetadata in details.place!.photoMetadatas!) {
+        PlacesService.places!
+            .fetchPlacePhoto(
+          photoMetadata,
+        )
+            .then((photo) {
+          setState(() {
+            if (photo.image != null) {
+              _placeImages.add(photo.image!);
+            }
+          });
+        });
+      }
+    }
+
+    _moveCameraToLocation(location);
+
+    setState(() {
+      _currentPlaceDetails = details;
+      _currentPlaceId = placeId;
+      _currentPlaceDistance = distance;
+    });
   }
 
   bool _isTouchAroundMarker(LatLng position) {
@@ -206,12 +212,7 @@ class MapScreenState extends State<MapScreen> {
           markerId: MarkerId(event.location!.toString()),
           position: LatLng(event.location!.lat, event.location!.lng),
           onTap: () {
-            // marker id
-            for (final event in _eventMap[event.location!]!) {
-              print('--------------------');
-              print(event.placeId);
-              print('--------------------');
-            }
+            _focusPlace(event.placeId!);
           },
         ),
       );
@@ -270,6 +271,7 @@ class MapScreenState extends State<MapScreen> {
             placeId: _currentPlaceId,
             placeName: _currentPlaceDetails!.place!.name!,
             address: _currentPlaceDetails!.place!.address!,
+            events: [..._eventMap[_currentPlaceDetails!.place!.latLng!] ?? []],
             types: _currentPlaceDetails!.place!.types!,
             location: _currentPlaceDetails!.place!.latLng!,
             placeImages: _placeImages,
