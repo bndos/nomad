@@ -17,6 +17,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
 import 'package:intl/intl.dart';
 
 class EventForm extends StatefulWidget {
+  final String? placeId;
   final String? distance;
   final String? placeName;
   final places_sdk.LatLng? location;
@@ -24,6 +25,7 @@ class EventForm extends StatefulWidget {
 
   const EventForm({
     Key? key,
+    this.placeId,
     this.distance,
     this.placeName,
     this.location,
@@ -54,6 +56,8 @@ class EventFormState extends State<EventForm> {
   places_sdk.LatLng? _currentLocation;
   String _currentPlaceDistance = '';
   String _currentPlaceName = '';
+  String _currentAddress = '';
+  String _currentPlaceId = '';
   places_sdk.LatLng? _currentPlaceLocation;
   List<AssetEntity> assets = [];
 
@@ -68,7 +72,13 @@ class EventFormState extends State<EventForm> {
     if (widget.distance != null) {
       _currentPlaceDistance = widget.distance!;
     }
-    _currentPlaceLocation = widget.location;
+    if (widget.placeId != null) {
+      _currentPlaceId = widget.placeId!;
+    }
+    if (widget.location != null) {
+      _currentPlaceLocation = widget.location!;
+    }
+
   }
 
   @override
@@ -135,7 +145,9 @@ class EventFormState extends State<EventForm> {
 
       setState(() {
         _currentPlaceDistance = distance;
+        _currentPlaceId = prediction.placeId;
         _currentPlaceName = details.place!.name!;
+        _currentAddress = details.place!.address!;
         _currentPlaceLocation = location;
       });
     }
@@ -395,7 +407,9 @@ class EventFormState extends State<EventForm> {
                               label: 'Create Event',
                               onPressed: () {
                                 Event event = Event(
+                                  placeId: _currentPlaceId,
                                   placeName: _currentPlaceName,
+                                  address: _currentAddress,
                                   location: _currentPlaceLocation,
                                   startTime: _startDateWrapper.date,
                                   endTime: _endDateWrapper.date,

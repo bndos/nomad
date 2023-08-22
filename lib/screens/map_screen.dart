@@ -27,6 +27,7 @@ class MapScreenState extends State<MapScreen> {
 
   places_sdk.LatLng? _currentLocation;
   places_sdk.FetchPlaceResponse? _currentPlaceDetails;
+  String _currentPlaceId = '';
   final List<Image> _placeImages = [];
   String _currentPlaceDistance = '';
   // events maps a map location to multiple events
@@ -157,6 +158,7 @@ class MapScreenState extends State<MapScreen> {
 
       setState(() {
         _currentPlaceDetails = details;
+        _currentPlaceId = prediction.placeId;
         _currentPlaceDistance = distance;
       });
     }
@@ -206,7 +208,9 @@ class MapScreenState extends State<MapScreen> {
           onTap: () {
             // marker id
             for (final event in _eventMap[event.location!]!) {
-              print(event.name);
+              print('--------------------');
+              print(event.placeId);
+              print('--------------------');
             }
           },
         ),
@@ -263,6 +267,7 @@ class MapScreenState extends State<MapScreen> {
         ),
         if (_currentPlaceDetails != null)
           PlaceDetailsContainer(
+            placeId: _currentPlaceId,
             placeName: _currentPlaceDetails!.place!.name!,
             address: _currentPlaceDetails!.place!.address!,
             types: _currentPlaceDetails!.place!.types!,

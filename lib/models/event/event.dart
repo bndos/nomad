@@ -5,6 +5,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
 class Event {
   String? placeName;
   String? address;
+  String? placeId;
   places_sdk.LatLng? location;
   DateTime? startTime;
   DateTime? endTime;
@@ -15,6 +16,7 @@ class Event {
 
   Event({
     this.placeName,
+    this.placeId,
     this.address,
     this.location,
     this.startTime,
