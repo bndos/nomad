@@ -10,21 +10,30 @@ import 'package:nomad/widgets/places/place_details.dart';
 import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
 class PlaceDetailsContainer extends StatefulWidget {
+  final String placeId;
   final String placeName;
   final String address;
   final String distance;
+  final LatLng location;
+  final List<Event> events;
+
   final List<PlaceType> types;
   final List<Image> placeImages;
   final VoidCallback? onHideContainer; // New callback function
+  final void Function(Event event)? onEventCreated;
 
   const PlaceDetailsContainer({
     Key? key,
+    required this.placeId,
     required this.placeName,
     required this.address,
     required this.types,
     required this.placeImages,
     required this.distance,
+    required this.location,
+    required this.events,
     this.onHideContainer,
+    this.onEventCreated,
   }) : super(key: key);
 
   @override
@@ -54,6 +63,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       damping: 10.0,
     );
     _tabController = TabController(length: 3, vsync: this);
+    events = widget.events;
   }
 
   @override
@@ -66,6 +76,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
   void _handleEventCreated(Event event) {
     setState(() {
       events.add(event);
+      widget.onEventCreated?.call(event);
     });
   }
 
@@ -75,8 +86,10 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
       isScrollControlled: true,
       builder: (BuildContext context) {
         return EventForm(
+          placeId: widget.placeId,
           placeName: widget.placeName,
           distance: widget.distance,
+          location: widget.location,
           onEventCreated: _handleEventCreated,
         );
       },
@@ -160,7 +173,7 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
             if (containerHeight < 10)
               {
                 widget.onHideContainer?.call(),
-              }
+              },
           },
           decoration: const BoxDecoration(
             color: Colors.white,

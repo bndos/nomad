@@ -59,7 +59,7 @@ class EventDetails extends StatelessWidget {
                 color: Colors.black.withOpacity(0.4),
                 blurRadius: 20,
                 offset: const Offset(0, -30),
-              )
+              ),
             ],
           ),
           child: Column(
