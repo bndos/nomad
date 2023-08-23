@@ -1,9 +1,12 @@
 import 'package:photo_manager/photo_manager.dart';
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
+    as places_sdk;
 
 class Event {
   String? placeName;
   String? address;
-  String? location;
+  String? placeId;
+  places_sdk.LatLng? location;
   DateTime? startTime;
   DateTime? endTime;
   String? details;
@@ -13,6 +16,7 @@ class Event {
 
   Event({
     this.placeName,
+    this.placeId,
     this.address,
     this.location,
     this.startTime,
