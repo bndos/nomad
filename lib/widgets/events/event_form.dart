@@ -78,7 +78,6 @@ class EventFormState extends State<EventForm> {
     if (widget.location != null) {
       _currentPlaceLocation = widget.location!;
     }
-
   }
 
   @override
