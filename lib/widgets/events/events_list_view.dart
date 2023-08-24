@@ -15,26 +15,18 @@ class EventsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return events.isNotEmpty
-        ? OverflowBox(
-            alignment: Alignment.topCenter,
-            maxHeight: double.infinity,
-            child: Column(
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height - 100,
-                    minHeight: 0,
-                  ),
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: events.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final event = events[index];
-                      return EventPreview(event: event);
-                    },
-                  ),
-                ),
-              ],
+        ? ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height - 100,
+              minHeight: 0,
+            ),
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: events.length,
+              itemBuilder: (BuildContext context, int index) {
+                final event = events[index];
+                return EventPreview(event: event);
+              },
             ),
           )
         : Center(
