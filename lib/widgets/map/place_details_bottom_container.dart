@@ -4,7 +4,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/events/event_form.dart';
-import 'package:nomad/widgets/events/event_preview.dart';
+import 'package:nomad/widgets/events/events_list_view.dart';
 import 'package:nomad/widgets/gallery/grid_gallery.dart';
 import 'package:nomad/widgets/places/place_details.dart';
 import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
@@ -223,35 +223,16 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
                   removeTop: true,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height - 200,
+                      maxHeight: MediaQuery.of(context).size.height - 240,
                       minHeight: 0,
                     ),
                     child: TabBarView(
                       controller: _tabController,
                       children: [
-                        if (events.isNotEmpty) ...[
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight:
-                                  MediaQuery.of(context).size.height - 200,
-                              minHeight: 0,
-                            ),
-                            child: ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: events.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final event = events[index];
-                                return EventPreview(event: event);
-                              },
-                            ),
-                          ),
-                        ],
-                        if (events.isEmpty)
-                          const Center(
-                            child: Text(
-                              'No events found',
-                            ),
-                          ),
+                        EventsListView(
+                          events: events,
+                          emptyListText: 'No events found',
+                        ),
                         GridGallery(
                           images: widget.placeImages,
                           backgroundColor: Colors.white,
