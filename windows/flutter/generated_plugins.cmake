@@ -3,7 +3,14 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  connectivity_plus
+  dart_vlc
+  desktop_drop
+  file_selector_windows
   geolocator_windows
+  share_plus
+  thumblr_windows
+  url_launcher_windows
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
