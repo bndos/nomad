@@ -17,6 +17,9 @@ The following video illustrates the real-time chat functionality within Nomad. U
 
 https://github.com/bndos/nomad/assets/44623235/d129f6ea-977d-4e0f-8a8c-752498f6eb5b
 
+What sub-events look like:
+![sub-events](https://github.com/bndos/nomad/assets/44623235/601f9944-7896-4a52-b3de-9621441c60a9)
+
 
 
 ## Setup
