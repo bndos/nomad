@@ -7,12 +7,14 @@ Nomad is a forthcoming social media application that is being developed with the
 ### Event Creation and Google Maps Place Search
 This video showcases the ability to create events within the Nomad app. It also demonstrates how users can search for places using the integrated Google Maps API.
 
-[![Event Creation and Google Maps Place Search](http://img.youtube.com/vi/CpjNfEw5Ao8/0.jpg)](https://youtu.be/CpjNfEw5Ao8)
+https://github.com/bndos/nomad/assets/44623235/d3110446-48fa-4f82-b804-b9caf468b17f
+
+
 
 ### Real-time Chat and Media Sharing
 The following video illustrates the real-time chat functionality within Nomad. Users can share media, create events, and display them directly within the chat interface.
 
-[![Real-time Chat and Media Sharing](http://img.youtube.com/vi/1RZIxJ6suP0/0.jpg)](https://youtu.be/1RZIxJ6suP0)
+https://github.com/bndos/nomad/assets/44623235/9184563b-1b9a-475b-bb75-3bd85dcf204a
 
 
 
