@@ -9,14 +9,15 @@ This video showcases the ability to create events within the Nomad app. It also 
 
 https://github.com/bndos/nomad/assets/44623235/d3110446-48fa-4f82-b804-b9caf468b17f
 
+What sub-events look like:
+
+
+<img src="https://github.com/bndos/nomad/assets/44623235/601f9944-7896-4a52-b3de-9621441c60a9" width="300">
 
 ### Real-time Chat and Media Sharing
 The following video illustrates the real-time chat functionality within Nomad. Users can share media, create events, and display them directly within the chat interface.
 
-
-
 https://github.com/bndos/nomad/assets/44623235/d129f6ea-977d-4e0f-8a8c-752498f6eb5b
-
 
 
 ## Setup
