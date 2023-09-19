@@ -14,7 +14,10 @@ https://github.com/bndos/nomad/assets/44623235/d3110446-48fa-4f82-b804-b9caf468b
 ### Real-time Chat and Media Sharing
 The following video illustrates the real-time chat functionality within Nomad. Users can share media, create events, and display them directly within the chat interface.
 
-https://github.com/bndos/nomad/assets/44623235/9184563b-1b9a-475b-bb75-3bd85dcf204a
+
+
+
+https://github.com/bndos/nomad/assets/44623235/d4e1e8f3-8be4-4e09-95f8-3445d6f07929
 
 
 
