@@ -1,29 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:nomad/screens/media_feed_page.dart';
+import 'package:nomad/utils/media_source_handler.dart';
+import 'package:photo_manager/photo_manager.dart';
 
-class GridGallery extends StatelessWidget {
-  final List<String> imageUrls;
+class GridGallery extends StatefulWidget {
   final Color backgroundColor;
+  final List<AssetEntity>? assets;
+  final List<Image>? images;
+  final List<String>? imageUrls;
 
   const GridGallery({
     Key? key,
-    required this.imageUrls,
+    this.imageUrls,
+    this.images,
+    this.assets,
     this.backgroundColor = Colors.transparent,
   }) : super(key: key);
 
   @override
+  State<GridGallery> createState() => _GridGalleryState();
+}
+
+class _GridGalleryState extends State<GridGallery> {
+  @override
   Widget build(BuildContext context) {
     final cacheManager = DefaultCacheManager();
+    final assetsExist = widget.assets != null && widget.assets!.isNotEmpty;
+    final imageUrlsExist =
+        widget.imageUrls != null && widget.imageUrls!.isNotEmpty;
+    final imagesExist = widget.images != null && widget.images!.isNotEmpty;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) / 3;
+
+    Widget buildGridView(List<Widget> children) {
+      return Container(
+        decoration: BoxDecoration(
+          color: widget.backgroundColor,
+        ),
+        child: GridView.count(
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          crossAxisCount: 3,
+          crossAxisSpacing: 1.0,
+          mainAxisSpacing: 1.0,
+          children: children,
+        ),
+      );
+    }
 
     return FutureBuilder<void>(
       future: _initializeCacheManager(cacheManager),
       builder: (context, snapshot) {
-        if (imageUrls.isEmpty) {
+        if (!assetsExist && !imageUrlsExist && !imagesExist) {
           return Container(
             padding: const EdgeInsets.all(50),
             decoration: BoxDecoration(
-              color: backgroundColor,
+              color: widget.backgroundColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Center(
@@ -38,45 +71,24 @@ class GridGallery extends StatelessWidget {
           );
         }
 
+        final children = getMediaListWidgets(
+          assets: widget.assets,
+          imageUrls: widget.imageUrls,
+          images: widget.images,
+          width: itemSize,
+          height: itemSize,
+          onTap: (index) => {
+            _navigateToMediaFeedPage(context, index),
+          },
+        );
+
+        if (assetsExist || imagesExist) {
+          return buildGridView(children);
+        }
+
         if (snapshot.connectionState == ConnectionState.done) {
-          final double screenWidth = MediaQuery.of(context).size.width;
-          final double itemSize = (screenWidth - 16.0 * 2 - 8.0 * 2) /
-              3; // Adjust the spacing as needed
-
-          return Container(
-            decoration: BoxDecoration(
-              color: backgroundColor,
-            ),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: imageUrls.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Adjust the number of columns as needed
-                crossAxisSpacing: 8.0, // Adjust the spacing between columns
-                mainAxisSpacing: 8.0, // Adjust the spacing between rows
-              ),
-              itemBuilder: (context, index) {
-                final imageUrl = imageUrls[index];
-
-                return ClipRRect(
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    cacheManager: cacheManager,
-                    fit: BoxFit.cover,
-                    width: itemSize,
-                    height: itemSize,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
-                );
-              },
-            ),
-          );
+          return buildGridView(children);
         } else {
-          // Cache manager is still initializing, show a loading indicator or placeholder
           return const CircularProgressIndicator();
         }
       },
@@ -84,6 +96,27 @@ class GridGallery extends StatelessWidget {
   }
 
   Future<void> _initializeCacheManager(DefaultCacheManager cacheManager) async {
-    await cacheManager.getFileFromCache(imageUrls[0]);
+    if (widget.imageUrls != null &&
+        widget.imageUrls!.isNotEmpty &&
+        widget.imageUrls![0].startsWith('http')) {
+      await cacheManager.getFileFromCache(widget.imageUrls![0]);
+    }
+  }
+
+  void _navigateToMediaFeedPage(
+    BuildContext context,
+    int index,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MediaFeedPage(
+          index: index,
+          images: widget.images,
+          assets: widget.assets,
+          imageUrls: widget.imageUrls,
+        ),
+      ),
+    );
   }
 }

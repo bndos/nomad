@@ -1,64 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:nomad/models/event/event.dart';
 import 'package:nomad/widgets/events/event_form.dart';
-
-import 'package:nomad/widgets/map/rounded_icon_button.dart';
+import 'package:nomad/widgets/events/events_list_view.dart';
+import 'package:nomad/widgets/gallery/grid_gallery.dart';
+import 'package:nomad/widgets/places/place_details.dart';
+import 'package:nomad/widgets/tabbar/custom_tab_bar.dart';
 
 class PlaceDetailsContainer extends StatefulWidget {
+  final String placeId;
   final String placeName;
   final String address;
   final String distance;
+  final LatLng location;
+  final List<Event> events;
+
   final List<PlaceType> types;
+  final List<Image> placeImages;
+  final VoidCallback? onHideContainer; // New callback function
+  final void Function(Event event)? onEventCreated;
 
   const PlaceDetailsContainer({
     Key? key,
+    required this.placeId,
     required this.placeName,
     required this.address,
     required this.types,
+    required this.placeImages,
     required this.distance,
+    required this.location,
+    required this.events,
+    this.onHideContainer,
+    this.onEventCreated,
   }) : super(key: key);
 
   @override
   PlaceDetailsContainerState createState() => PlaceDetailsContainerState();
 }
 
-class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
-  double containerHeight = 200.0; // Initial height of the container
-  double dragOffset = 0.0; // Offset for tracking the drag gesture
+class PlaceDetailsContainerState extends State<PlaceDetailsContainer>
+    with TickerProviderStateMixin {
+  double previousHeight = 200.0;
+  double containerHeight = 200.0;
+  double dragOffset = 0.0;
+  List<Event> events = [];
+  late AnimationController _animationController;
+  late SpringDescription _spring;
+  late TabController _tabController;
 
-  IconData getIconForPlaceType(PlaceType placeType) {
-    switch (placeType) {
-      case PlaceType.UNIVERSITY:
-        return FontAwesomeIcons.graduationCap;
-      case PlaceType.RESTAURANT:
-        return FontAwesomeIcons.utensils;
-      case PlaceType.CAFE:
-        return FontAwesomeIcons.mugSaucer;
-      case PlaceType.BAR:
-        return FontAwesomeIcons.champagneGlasses;
-      case PlaceType.NIGHT_CLUB:
-        return FontAwesomeIcons.champagneGlasses;
-      case PlaceType.PARK:
-        return FontAwesomeIcons.tree;
-      case PlaceType.SHOPPING_MALL:
-        return FontAwesomeIcons.bagShopping;
-      case PlaceType.HOSPITAL:
-        return FontAwesomeIcons.hospital;
-      case PlaceType.MOVIE_THEATER:
-        return FontAwesomeIcons.film;
-      case PlaceType.MUSEUM:
-        return FontAwesomeIcons.monument;
-      case PlaceType.STADIUM:
-        return FontAwesomeIcons.flag;
-      case PlaceType.TOURIST_ATTRACTION:
-        return FontAwesomeIcons.camera;
-      case PlaceType.SUBWAY_STATION:
-        return FontAwesomeIcons.trainSubway;
-      default:
-        return FontAwesomeIcons.locationPin; // Default icon
-    }
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _spring = const SpringDescription(
+      mass: 1,
+      stiffness: 100,
+      damping: 10.0,
+    );
+    _tabController = TabController(length: 3, vsync: this);
+    events = widget.events;
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _handleEventCreated(Event event) {
+    setState(() {
+      events.add(event);
+      widget.onEventCreated?.call(event);
+    });
   }
 
   void _openEventForm(BuildContext context) {
@@ -67,11 +86,66 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       isScrollControlled: true,
       builder: (BuildContext context) {
         return EventForm(
+          placeId: widget.placeId,
           placeName: widget.placeName,
           distance: widget.distance,
+          location: widget.location,
+          onEventCreated: _handleEventCreated,
         );
       },
     );
+  }
+
+  void _handleVerticalDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      previousHeight = containerHeight;
+      containerHeight -= details.delta.dy;
+    });
+  }
+
+  void _handleVerticalDragEnd(DragEndDetails details) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final appBarHeight = AppBar().preferredSize.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final availableHeight =
+        screenHeight - appBarHeight - statusBarHeight - bottomPadding;
+
+    final snapPoints = [0.0, 200.0, screenHeight * 1 / 2, availableHeight];
+    final currentHeight = containerHeight;
+    final dragVelocity = currentHeight - previousHeight;
+
+    double closestSnapPoint = currentHeight;
+
+    if (dragVelocity > 0) {
+      // Dragging downwards
+      for (final point in snapPoints) {
+        if (point > currentHeight) {
+          closestSnapPoint = point;
+          break;
+        }
+      }
+    } else {
+      // Dragging upwards
+      for (var i = snapPoints.length - 1; i >= 0; i--) {
+        final point = snapPoints[i];
+        if (point < currentHeight) {
+          closestSnapPoint = point;
+          break;
+        }
+      }
+    }
+
+    closestSnapPoint = closestSnapPoint.clamp(0.0, availableHeight);
+
+    final simulation = SpringSimulation(
+      _spring,
+      containerHeight,
+      closestSnapPoint,
+      details.velocity.pixelsPerSecond.dy,
+    );
+    containerHeight = closestSnapPoint;
+    _animationController.animateWith(simulation);
   }
 
   @override
@@ -81,21 +155,26 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
       right: 0,
       bottom: 0,
       child: GestureDetector(
-        onVerticalDragUpdate: (details) {
-          setState(() {
-            // Update the container height based on the vertical drag gesture
-            containerHeight -= details.delta.dy;
-            // Ensure the container doesn't exceed certain limits
-            containerHeight = containerHeight.clamp(
-              100.0,
-              MediaQuery.of(context).size.height,
-            );
-          });
-        },
-        child: Container(
+        onVerticalDragUpdate: _handleVerticalDragUpdate,
+        onVerticalDragEnd:
+            widget.onHideContainer != null ? _handleVerticalDragEnd : null,
+        child: AnimatedContainer(
           width: double.infinity,
           height: containerHeight,
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(
+            top: 16.0,
+            left: 4.0,
+            right: 4.0,
+            bottom: 0.0,
+          ),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutQuart,
+          onEnd: () => {
+            if (containerHeight < 10)
+              {
+                widget.onHideContainer?.call(),
+              },
+          },
           decoration: const BoxDecoration(
             color: Colors.white,
             boxShadow: [
@@ -111,97 +190,61 @@ class PlaceDetailsContainerState extends State<PlaceDetailsContainer> {
             ),
           ),
           child: OverflowBox(
-            minHeight: 0.0,
-            maxHeight: double.infinity,
             alignment: Alignment.topCenter,
+            maxHeight: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width *
-                          0.2, // 25% of the screen width
-                      height: MediaQuery.of(context).size.width *
-                          0.2, // Set the height equal to the width for a circular shape
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100], // Pale grey background color
-                        shape: BoxShape.circle, // Circular shape
-                      ),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          iconTheme: IconThemeData(
-                            color: Colors
-                                .grey[800], // Set the desired foreground color
-                          ),
-                        ),
-                        child: Icon(
-                          getIconForPlaceType(widget.types[0]),
-                          size: 32.0,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.distance.isNotEmpty
-                                ? '${widget.placeName} (${widget.distance})'
-                                : widget.placeName,
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            widget.types[0].name
-                                .replaceAll('_', ' ')
-                                .capitalize!,
-                            style: const TextStyle(fontSize: 12.0),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            widget.address,
-                            style: const TextStyle(fontSize: 12.0),
-                          ),
-                        ],
-                      ),
-                    ),
+                PlaceDetails(
+                  placeName: widget.placeName,
+                  address: widget.address,
+                  distance: widget.distance,
+                  types: widget.types,
+                  onAddEvent: () {
+                    _openEventForm(context);
+                  },
+                  onDirections: () {
+                    // Perform directions action
+                  },
+                  onShare: () {
+                    // Perform share action
+                  },
+                ),
+                CustomTabBar(
+                  tabController: _tabController,
+                  icons: const [
+                    Iconsax.link,
+                    Iconsax.grid_1,
+                    Iconsax.video_circle,
                   ],
                 ),
-                const SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RoundedIconButton(
-                      icon: FontAwesomeIcons
-                          .plus, // Replace with the appropriate Font Awesome icon
-                      label: 'Event',
-                      onPressed: () {
-                        // Perform create event action
-                        _openEventForm(context);
-                      },
+                MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height - 240,
+                      minHeight: 0,
                     ),
-                    RoundedIconButton(
-                      icon: FontAwesomeIcons
-                          .locationPin, // Replace with the appropriate Font Awesome icon
-                      label: 'Directions',
-                      onPressed: () {
-                        // Perform directions action
-                      },
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        EventsListView(
+                          events: events,
+                          emptyListText: 'No events found',
+                        ),
+                        GridGallery(
+                          images: widget.placeImages,
+                          backgroundColor: Colors.white,
+                        ),
+                        const Center(
+                          child: Text(
+                            'No places found',
+                          ),
+                        ),
+                      ],
                     ),
-                    RoundedIconButton(
-                      icon: FontAwesomeIcons
-                          .share, // Replace with the appropriate Font Awesome icon
-                      label: 'Share',
-                      onPressed: () {
-                        // Perform share action
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),

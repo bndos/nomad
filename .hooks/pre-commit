@@ -48,7 +48,7 @@ fi
 # If there are whitespace errors, print the offending file names and fail.
 git diff-index --check --cached $against --
 
-branch_regex="^(main|development|master|(feature|test|(bug|hot)fix)(/[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*){1,2}|release/[0-9]+(\.[0-9]+)*(-(alpha|beta|rc)[0-9]*)?)$"
+branch_regex="^(main|development|master|(feature|refactor|test|(bug|hot)fix)(/[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*){1,2}|release/[0-9]+(\.[0-9]+)*(-(alpha|beta|rc)[0-9]*)?)$"
 
 branch_name=$(git symbolic-ref --short HEAD)
 
@@ -57,6 +57,7 @@ if ! $(echo $(git rev-parse --abbrev-ref HEAD) | grep -q -E "$branch_regex"); th
   exit 1
 fi
 
+dart fix --apply
 flutter analyze --no-pub
 output=$(dart format . --set-exit-if-changed)
 
