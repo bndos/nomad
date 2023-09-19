@@ -17,7 +17,10 @@ The following video illustrates the real-time chat functionality within Nomad. U
 
 
 
-https://github.com/bndos/nomad/assets/44623235/d4e1e8f3-8be4-4e09-95f8-3445d6f07929
+
+https://github.com/bndos/nomad/assets/44623235/59f93203-b3d9-4c2b-91dc-12457b6bf9c1
+
+
 
 
 
