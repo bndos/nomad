@@ -1,39 +1,40 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:nomad/screens/sign_up_page.dart';
 import 'package:nomad/widgets/map/rounded_icon_button.dart';
 import 'package:nomad/widgets/textfield/custom_text_field.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  SignInPageState createState() => SignInPageState();
+  SignUpPageState createState() => SignUpPageState();
 }
 
-class SignInPageState extends State<SignInPage> {
+class SignUpPageState extends State<SignUpPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future<void> _signIn() async {
+  Future<void> _signUp() async {
     try {
-      await _auth.signInWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
+      if (!mounted) return;
+      Navigator.of(context).pop();
     } catch (e) {
       // Handle error
     }
   }
 
-  Future<void> _signInWithGoogle() async {
-    // Implement Google Sign-In logic
+  Future<void> _signUpWithGoogle() async {
+    // Implement Google Sign-Up logic
   }
 
-  Future<void> _signInWithFacebook() async {
-    // Implement Facebook Sign-In logic
+  Future<void> _signUpWithFacebook() async {
+    // Implement Facebook Sign-Up logic
   }
 
   @override
@@ -75,7 +76,7 @@ class SignInPageState extends State<SignInPage> {
                     width: 44,
                     expanded: false,
                     radius: 30,
-                    onPressed: _signInWithGoogle,
+                    onPressed: _signUpWithGoogle,
                     isDisabled: false,
                   ),
                   RoundedIconButton(
@@ -87,31 +88,29 @@ class SignInPageState extends State<SignInPage> {
                     width: 44,
                     expanded: false,
                     radius: 30,
-                    onPressed: _signInWithFacebook,
+                    onPressed: _signUpWithFacebook,
                     isDisabled: false,
                   ),
                 ],
               ),
               const SizedBox(height: 24),
               FilledButton(
-                onPressed: _signIn,
+                onPressed: _signUp,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 40),
                 ),
-                child: const Text('Sign In'),
+                child: const Text('Sign Up'),
               ),
-              const SizedBox(height: 12),
-              const Text('or'),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const SignUpPage()),
-                  );
+                  if (!mounted) return;
+                  Navigator.of(context).pop();
                 },
                 child: const Text(
-                  'Sign Up',
+                  'Already have an account? Sign In',
                   style: TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
