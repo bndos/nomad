@@ -107,7 +107,7 @@ class SignInPageState extends State<SignInPage> {
               onPressed: () {
                 // Navigate to sign up page
               },
-              child: Text(
+              child: const Text(
                 'Sign Up',
                 style: TextStyle(
                   color: Colors.blue, // Adjust the color as needed
