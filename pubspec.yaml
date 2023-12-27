@@ -52,6 +52,7 @@ dependencies:
   video_player: ^2.6.1
   stream_chat_flutter: ^6.9.0
   firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
 
 dev_dependencies:
   flutter_test:
