@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nomad/widgets/map/rounded_icon_button.dart';
 import 'package:nomad/widgets/textfield/custom_text_field.dart';
 
 class SignInPage extends StatefulWidget {
@@ -24,6 +26,14 @@ class SignInPageState extends State<SignInPage> {
     } catch (e) {
       // Handle error
     }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    // Implement Google Sign-In logic
+  }
+
+  Future<void> _signInWithFacebook() async {
+    // Implement Facebook Sign-In logic
   }
 
   @override
@@ -52,6 +62,36 @@ class SignInPageState extends State<SignInPage> {
               obscureText: true,
             ),
             const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RoundedIconButton(
+                  iconColor: Colors.white,
+                  icon: FontAwesomeIcons.google,
+                  containerColor: Colors.red,
+                  label: '',
+                  height: 44,
+                  width: 44,
+                  expanded: false,
+                  radius: 30,
+                  onPressed: _signInWithGoogle,
+                  isDisabled: false,
+                ),
+                RoundedIconButton(
+                  iconColor: Colors.white,
+                  icon: FontAwesomeIcons.facebookF,
+                  containerColor: Colors.blue,
+                  label: '',
+                  height: 44,
+                  width: 44,
+                  expanded: false,
+                  radius: 30,
+                  onPressed: _signInWithFacebook,
+                  isDisabled: false,
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
             FilledButton(
               onPressed: _signIn,
               style: ElevatedButton.styleFrom(
@@ -60,6 +100,21 @@ class SignInPageState extends State<SignInPage> {
                 minimumSize: const Size(double.infinity, 40),
               ),
               child: const Text('Sign In'),
+            ),
+            const SizedBox(height: 12),
+            const Text('or'),
+            TextButton(
+              onPressed: () {
+                // Navigate to sign up page
+              },
+              child: Text(
+                'Sign Up',
+                style: TextStyle(
+                  color: Colors.blue, // Adjust the color as needed
+                  decoration: TextDecoration
+                      .underline, // Underline to make it look like a link
+                ),
+              ),
             ),
           ],
         ),
