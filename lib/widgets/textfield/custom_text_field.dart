@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
-  String? hintText;
+  final String? hintText;
   final TextInputType? keyboardType;
   final bool obscureText;
 
-  CustomTextField({
+  const CustomTextField({
     Key? key,
     required this.label,
     required this.controller,
@@ -23,11 +23,12 @@ class CustomTextField extends StatefulWidget {
 class CustomTextFieldState extends State<CustomTextField> {
   late FocusNode _focusNode;
   bool _isTextFieldFocused = false;
+  late String _hintText;
 
   @override
   void initState() {
     super.initState();
-    widget.hintText ??= widget.label;
+    _hintText = widget.hintText ?? widget.label;
     _focusNode = FocusNode();
     _focusNode.addListener(() {
       setState(() {
@@ -57,7 +58,7 @@ class CustomTextFieldState extends State<CustomTextField> {
           fontSize: 16,
           height: 5.5,
         ),
-        hintText: _isTextFieldFocused ? null : widget.hintText,
+        hintText: _isTextFieldFocused ? null : _hintText,
         filled: true,
         fillColor: Colors.grey[100],
         contentPadding: EdgeInsets.symmetric(

@@ -6,10 +6,10 @@ class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  SignInPageState createState() => SignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class SignInPageState extends State<SignInPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -29,12 +29,17 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Image.asset(
+              'assets/icons/tipi.png', // Your custom PNG icon
+              width: 100, // Adjust the width as needed
+              height: 100, // Adjust the height as needed
+            ),
+            const SizedBox(height: 32), // Space between icon and text field
             CustomTextField(
               controller: _emailController,
               label: 'Email',
@@ -46,8 +51,14 @@ class _SignInPageState extends State<SignInPage> {
               label: 'Password',
               obscureText: true,
             ),
-            ElevatedButton(
+            const SizedBox(height: 24),
+            FilledButton(
               onPressed: _signIn,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 40),
+              ),
               child: const Text('Sign In'),
             ),
           ],
