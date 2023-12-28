@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,15 +14,26 @@ class SignUpPage extends StatefulWidget {
 
 class SignUpPageState extends State<SignUpPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
 
   Future<void> _signUp() async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      final userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
+
+      User? user = userCredential.user;
+      await user?.updateDisplayName(_usernameController.text);
+
+      await _firestore.collection('users').doc(user?.uid).set({
+        'username': _usernameController.text,
+        'email': _emailController.text,
+      });
+
       if (!mounted) return;
       Navigator.of(context).pop();
     } catch (e) {
@@ -56,6 +68,12 @@ class SignUpPageState extends State<SignUpPage> {
                 controller: _emailController,
                 label: 'Email',
                 keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 24),
+              CustomTextField(
+                controller: _usernameController,
+                label: 'Username', // Add a username field
+                keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 24),
               CustomTextField(
