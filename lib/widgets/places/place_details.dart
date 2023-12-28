@@ -87,19 +87,26 @@ class PlaceDetails extends StatelessWidget {
               icon: FontAwesomeIcons.plus,
               label: 'Event',
               onPressed: onAddEvent,
+              containerColor: Colors.grey[100],
+              height: 38,
             ),
             RoundedIconButton(
               icon: FontAwesomeIcons.locationPin,
               label: 'Directions',
               onPressed: onDirections,
+              containerColor: Colors.grey[100],
+              height: 38,
             ),
             RoundedIconButton(
               icon: FontAwesomeIcons.share,
               label: 'Share',
               onPressed: onShare,
+              containerColor: Colors.grey[100],
+              height: 38,
             ),
           ],
         ),
+        const SizedBox(height: 8.0),
       ],
     );
   }
