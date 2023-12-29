@@ -26,4 +26,20 @@ class Event {
     required this.imageUrls,
     this.assets,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'placeName': placeName,
+      'address': address,
+      'placeId': placeId,
+      'location': location != null
+          ? {'lat': location!.lat, 'lng': location!.lng}
+          : null,
+      'startTime': startTime?.toIso8601String(),
+      'endTime': endTime?.toIso8601String(),
+      'details': details,
+      'name': name,
+      'imageUrls': imageUrls,
+    };
+  }
 }
