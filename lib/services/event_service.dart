@@ -7,4 +7,11 @@ class EventService {
   Future<void> createEvent(Event event) async {
     await _firestore.collection('events').add(event.toJson());
   }
+
+  Future<List<Event>> fetchAllEvents() async {
+    QuerySnapshot querySnapshot = await _firestore.collection('events').get();
+    return querySnapshot.docs
+        .map((doc) => Event.fromFirestore(doc.data() as Map<String, dynamic>))
+        .toList();
+  }
 }

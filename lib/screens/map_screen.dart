@@ -196,6 +196,35 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
+  Future<void> _fetchAndDisplayEvents() async {
+    List<Event> events = await _eventService.fetchAllEvents();
+
+    for (var event in events) {
+      if (event.location == null) continue;
+
+      LatLng markerPosition = LatLng(event.location!.lat, event.location!.lng);
+      MarkerId markerId = MarkerId(event.location!.toString());
+
+      setState(() {
+        _eventMarkers.add(
+          Marker(
+            markerId: markerId,
+            position: markerPosition,
+            onTap: () {
+              _focusPlace(event.placeId!);
+            },
+          ),
+        );
+      });
+
+      if (_eventMap.containsKey(event.location!)) {
+        _eventMap[event.location!]!.add(event);
+      } else {
+        _eventMap[event.location!] = [event];
+      }
+    }
+  }
+
   void _handleEventCreated(Event event) {
     // event id generated in firestore
     if (event.location == null) {
@@ -250,6 +279,7 @@ class MapScreenState extends State<MapScreen> {
             setState(() {
               _mapController = controller;
               focusCurrentLocation();
+              _fetchAndDisplayEvents();
             });
           },
           onLongPress: _handleMapLongPress,

@@ -29,6 +29,28 @@ class Event {
     this.iconUrl,
   });
 
+  factory Event.fromFirestore(Map<String, dynamic> data) {
+    return Event(
+      placeName: data['placeName'],
+      address: data['address'],
+      placeId: data['placeId'],
+      location: data['location'] != null
+          ? places_sdk.LatLng(
+              lat: data['location']['lat'],
+              lng: data['location']['lng'],
+            )
+          : null,
+      startTime:
+          data['startTime'] != null ? DateTime.parse(data['startTime']) : null,
+      endTime: data['endTime'] != null ? DateTime.parse(data['endTime']) : null,
+      details: data['details'],
+      name: data['name'],
+      imageUrls: List<String>.from(data['imageUrls'] ?? []),
+      iconUrl: data['iconUrl'],
+      // assets field is omitted as it's not directly supported in Firestore
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'placeName': placeName,
