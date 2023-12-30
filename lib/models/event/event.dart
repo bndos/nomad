@@ -13,6 +13,7 @@ class Event {
   String name;
   List<String> imageUrls;
   List<AssetEntity>? assets;
+  String? iconUrl;
 
   Event({
     this.placeName,
@@ -25,6 +26,7 @@ class Event {
     required this.details,
     required this.imageUrls,
     this.assets,
+    this.iconUrl,
   });
 
   Map<String, dynamic> toJson() {
@@ -40,6 +42,7 @@ class Event {
       'details': details,
       'name': name,
       'imageUrls': imageUrls,
+      'iconUrl': iconUrl,
     };
   }
 }

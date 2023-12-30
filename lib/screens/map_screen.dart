@@ -4,6 +4,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart'
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nomad/models/event/event.dart';
+import 'package:nomad/services/event_service.dart';
 import 'package:nomad/services/location_service.dart';
 import 'package:nomad/services/places_service.dart';
 import 'package:nomad/widgets/map/current_location_button.dart';
@@ -20,6 +21,7 @@ class MapScreen extends StatefulWidget {
 class MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   final LocationService _locationService = LocationService();
+  final EventService _eventService = EventService();
 
   List<Marker> _currentMarker = [];
   final List<Marker> _eventMarkers = [];
@@ -199,6 +201,8 @@ class MapScreenState extends State<MapScreen> {
     if (event.location == null) {
       return;
     }
+
+    _eventService.createEvent(event);
 
     if (_eventMap.containsKey(event.location!)) {
       _eventMap[event.location!]!.add(event);
