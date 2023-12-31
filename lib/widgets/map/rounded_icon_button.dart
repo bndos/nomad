@@ -26,11 +26,11 @@ class RoundedIconButton extends StatelessWidget {
     this.textLabel,
     this.isDisabled = false, // Set default value to false
     this.color = lightGreyColor,
-    this.containerColor,
+    this.containerColor = lightGreyColor,
     this.iconColor = Colors.black,
     this.labelColor,
     this.foregroundColor = Colors.black,
-    this.height,
+    this.height = 36,
     this.width,
     this.expanded = true,
     this.radius = 16.0,

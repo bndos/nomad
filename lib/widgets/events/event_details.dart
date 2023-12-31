@@ -21,6 +21,8 @@ class EventDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasEventImage = event.assets != null && event.assets!.isNotEmpty;
+
     return Stack(
       children: [
         // Container with image
@@ -36,23 +38,16 @@ class EventDetails extends StatelessWidget {
             height: 300,
             width: MediaQuery.of(context).size.width,
           ),
-        ] else ...[
-          Container(
-            height: 300,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.grey.shade100,
-          ),
-        ],
-        // Content after the AppBar
+        ], // Content after the AppBar
         Container(
           width: MediaQuery.of(context).size.width,
-          margin: const EdgeInsets.only(top: 250),
+          margin: EdgeInsets.only(top: hasEventImage ? 300 : 0),
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(hasEventImage ? 20 : 0),
+              topRight: Radius.circular(hasEventImage ? 20 : 0),
             ),
             boxShadow: [
               BoxShadow(
